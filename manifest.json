@@ -1,0 +1,11 @@
+{
+  "name": "claude-github-issue",
+  "displayName": "GitHub Issues Board",
+  "version": "1.0.0",
+  "description": "Kanban board for GitHub Issues with bidirectional TaskMaster sync and /github-task CLI skill auto-install",
+  "author": "szmidtpiotr",
+  "slot": "tab",
+  "icon": "github",
+  "entry": "dist/frontend.js",
+  "server": "dist/backend.js"
+}

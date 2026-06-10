@@ -1,0 +1,66 @@
+import React from 'react';
+import type { GithubIssue, ColumnDef } from './types';
+import { GithubIssueCard } from './GithubIssueCard';
+
+interface Props {
+  column: ColumnDef;
+  issues: GithubIssue[];
+  collapsed: boolean;
+  onToggle: () => void;
+  onOpenIssue: (issue: GithubIssue) => void;
+}
+
+export const GithubKanbanColumn: React.FC<Props> = ({ column, issues, collapsed, onToggle, onOpenIssue }) => {
+  return (
+    <div
+      className="cgi-column"
+      style={{ background: column.bgColor }}
+    >
+      <div
+        className="cgi-column-header"
+        style={{ color: column.accentColor, borderBottom: `1px solid ${column.accentColor}30` }}
+        onClick={onToggle}
+        title={collapsed ? `Expand ${column.title}` : `Collapse ${column.title}`}
+      >
+        {!collapsed && (
+          <>
+            <span>{column.title}</span>
+            <span className="cgi-column-count">{issues.length}</span>
+            <span className="cgi-column-toggle">▲</span>
+          </>
+        )}
+        {collapsed && (
+          <span className="cgi-column-toggle" style={{ margin: '0 auto' }}>▼</span>
+        )}
+      </div>
+
+      {collapsed ? (
+        <div
+          className="cgi-column-body"
+          style={{ alignItems: 'center', cursor: 'pointer' }}
+          onClick={onToggle}
+        >
+          <span className="cgi-column-collapsed-label" style={{ color: column.accentColor }}>
+            {column.title} ({issues.length})
+          </span>
+        </div>
+      ) : (
+        <div className="cgi-column-body">
+          {issues.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px 0', opacity: 0.4, fontSize: 12 }}>
+              No issues
+            </div>
+          ) : (
+            issues.map(issue => (
+              <GithubIssueCard
+                key={issue.id}
+                issue={issue}
+                onClick={() => onOpenIssue(issue)}
+              />
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
