@@ -1,12 +1,21 @@
 import React from 'react';
 import type { GithubIssue } from './types';
 import { STATUS_LABELS } from './types';
+import type { PriorityLevel } from './priorityUtils';
 import { extractImages } from './imageUtils';
 
 interface Props {
   issue: GithubIssue;
+  priority: PriorityLevel | null;
+  priorityReason?: string;
   onClick: () => void;
 }
+
+const PRIORITY_COLORS: Record<PriorityLevel, string> = {
+  high: '#ef4444',
+  medium: '#f59e0b',
+  low: '#6b7280',
+};
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex);
@@ -22,7 +31,7 @@ function labelTextColor(hex: string): string {
   return lum > 140 ? '#000000' : '#ffffff';
 }
 
-export const GithubIssueCard: React.FC<Props> = ({ issue, onClick }) => {
+export const GithubIssueCard: React.FC<Props> = ({ issue, priority, priorityReason, onClick }) => {
   const visibleLabels = issue.labels.filter(l => !STATUS_LABELS.includes(l.name));
   const images = issue.body ? extractImages(issue.body) : [];
   const previewImages = images.slice(0, 3);
@@ -45,7 +54,16 @@ export const GithubIssueCard: React.FC<Props> = ({ issue, onClick }) => {
           )}
         </div>
       )}
-      <div className="cgi-card-title">{issue.title}</div>
+      <div className="cgi-card-title-row">
+        {priority && (
+          <span
+            className="cgi-priority-dot"
+            style={{ background: PRIORITY_COLORS[priority] }}
+            title={priorityReason ? `${priority}: ${priorityReason}` : priority}
+          />
+        )}
+        <div className="cgi-card-title">{issue.title}</div>
+      </div>
       <div className="cgi-card-meta">
         <span className="cgi-card-number">#{issue.number}</span>
         {issue.assignees.map(a => (

@@ -11,11 +11,13 @@ interface ConfigState {
   token: string;
   owner: string;
   repo: string;
+  anthropicKey: string;
 }
 
 export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved }) => {
   const api = usePluginAPI();
-  const [form, setForm] = useState<ConfigState>({ token: '', owner: '', repo: '' });
+  const [form, setForm] = useState<ConfigState>({ token: '', owner: '', repo: '', anthropicKey: '' });
+  const [showAnthropicKey, setShowAnthropicKey] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,13 +30,13 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved }
     api.rpc('GET', `/config?path=${encodeURIComponent(projectPath)}`)
       .then(res => {
         if (cancelled) return;
-        const d = res as { configured?: boolean; owner?: string; repo?: string; hasToken?: boolean };
+        const d = res as { configured?: boolean; owner?: string; repo?: string; hasToken?: boolean; hasAnthropicKey?: boolean };
         if (d.configured) {
           setForm(f => ({
             ...f,
             owner: d.owner ?? '',
             repo: d.repo ?? '',
-            // token is not returned for security — leave blank, user must re-enter to change
+            // secrets not returned — leave blank, user must re-enter to change
           }));
         }
       })
@@ -60,6 +62,7 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved }
         owner: form.owner.trim(),
         repo: form.repo.trim(),
         enabled: true,
+        anthropicKey: form.anthropicKey.trim() || undefined,
       });
       setSuccess(true);
       setTimeout(() => {
@@ -165,6 +168,31 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved }
                 style={inputStyle}
                 autoComplete="off"
               />
+            </div>
+
+            {/* Anthropic Key (optional) */}
+            <div>
+              <label style={labelStyle}>Anthropic API Key <span style={{ opacity: 0.5, fontWeight: 400, textTransform: 'none', fontSize: 11 }}>(optional — enables real AI prioritization)</span></label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showAnthropicKey ? 'text' : 'password'}
+                  value={form.anthropicKey}
+                  onChange={e => setForm(f => ({ ...f, anthropicKey: e.target.value }))}
+                  placeholder="sk-ant-api03-…"
+                  style={{ ...inputStyle, paddingRight: 38 }}
+                  autoComplete="off"
+                />
+                <button
+                  onClick={() => setShowAnthropicKey(v => !v)}
+                  style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.45, fontSize: 12 }}
+                  title={showAnthropicKey ? 'Hide key' : 'Show key'}
+                >
+                  {showAnthropicKey ? 'hide' : 'show'}
+                </button>
+              </div>
+              <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4 }}>
+                Without a key, AI Prioritize uses smart heuristics (labels, age, engagement). With a key, it uses Claude Haiku for deeper analysis.
+              </div>
             </div>
 
             {/* Error */}

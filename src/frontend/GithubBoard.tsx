@@ -1,10 +1,12 @@
 import React from 'react';
-import type { IssuesData, GithubIssue } from './types';
+import type { GithubIssue } from './types';
 import { COLUMNS, issueToColumnId } from './types';
+import type { IssuePriority } from './priorityUtils';
 import { GithubKanbanColumn } from './GithubKanbanColumn';
 
 interface Props {
-  data: IssuesData;
+  issues: GithubIssue[];
+  priorityMap: Map<number, IssuePriority>;
   collapsedColumns: Set<string>;
   onToggleColumn: (id: string) => void;
   onMoveIssue: (issueNumber: number, newColumnId: string) => void;
@@ -12,38 +14,35 @@ interface Props {
 }
 
 export const GithubBoard: React.FC<Props> = ({
-  data,
+  issues,
+  priorityMap,
   collapsedColumns,
   onToggleColumn,
   onOpenIssue,
 }) => {
-  // Group issues by column
   const issuesByColumn = React.useMemo(() => {
     const map = new Map<string, GithubIssue[]>();
     for (const col of COLUMNS) map.set(col.id, []);
-    for (const issue of data.issues) {
+    for (const issue of issues) {
       const colId = issueToColumnId(issue);
       const arr = map.get(colId);
       if (arr) arr.push(issue);
     }
     return map;
-  }, [data.issues]);
+  }, [issues]);
 
-  // Build grid template: collapsed = 52px, expanded = minmax(0, 1fr)
   const gridTemplate = COLUMNS.map(col =>
     collapsedColumns.has(col.id) ? '52px' : 'minmax(0, 1fr)'
   ).join(' ');
 
   return (
-    <div
-      className="cgi-board"
-      style={{ gridTemplateColumns: gridTemplate }}
-    >
+    <div className="cgi-board" style={{ gridTemplateColumns: gridTemplate }}>
       {COLUMNS.map(col => (
         <GithubKanbanColumn
           key={col.id}
           column={col}
           issues={issuesByColumn.get(col.id) ?? []}
+          priorityMap={priorityMap}
           collapsed={collapsedColumns.has(col.id)}
           onToggle={() => onToggleColumn(col.id)}
           onOpenIssue={onOpenIssue}

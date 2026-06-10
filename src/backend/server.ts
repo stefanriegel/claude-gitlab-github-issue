@@ -4,6 +4,7 @@ import fs from 'fs';
 import { URL } from 'url';
 import * as issuesService from './issues.service';
 import * as configService from './config.service';
+import { prioritizeIssues } from './ai.service';
 
 // ---- Auto-install /github-task skill ----
 function installSkill(): void {
@@ -183,6 +184,7 @@ async function handleGetConfig(
         owner: config.owner,
         repo: config.repo,
         hasToken: Boolean(config.token),
+        hasAnthropicKey: Boolean(config.anthropicKey),
       });
     }
   } catch (e) {
@@ -254,14 +256,42 @@ const server = http.createServer(async (req, res) => {
       if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
       try {
         const raw = await readBody(req);
-        const body = JSON.parse(raw) as { token?: string; owner?: string; repo?: string; enabled?: boolean };
+        const body = JSON.parse(raw) as { token?: string; owner?: string; repo?: string; enabled?: boolean; anthropicKey?: string };
         if (!body.token?.trim() || !body.owner?.trim() || !body.repo?.trim()) {
           sendJson(res, 400, { error: 'token, owner, and repo are required' });
           return;
         }
-        const config = { token: body.token.trim(), owner: body.owner.trim(), repo: body.repo.trim(), enabled: body.enabled !== false };
+        const existing = await configService.readConfig(projectPath);
+        const config: configService.GithubConfig = {
+          token: body.token.trim(),
+          owner: body.owner.trim(),
+          repo: body.repo.trim(),
+          enabled: body.enabled !== false,
+          anthropicKey: body.anthropicKey?.trim() || existing?.anthropicKey || undefined,
+        };
         await configService.writeConfig(projectPath, config);
         sendJson(res, 200, { ok: true });
+      } catch (e) {
+        sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+      }
+      return;
+    }
+
+    // POST /ai-prioritize — smart prioritization (heuristic + optional Anthropic AI)
+    if (method === 'POST' && pathname === '/ai-prioritize') {
+      const query = parseQuery(req.url ?? '');
+      const projectPath = query['path'] ?? '';
+      if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+      try {
+        const raw = await readBody(req);
+        const body = JSON.parse(raw) as { issues?: unknown[] };
+        if (!Array.isArray(body.issues) || body.issues.length === 0) {
+          sendJson(res, 400, { error: 'issues array required' });
+          return;
+        }
+        const config = await configService.readConfig(projectPath);
+        const result = await prioritizeIssues(body.issues as Parameters<typeof prioritizeIssues>[0], config?.anthropicKey);
+        sendJson(res, 200, result);
       } catch (e) {
         sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
       }

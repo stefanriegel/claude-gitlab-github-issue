@@ -8,6 +8,7 @@ export interface GithubConfig {
   owner: string;
   repo: string;
   enabled: boolean;
+  anthropicKey?: string;
 }
 
 export async function readConfig(projectPath: string): Promise<GithubConfig | null> {
@@ -22,6 +23,7 @@ export async function readConfig(projectPath: string): Promise<GithubConfig | nu
       owner: parsed.owner,
       repo: parsed.repo,
       enabled: parsed.enabled !== false,
+      anthropicKey: parsed.anthropicKey,
     };
   } catch {
     return null;

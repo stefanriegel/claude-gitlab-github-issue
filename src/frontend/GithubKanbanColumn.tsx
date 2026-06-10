@@ -1,21 +1,20 @@
 import React from 'react';
 import type { GithubIssue, ColumnDef } from './types';
+import type { IssuePriority } from './priorityUtils';
 import { GithubIssueCard } from './GithubIssueCard';
 
 interface Props {
   column: ColumnDef;
   issues: GithubIssue[];
+  priorityMap: Map<number, IssuePriority>;
   collapsed: boolean;
   onToggle: () => void;
   onOpenIssue: (issue: GithubIssue) => void;
 }
 
-export const GithubKanbanColumn: React.FC<Props> = ({ column, issues, collapsed, onToggle, onOpenIssue }) => {
+export const GithubKanbanColumn: React.FC<Props> = ({ column, issues, priorityMap, collapsed, onToggle, onOpenIssue }) => {
   return (
-    <div
-      className="cgi-column"
-      style={{ background: column.bgColor }}
-    >
+    <div className="cgi-column" style={{ background: column.bgColor }}>
       <div
         className="cgi-column-header"
         style={{ color: column.accentColor, borderBottom: `1px solid ${column.accentColor}30` }}
@@ -55,6 +54,8 @@ export const GithubKanbanColumn: React.FC<Props> = ({ column, issues, collapsed,
               <GithubIssueCard
                 key={issue.id}
                 issue={issue}
+                priority={priorityMap.get(issue.number)?.priority ?? null}
+                priorityReason={priorityMap.get(issue.number)?.reason}
                 onClick={() => onOpenIssue(issue)}
               />
             ))
