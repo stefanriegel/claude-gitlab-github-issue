@@ -88,14 +88,8 @@ The plugin appears as a new **GitHub Issues** tab. No global configuration neede
 
 Click the **⚙** button in the board toolbar to open settings, or create `.GitHubBoard/github-sync.json` manually:
 
-```json
-{
-  "token": "ghp_xxxxxxxxxxxxxxxxxxxx",
-  "owner": "your-github-username",
-  "repo": "your-repository-name",
-  "enabled": true
-}
-```
+<img width="895" height="1192" alt="image" src="https://github.com/user-attachments/assets/655fd817-23c5-4b00-bc93-edfd896d0434" />
+
 
 **Generate a token:** GitHub → Settings → Developer settings → Personal access tokens → Generate new (classic)
 Required scope: `repo`
