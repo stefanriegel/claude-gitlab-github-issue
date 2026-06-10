@@ -7,6 +7,7 @@ import { detectPriorityFromLabels, getEffectivePriority, sortIssues } from './pr
 import { GithubBoard } from './GithubBoard';
 import { GithubIssueModal } from './GithubIssueModal';
 import { NewIssueModal } from './NewIssueModal';
+import { SubscriptionPriorityModal } from './SubscriptionPriorityModal';
 import { ConfigBanner } from './ConfigBanner';
 import { SettingsModal } from './SettingsModal';
 
@@ -64,6 +65,8 @@ export const App: React.FC = () => {
   const [priorityMap, setPriorityMap] = useState<Map<number, IssuePriority>>(new Map());
   const [aiPrioritizing, setAiPrioritizing] = useState(false);
   const [aiUsed, setAiUsed] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [hasAnthropicKey, setHasAnthropicKey] = useState(false);
 
   const theme = api.context.theme;
   const project = api.context.project;
@@ -109,6 +112,17 @@ export const App: React.FC = () => {
     return unsubscribe;
   }, [fetchIssues, api]);
 
+  // Check if Anthropic key is configured
+  useEffect(() => {
+    if (!project?.path) return;
+    api.rpc('GET', `/config?path=${encodeURIComponent(project.path)}`)
+      .then(res => {
+        const d = res as { hasAnthropicKey?: boolean };
+        setHasAnthropicKey(Boolean(d.hasAnthropicKey));
+      })
+      .catch(() => {});
+  }, [api, project?.path]);
+
   useEffect(() => {
     const schedule = () => {
       fetchRef.current = setTimeout(() => { fetchIssues().then(schedule); }, POLL_INTERVAL_MS);
@@ -128,6 +142,15 @@ export const App: React.FC = () => {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showSortMenu]);
+
+  const handleSubscriptionPriorities = (priorities: IssuePriority[]) => {
+    const newMap = new Map<number, IssuePriority>();
+    for (const p of priorities) newMap.set(p.number, p);
+    setPriorityMap(newMap);
+    setAiUsed(true);
+    setSortBy('priority');
+    setShowSubscriptionModal(false);
+  };
 
   const handleAIPrioritize = async () => {
     if (!data || aiPrioritizing || !project?.path) return;
@@ -265,17 +288,29 @@ export const App: React.FC = () => {
             </button>
           )}
           {data && project && (
-            <button
-              className={`cgi-btn cgi-btn-ai${aiPrioritizing ? ' cgi-btn-ai-loading' : ''}`}
-              onClick={handleAIPrioritize}
-              disabled={aiPrioritizing}
-              title={aiUsed ? 'Re-run AI prioritization' : 'Analyze and prioritize issues with AI'}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-              </svg>
-              {aiPrioritizing ? 'Analyzing…' : aiUsed ? 'AI Prioritized' : 'AI Prioritize'}
-            </button>
+            <div className="cgi-ai-btn-group">
+              <button
+                className={`cgi-btn cgi-btn-ai${aiPrioritizing ? ' cgi-btn-ai-loading' : ''}`}
+                onClick={handleAIPrioritize}
+                disabled={aiPrioritizing}
+                title={hasAnthropicKey ? 'Prioritize using Claude API (Anthropic key configured)' : 'Prioritize using smart heuristics — add Anthropic API key in ⚙ settings for AI analysis'}
+                style={{ borderRadius: '6px 0 0 6px', borderRight: 'none' }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+                </svg>
+                {aiPrioritizing ? 'Analyzing…' : aiUsed ? 'AI Prioritized' : 'AI Prioritize'}
+              </button>
+              <button
+                className="cgi-btn cgi-btn-ai cgi-btn-ai-sub"
+                onClick={() => setShowSubscriptionModal(true)}
+                disabled={aiPrioritizing}
+                title="Prioritize via Claude.ai subscription — copy prompt, paste response"
+                style={{ borderRadius: '0 6px 6px 0', padding: '4px 8px', fontSize: 11 }}
+              >
+                claude.ai
+              </button>
+            </div>
           )}
           <button className="cgi-btn" onClick={fetchIssues} disabled={loading} title="Refresh issues">
             {loading ? '↻ Refreshing…' : '↻ Refresh'}
@@ -405,6 +440,14 @@ export const App: React.FC = () => {
             setShowSettings(false);
             void fetchIssues();
           }}
+        />
+      )}
+
+      {showSubscriptionModal && data && (
+        <SubscriptionPriorityModal
+          issues={data.issues}
+          onApply={handleSubscriptionPriorities}
+          onClose={() => setShowSubscriptionModal(false)}
         />
       )}
 

@@ -556,6 +556,23 @@
   opacity: 0.75;
 }
 
+/* AI button split group */
+.cgi-ai-btn-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.cgi-btn-ai-sub {
+  opacity: 0.85;
+  font-size: 11px !important;
+  letter-spacing: 0.01em;
+  border-left: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+.cgi-btn-ai-sub:hover {
+  opacity: 1;
+}
+
 /* Filter bar */
 .cgi-filterbar {
   display: flex;
