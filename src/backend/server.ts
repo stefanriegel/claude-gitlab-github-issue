@@ -286,7 +286,7 @@ server.listen(0, '127.0.0.1', () => {
   const addr = server.address();
   const port = typeof addr === 'object' && addr ? addr.port : 0;
   // Signal to plugin host that we're ready
-  process.stdout.write(JSON.stringify({ type: 'ready', port }) + '\n');
+  process.stdout.write(JSON.stringify({ ready: true, port }) + '\n');
 });
 
 server.on('error', (err) => {
