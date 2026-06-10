@@ -527,6 +527,19 @@
   --cgi-scrollbar: rgba(255,255,255,0.15);
 }
 
+/* New Issue button */
+.cgi-btn-new-issue {
+  background: var(--cgi-accent);
+  color: #fff;
+  border-color: var(--cgi-accent);
+  font-weight: 600;
+  gap: 5px;
+}
+.cgi-btn-new-issue:hover {
+  background: var(--cgi-accent-hover);
+  border-color: var(--cgi-accent-hover);
+}
+
 /* AI Prioritize button */
 .cgi-btn-ai {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);

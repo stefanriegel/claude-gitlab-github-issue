@@ -228,6 +228,23 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // POST /issues — create new issue
+    if (method === 'POST' && pathname === '/issues') {
+      const query = parseQuery(req.url ?? '');
+      const projectPath = query['path'] ?? '';
+      if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+      try {
+        const raw = await readBody(req);
+        const body = JSON.parse(raw) as { title?: string; body?: string; labels?: string[] };
+        if (!body.title?.trim()) { sendJson(res, 400, { error: 'title is required' }); return; }
+        const issue = await issuesService.createIssue(projectPath, body.title.trim(), body.body, body.labels);
+        sendJson(res, 201, { ok: true, issue });
+      } catch (e) {
+        sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+      }
+      return;
+    }
+
     // PATCH /issues/:number
     const patchMatch = method === 'PATCH' && pathname.match(/^\/issues\/(\d+)$/);
     if (patchMatch && patchMatch[1]) {

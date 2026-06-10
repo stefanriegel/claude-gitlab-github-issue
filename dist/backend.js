@@ -80,6 +80,12 @@ async function patchIssue(token, owner, repo, number, patch) {
 async function getIssue(token, owner, repo, number) {
   return githubFetch(token, "GET", `/repos/${owner}/${repo}/issues/${number}`);
 }
+async function createIssue(token, owner, repo, title, body, labels) {
+  const payload = { title };
+  if (body?.trim()) payload.body = body.trim();
+  if (labels?.length) payload.labels = labels;
+  return githubFetch(token, "POST", `/repos/${owner}/${repo}/issues`, payload);
+}
 async function createComment(token, owner, repo, issueNumber, body) {
   return githubFetch(
     token,
@@ -215,6 +221,13 @@ async function addComment(projectPath, issueNumber, body) {
   const comment = await createComment(config.token, config.owner, config.repo, issueNumber, body);
   cacheDeletePrefix(`comments:${config.owner}/${config.repo}:${issueNumber}`);
   return comment;
+}
+async function createIssue2(projectPath, title, body, labels) {
+  const config = await readConfig(projectPath);
+  if (!config?.token || !config?.owner || !config?.repo) throw new Error("Not configured");
+  const issue = await createIssue(config.token, config.owner, config.repo, title, body, labels);
+  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  return issue;
 }
 async function updateIssue(projectPath, issueNumber, { state, addLabels, removeLabels, labels, title }) {
   const config = await readConfig(projectPath);
@@ -551,6 +564,27 @@ var server = import_http.default.createServer(async (req, res) => {
     }
     if (method === "GET" && pathname === "/config") {
       await handleGetConfig(req, res);
+      return;
+    }
+    if (method === "POST" && pathname === "/issues") {
+      const query = parseQuery(req.url ?? "");
+      const projectPath = query["path"] ?? "";
+      if (!projectPath) {
+        sendJson(res, 400, { error: "path query parameter required" });
+        return;
+      }
+      try {
+        const raw = await readBody(req);
+        const body = JSON.parse(raw);
+        if (!body.title?.trim()) {
+          sendJson(res, 400, { error: "title is required" });
+          return;
+        }
+        const issue = await createIssue2(projectPath, body.title.trim(), body.body, body.labels);
+        sendJson(res, 201, { ok: true, issue });
+      } catch (e) {
+        sendJson(res, 500, { error: e.message ?? "Internal error" });
+      }
       return;
     }
     const patchMatch = method === "PATCH" && pathname.match(/^\/issues\/(\d+)$/);

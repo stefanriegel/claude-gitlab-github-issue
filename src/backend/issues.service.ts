@@ -94,6 +94,19 @@ export async function addComment(projectPath: string, issueNumber: string | numb
   return comment;
 }
 
+export async function createIssue(
+  projectPath: string,
+  title: string,
+  body?: string,
+  labels?: string[]
+): Promise<GithubIssue> {
+  const config = await configService.readConfig(projectPath);
+  if (!config?.token || !config?.owner || !config?.repo) throw new Error('Not configured');
+  const issue = await github.createIssue(config.token, config.owner, config.repo, title, body, labels);
+  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  return issue;
+}
+
 export async function updateIssue(
   projectPath: string,
   issueNumber: string | number,

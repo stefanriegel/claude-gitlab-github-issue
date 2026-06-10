@@ -86,6 +86,20 @@ export async function getIssue(
   return githubFetch(token, 'GET', `/repos/${owner}/${repo}/issues/${number}`) as Promise<GithubIssue>;
 }
 
+export async function createIssue(
+  token: string,
+  owner: string,
+  repo: string,
+  title: string,
+  body?: string,
+  labels?: string[]
+): Promise<GithubIssue> {
+  const payload: Record<string, unknown> = { title };
+  if (body?.trim()) payload.body = body.trim();
+  if (labels?.length) payload.labels = labels;
+  return githubFetch(token, 'POST', `/repos/${owner}/${repo}/issues`, payload) as Promise<GithubIssue>;
+}
+
 export async function createComment(
   token: string,
   owner: string,

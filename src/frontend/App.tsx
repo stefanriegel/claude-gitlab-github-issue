@@ -6,6 +6,7 @@ import type { IssuePriority, PriorityLevel, SortOption } from './priorityUtils';
 import { detectPriorityFromLabels, getEffectivePriority, sortIssues } from './priorityUtils';
 import { GithubBoard } from './GithubBoard';
 import { GithubIssueModal } from './GithubIssueModal';
+import { NewIssueModal } from './NewIssueModal';
 import { ConfigBanner } from './ConfigBanner';
 import { SettingsModal } from './SettingsModal';
 
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(loadCollapsed);
   const [selectedIssue, setSelectedIssue] = useState<GithubIssue | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showNewIssue, setShowNewIssue] = useState(false);
 
   // Filter/sort state
   const [searchText, setSearchText] = useState('');
@@ -193,6 +195,12 @@ export const App: React.FC = () => {
     setSelectedIssue(updated);
   };
 
+  const handleIssueCreated = (issue: GithubIssue) => {
+    setData(prev => prev ? { ...prev, issues: [issue, ...prev.issues] } : prev);
+    setShowNewIssue(false);
+    setSelectedIssue(issue);
+  };
+
   // Filtered + sorted issues
   const processedIssues = useMemo(() => {
     if (!data) return [];
@@ -244,6 +252,18 @@ export const App: React.FC = () => {
           )}
         </div>
         <div className="cgi-toolbar-actions">
+          {project && !notConfigured && (
+            <button
+              className="cgi-btn cgi-btn-new-issue"
+              onClick={() => setShowNewIssue(true)}
+              title="Create a new issue"
+            >
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"/>
+              </svg>
+              New Issue
+            </button>
+          )}
           {data && project && (
             <button
               className={`cgi-btn cgi-btn-ai${aiPrioritizing ? ' cgi-btn-ai-loading' : ''}`}
@@ -385,6 +405,14 @@ export const App: React.FC = () => {
             setShowSettings(false);
             void fetchIssues();
           }}
+        />
+      )}
+
+      {showNewIssue && project && (
+        <NewIssueModal
+          projectPath={projectPath}
+          onClose={() => setShowNewIssue(false)}
+          onCreated={handleIssueCreated}
         />
       )}
     </div>
