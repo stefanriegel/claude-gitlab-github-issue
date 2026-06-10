@@ -1,6 +1,6 @@
 ---
 name: github-task
-description: Manage GitHub Issues as tasks — list, move between columns, update with comments. Reads GitHub config from .taskmaster/github-sync.json in the current project. Use when the user invokes /github-task or asks to "check tasks", "move issue to in-progress", "update task", "what needs testing", "mark done", "sprawdź taski", "przenieś task", "zaktualizuj task".
+description: Manage GitHub Issues as tasks — list, move between columns, update with comments. Reads GitHub config from .GitHubBoard/github-sync.json in the current project. Use when the user invokes /github-task or asks to "check tasks", "move issue to in-progress", "update task", "what needs testing", "mark done", "sprawdź taski", "przenieś task", "zaktualizuj task".
 ---
 
 # github-task skill
@@ -9,13 +9,13 @@ Read and manage GitHub Issues directly via the GitHub API using the project's st
 
 ## Setup — read config
 
-First, find and read `.taskmaster/github-sync.json` in the current project:
+First, find and read `.GitHubBoard/github-sync.json` in the current project:
 
 ```bash
-cat .taskmaster/github-sync.json 2>/dev/null || find . -name "github-sync.json" -path "*taskmaster*" 2>/dev/null | head -1 | xargs cat
+cat .GitHubBoard/github-sync.json 2>/dev/null || find . -name "github-sync.json" -path "*GitHubBoard*" 2>/dev/null | head -1 | xargs cat
 ```
 
-Extract: `token`, `owner`, `repo`. If missing → tell user to configure GitHub sync in the GitHub Issues tab first.
+Extract: `token`, `owner`, `repo`. If missing → tell user to configure in the GitHub Issues Board tab (click the ⚙ gear icon).
 
 Set shell variables:
 ```bash

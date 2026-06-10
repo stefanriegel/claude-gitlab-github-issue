@@ -5,6 +5,7 @@ import { usePluginAPI } from './PluginContext';
 import { GithubBoard } from './GithubBoard';
 import { GithubIssueModal } from './GithubIssueModal';
 import { ConfigBanner } from './ConfigBanner';
+import { SettingsModal } from './SettingsModal';
 
 const POLL_INTERVAL_MS = 30_000;
 const STORAGE_KEY = 'cgi-collapsed-columns';
@@ -34,6 +35,7 @@ export const App: React.FC = () => {
   const [notConfigured, setNotConfigured] = useState(false);
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(loadCollapsed);
   const [selectedIssue, setSelectedIssue] = useState<GithubIssue | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   const theme = api.context.theme;
   const project = api.context.project;
@@ -169,6 +171,16 @@ export const App: React.FC = () => {
           >
             {loading ? '↻ Refreshing...' : '↻ Refresh'}
           </button>
+          {project && (
+            <button
+              className="cgi-btn"
+              onClick={() => setShowSettings(true)}
+              title="GitHub Issues Board settings"
+              style={{ padding: '4px 8px' }}
+            >
+              ⚙
+            </button>
+          )}
         </div>
       </div>
 
@@ -179,7 +191,7 @@ export const App: React.FC = () => {
           <div style={{ fontSize: 12, opacity: 0.4 }}>Open a project to view its GitHub Issues.</div>
         </div>
       ) : notConfigured ? (
-        <ConfigBanner />
+        <ConfigBanner onOpenSettings={() => setShowSettings(true)} />
       ) : loading && !data ? (
         <div className="cgi-center">
           <div className="cgi-spinner" />
@@ -207,6 +219,19 @@ export const App: React.FC = () => {
           projectPath={projectPath}
           onClose={() => setSelectedIssue(null)}
           onIssueUpdated={handleIssueUpdated}
+        />
+      )}
+
+      {/* Settings modal */}
+      {showSettings && project && (
+        <SettingsModal
+          projectPath={projectPath}
+          onClose={() => setShowSettings(false)}
+          onSaved={() => {
+            setNotConfigured(false);
+            setShowSettings(false);
+            void fetchIssues();
+          }}
         />
       )}
     </div>

@@ -206,7 +206,7 @@ const server = http.createServer(async (req, res) => {
   if (method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     });
     res.end();
@@ -244,6 +244,27 @@ const server = http.createServer(async (req, res) => {
     const postCommentMatch = method === 'POST' && pathname.match(/^\/issues\/(\d+)\/comments$/);
     if (postCommentMatch && postCommentMatch[1]) {
       await handlePostComment(req, res, postCommentMatch[1]);
+      return;
+    }
+
+    // PUT /config — save settings from UI
+    if (method === 'PUT' && pathname === '/config') {
+      const query = parseQuery(req.url ?? '');
+      const projectPath = query['path'] ?? '';
+      if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+      try {
+        const raw = await readBody(req);
+        const body = JSON.parse(raw) as { token?: string; owner?: string; repo?: string; enabled?: boolean };
+        if (!body.token?.trim() || !body.owner?.trim() || !body.repo?.trim()) {
+          sendJson(res, 400, { error: 'token, owner, and repo are required' });
+          return;
+        }
+        const config = { token: body.token.trim(), owner: body.owner.trim(), repo: body.repo.trim(), enabled: body.enabled !== false };
+        await configService.writeConfig(projectPath, config);
+        sendJson(res, 200, { ok: true });
+      } catch (e) {
+        sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+      }
       return;
     }
 
