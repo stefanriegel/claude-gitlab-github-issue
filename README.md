@@ -2,6 +2,8 @@
 
 A [claudecodeui](https://github.com/claudecodeui/claudecodeui) plugin that adds a **GitHub Issues Kanban board** tab to your workspace, plus auto-installs the `/github-task` CLI skill for managing issues directly from Claude chat.
 
+<img width="2106" height="1004" alt="image" src="https://github.com/user-attachments/assets/020995b5-6292-4e70-9af1-9eb124e4686b" />
+
 <img width="2076" height="197" alt="image" src="https://github.com/user-attachments/assets/9deb1117-a711-46f6-8ab1-bf55a357c79d" />
 
 
