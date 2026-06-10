@@ -5,6 +5,28 @@ import { usePluginAPI } from './PluginContext';
 import { extractImages, stripImages } from './imageUtils';
 import { ImageLightbox } from './ImageLightbox';
 
+const MODAL_MIN_W = 400;
+const MODAL_MIN_H = 300;
+const STORAGE_KEY = 'cgi-modal-size';
+
+function clampSize(w: number, h: number) {
+  return {
+    width: Math.min(Math.max(w, MODAL_MIN_W), window.innerWidth - 32),
+    height: Math.min(Math.max(h, MODAL_MIN_H), window.innerHeight - 80),
+  };
+}
+
+function loadSize() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) {
+      const { width, height } = JSON.parse(s);
+      return clampSize(Number(width), Number(height));
+    }
+  } catch {}
+  return clampSize(680, Math.round(window.innerHeight * 0.82));
+}
+
 interface Props {
   issue: GithubIssue;
   projectPath: string;
@@ -32,6 +54,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
   const [error, setError] = useState<string | null>(null);
   const [currentIssue, setCurrentIssue] = useState<GithubIssue>(issue);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  const [modalSize, setModalSize] = useState(loadSize);
 
   const currentColumnId = issueToColumnId(currentIssue);
 
@@ -58,6 +81,44 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  // Re-clamp when window resizes
+  useEffect(() => {
+    const onWindowResize = () => setModalSize(prev => clampSize(prev.width, prev.height));
+    window.addEventListener('resize', onWindowResize);
+    return () => window.removeEventListener('resize', onWindowResize);
+  }, []);
+
+  // Persist size
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(modalSize));
+  }, [modalSize]);
+
+  const startResize = useCallback((e: React.MouseEvent, dir: 'e' | 's' | 'se') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    const w0 = modalSize.width;
+    const h0 = modalSize.height;
+    const cursor = dir === 'e' ? 'ew-resize' : dir === 's' ? 'ns-resize' : 'nwse-resize';
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = cursor;
+
+    const onMove = (ev: MouseEvent) => {
+      const newW = dir !== 's' ? w0 + (ev.clientX - x0) : w0;
+      const newH = dir !== 'e' ? h0 + (ev.clientY - y0) : h0;
+      setModalSize(clampSize(newW, newH));
+    };
+    const onUp = () => {
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [modalSize.width, modalSize.height]);
 
   const handleMoveToColumn = async (colId: string) => {
     if (colId === currentColumnId || movingTo) return;
@@ -101,7 +162,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
     <>
     {lightbox && <ImageLightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
     <div className="cgi-modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="cgi-modal" onClick={e => e.stopPropagation()}>
+      <div className="cgi-modal" style={{ width: modalSize.width, height: modalSize.height }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="cgi-modal-header">
           <div style={{ flex: 1 }}>
@@ -258,6 +319,11 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
             </form>
           </div>
         </div>
+
+        {/* Resize handles */}
+        <div className="cgi-resize-e" onMouseDown={e => startResize(e, 'e')} />
+        <div className="cgi-resize-s" onMouseDown={e => startResize(e, 's')} />
+        <div className="cgi-resize-se" onMouseDown={e => startResize(e, 'se')} />
       </div>
     </div>
     </>
