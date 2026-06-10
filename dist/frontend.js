@@ -7507,7 +7507,10 @@ const GithubIssueModal = ({
       fileName: _jsxFileName$6,
       lineNumber: 162,
       columnNumber: 19
-    } }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox(img), title: "Click to enlarge", __self: void 0, __source: {
+    } }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({
+      src: img.url,
+      alt: img.alt
+    }), title: "Click to enlarge", __self: void 0, __source: {
       fileName: _jsxFileName$6,
       lineNumber: 164,
       columnNumber: 23
@@ -7598,7 +7601,10 @@ const GithubIssueModal = ({
       fileName: _jsxFileName$6,
       lineNumber: 220,
       columnNumber: 25
-    } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox(img), title: "Click to enlarge", __self: void 0, __source: {
+    } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({
+      src: img.url,
+      alt: img.alt
+    }), title: "Click to enlarge", __self: void 0, __source: {
       fileName: _jsxFileName$6,
       lineNumber: 222,
       columnNumber: 29

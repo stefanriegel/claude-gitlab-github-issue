@@ -161,7 +161,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
                 {imgs.length > 0 && (
                   <div className="cgi-img-grid">
                     {imgs.map((img, i) => (
-                      <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox(img)} title="Click to enlarge">
+                      <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox({ src: img.url, alt: img.alt })} title="Click to enlarge">
                         <img src={img.url} alt={img.alt || 'image'} className="cgi-img-thumb" loading="lazy" />
                       </button>
                     ))}
@@ -219,7 +219,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
                       {cImgs.length > 0 && (
                         <div className="cgi-img-grid" style={{ marginBottom: cText ? 8 : 0 }}>
                           {cImgs.map((img, i) => (
-                            <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox(img)} title="Click to enlarge">
+                            <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox({ src: img.url, alt: img.alt })} title="Click to enlarge">
                               <img src={img.url} alt={img.alt || 'image'} className="cgi-img-thumb" loading="lazy" />
                             </button>
                           ))}
