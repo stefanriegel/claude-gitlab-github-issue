@@ -12,13 +12,14 @@ import { SettingsModal } from './SettingsModal';
 const POLL_INTERVAL_MS = 30_000;
 const STORAGE_KEY = 'cgi-collapsed-columns';
 const SORT_LABELS: Record<SortOption, string> = {
+  number: 'Number',
   updated: 'Updated',
   created: 'Created',
   comments: 'Comments',
   title: 'Title',
   priority: 'Priority',
 };
-const SORT_OPTIONS: SortOption[] = ['updated', 'created', 'comments', 'title', 'priority'];
+const SORT_OPTIONS: SortOption[] = ['number', 'updated', 'created', 'comments', 'title', 'priority'];
 const PRIORITY_PILL_COLORS: Record<string, string> = {
   high: '#ef4444',
   medium: '#f59e0b',
@@ -53,7 +54,7 @@ export const App: React.FC = () => {
   // Filter/sort state
   const [searchText, setSearchText] = useState('');
   const [activePriority, setActivePriority] = useState<'all' | PriorityLevel>('all');
-  const [sortBy, setSortBy] = useState<SortOption>('updated');
+  const [sortBy, setSortBy] = useState<SortOption>('number');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [showSortMenu, setShowSortMenu] = useState(false);
 

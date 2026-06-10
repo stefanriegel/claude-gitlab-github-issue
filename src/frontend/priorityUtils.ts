@@ -19,7 +19,7 @@ export function detectPriorityFromLabels(labels: Array<{ name: string }>): Prior
   return null;
 }
 
-export type SortOption = 'updated' | 'created' | 'comments' | 'title' | 'priority';
+export type SortOption = 'number' | 'updated' | 'created' | 'comments' | 'title' | 'priority';
 
 const PRIORITY_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2, unknown: 3 };
 
@@ -46,6 +46,7 @@ export function sortIssues<T extends {
   return [...issues].sort((a, b) => {
     let cmp = 0;
     switch (sortBy) {
+      case 'number': cmp = b.number - a.number; break;
       case 'updated': cmp = Date.parse(b.updated_at) - Date.parse(a.updated_at); break;
       case 'created': cmp = Date.parse(b.created_at) - Date.parse(a.created_at); break;
       case 'comments': cmp = b.comments - a.comments; break;
