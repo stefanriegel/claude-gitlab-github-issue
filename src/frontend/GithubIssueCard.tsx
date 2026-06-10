@@ -1,6 +1,7 @@
 import React from 'react';
 import type { GithubIssue } from './types';
 import { STATUS_LABELS } from './types';
+import { extractImages } from './imageUtils';
 
 interface Props {
   issue: GithubIssue;
@@ -23,9 +24,27 @@ function labelTextColor(hex: string): string {
 
 export const GithubIssueCard: React.FC<Props> = ({ issue, onClick }) => {
   const visibleLabels = issue.labels.filter(l => !STATUS_LABELS.includes(l.name));
+  const images = issue.body ? extractImages(issue.body) : [];
+  const previewImages = images.slice(0, 3);
 
   return (
     <div className="cgi-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
+      {previewImages.length > 0 && (
+        <div className="cgi-card-thumbs">
+          {previewImages.map((img, i) => (
+            <img
+              key={i}
+              src={img.url}
+              alt={img.alt || 'image'}
+              className="cgi-card-thumb"
+              loading="lazy"
+            />
+          ))}
+          {images.length > 3 && (
+            <span className="cgi-card-thumb-more">+{images.length - 3}</span>
+          )}
+        </div>
+      )}
       <div className="cgi-card-title">{issue.title}</div>
       <div className="cgi-card-meta">
         <span className="cgi-card-number">#{issue.number}</span>

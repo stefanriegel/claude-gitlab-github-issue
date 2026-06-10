@@ -527,6 +527,111 @@
   --cgi-scrollbar: rgba(255,255,255,0.15);
 }
 
+/* Image thumbnails on cards */
+.cgi-card-thumbs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.cgi-card-thumb {
+  width: 52px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--cgi-border);
+  background: var(--cgi-code-bg);
+  pointer-events: none;
+}
+
+.cgi-card-thumb-more {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--cgi-text-muted);
+  padding: 0 4px;
+}
+
+/* Image grid in modal / comments */
+.cgi-img-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.cgi-img-thumb-btn {
+  background: none;
+  border: 1px solid var(--cgi-border);
+  border-radius: 6px;
+  padding: 0;
+  cursor: zoom-in;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+
+.cgi-img-thumb-btn:hover {
+  border-color: var(--cgi-accent);
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);
+}
+
+.cgi-img-thumb {
+  display: block;
+  width: auto;
+  height: 80px;
+  max-width: 200px;
+  object-fit: cover;
+}
+
+/* Lightbox */
+.cgi-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  padding: 24px;
+}
+
+.cgi-lightbox-img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  cursor: default;
+}
+
+.cgi-lightbox-close {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  transition: background 0.15s;
+  line-height: 1;
+  padding: 0;
+}
+
+.cgi-lightbox-close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
 /* Light theme variables */
 .cgi-light {
   --cgi-bg: #f6f8fa;

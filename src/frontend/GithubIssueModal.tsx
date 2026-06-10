@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import type { GithubIssue, GithubComment } from './types';
 import { COLUMNS, issueToColumnId, columnChangePatch } from './types';
 import { usePluginAPI } from './PluginContext';
+import { extractImages, stripImages } from './imageUtils';
+import { ImageLightbox } from './ImageLightbox';
 
 interface Props {
   issue: GithubIssue;
@@ -29,6 +31,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
   const [movingTo, setMovingTo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentIssue, setCurrentIssue] = useState<GithubIssue>(issue);
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
   const currentColumnId = issueToColumnId(currentIssue);
 
@@ -95,6 +98,8 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
   };
 
   return (
+    <>
+    {lightbox && <ImageLightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
     <div className="cgi-modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="cgi-modal" onClick={e => e.stopPropagation()}>
         {/* Header */}
@@ -147,12 +152,25 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
           )}
 
           {/* Body */}
-          {currentIssue.body && (
-            <div>
-              <div className="cgi-modal-section-label">Description</div>
-              <pre className="cgi-issue-body">{currentIssue.body}</pre>
-            </div>
-          )}
+          {currentIssue.body && (() => {
+            const imgs = extractImages(currentIssue.body);
+            const text = stripImages(currentIssue.body);
+            return (
+              <div>
+                <div className="cgi-modal-section-label">Description</div>
+                {imgs.length > 0 && (
+                  <div className="cgi-img-grid">
+                    {imgs.map((img, i) => (
+                      <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox(img)} title="Click to enlarge">
+                        <img src={img.url} alt={img.alt || 'image'} className="cgi-img-thumb" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {text && <pre className="cgi-issue-body">{text}</pre>}
+              </div>
+            );
+          })()}
 
           {/* Column selector */}
           <div>
@@ -187,17 +205,30 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
               <div style={{ color: 'var(--cgi-text-muted)', fontSize: 12 }}>Loading comments...</div>
             ) : comments.length > 0 ? (
               <div className="cgi-comments-list">
-                {comments.map(c => (
-                  <div key={c.id} className="cgi-comment">
-                    <div className="cgi-comment-header">
-                      <img src={c.user.avatar_url} alt={c.user.login} className="cgi-avatar" />
-                      <span className="cgi-comment-author">{c.user.login}</span>
-                      <span>·</span>
-                      <span>{formatDate(c.created_at)}</span>
+                {comments.map(c => {
+                  const cImgs = extractImages(c.body);
+                  const cText = stripImages(c.body);
+                  return (
+                    <div key={c.id} className="cgi-comment">
+                      <div className="cgi-comment-header">
+                        <img src={c.user.avatar_url} alt={c.user.login} className="cgi-avatar" />
+                        <span className="cgi-comment-author">{c.user.login}</span>
+                        <span>·</span>
+                        <span>{formatDate(c.created_at)}</span>
+                      </div>
+                      {cImgs.length > 0 && (
+                        <div className="cgi-img-grid" style={{ marginBottom: cText ? 8 : 0 }}>
+                          {cImgs.map((img, i) => (
+                            <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox(img)} title="Click to enlarge">
+                              <img src={img.url} alt={img.alt || 'image'} className="cgi-img-thumb" loading="lazy" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {cText && <div className="cgi-comment-body">{cText}</div>}
                     </div>
-                    <div className="cgi-comment-body">{c.body}</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div style={{ color: 'var(--cgi-text-muted)', fontSize: 12 }}>No comments yet.</div>
@@ -229,5 +260,6 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
         </div>
       </div>
     </div>
+    </>
   );
 };

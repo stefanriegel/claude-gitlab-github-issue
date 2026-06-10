@@ -6938,14 +6938,14 @@ var m = reactDomExports;
   createRoot = m.createRoot;
   m.hydrateRoot;
 }
-var _jsxFileName$8 = "/tmp/claude-github-issue/src/frontend/PluginContext.tsx";
+var _jsxFileName$9 = "/tmp/claude-github-issue/src/frontend/PluginContext.tsx";
 const PluginContext = reactExports.createContext(null);
 const PluginProvider = ({
   api,
   children
 }) => {
   return /* @__PURE__ */ React.createElement(PluginContext.Provider, { value: api, __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 7,
     columnNumber: 10
   } }, children);
@@ -6982,7 +6982,19 @@ function columnChangePatch(fromId, toId) {
     removeLabels: STATUS_LABELS.filter((l2) => !toCol.labels.includes(l2))
   };
 }
-var _jsxFileName$7 = "/tmp/claude-github-issue/src/frontend/GithubIssueCard.tsx";
+function extractImages(text) {
+  const results = [];
+  const re2 = /!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g;
+  let m2;
+  while ((m2 = re2.exec(text)) !== null) {
+    results.push({ alt: m2[1] ?? "", url: m2[2] ?? "" });
+  }
+  return results;
+}
+function stripImages(text) {
+  return text.replace(/!\[[^\]]*\]\(https?:\/\/[^)\s]+\)/g, "").trim();
+}
+var _jsxFileName$8 = "/tmp/claude-github-issue/src/frontend/GithubIssueCard.tsx";
 function hexToRgb(hex) {
   const m2 = /^#?([0-9a-f]{6})$/i.exec(hex);
   if (!m2 || !m2[1]) return null;
@@ -7004,41 +7016,55 @@ const GithubIssueCard = ({
   onClick
 }) => {
   const visibleLabels = issue.labels.filter((l2) => !STATUS_LABELS.includes(l2.name));
+  const images = issue.body ? extractImages(issue.body) : [];
+  const previewImages = images.slice(0, 3);
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-card", onClick, role: "button", tabIndex: 0, onKeyDown: (e) => e.key === "Enter" && onClick(), __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 28,
+    fileName: _jsxFileName$8,
+    lineNumber: 31,
     columnNumber: 5
-  } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-card-title", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 29,
+  } }, previewImages.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-card-thumbs", __self: void 0, __source: {
+    fileName: _jsxFileName$8,
+    lineNumber: 33,
+    columnNumber: 9
+  } }, previewImages.map((img, i) => /* @__PURE__ */ React.createElement("img", { key: i, src: img.url, alt: img.alt || "image", className: "cgi-card-thumb", loading: "lazy", __self: void 0, __source: {
+    fileName: _jsxFileName$8,
+    lineNumber: 35,
+    columnNumber: 13
+  } })), images.length > 3 && /* @__PURE__ */ React.createElement("span", { className: "cgi-card-thumb-more", __self: void 0, __source: {
+    fileName: _jsxFileName$8,
+    lineNumber: 44,
+    columnNumber: 13
+  } }, "+", images.length - 3)), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-title", __self: void 0, __source: {
+    fileName: _jsxFileName$8,
+    lineNumber: 48,
     columnNumber: 7
   } }, issue.title), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-meta", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 30,
+    fileName: _jsxFileName$8,
+    lineNumber: 49,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-card-number", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 31,
+    fileName: _jsxFileName$8,
+    lineNumber: 50,
     columnNumber: 9
   } }, "#", issue.number), issue.assignees.map((a) => /* @__PURE__ */ React.createElement("img", { key: a.login, src: a.avatar_url, alt: a.login, title: a.login, className: "cgi-avatar", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 33,
+    fileName: _jsxFileName$8,
+    lineNumber: 52,
     columnNumber: 11
   } })), issue.comments > 0 && /* @__PURE__ */ React.createElement("span", { className: "cgi-card-comments", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 42,
+    fileName: _jsxFileName$8,
+    lineNumber: 61,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { width: "11", height: "11", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 43,
+    fileName: _jsxFileName$8,
+    lineNumber: 62,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 13.25 12H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 13.543V12H2.75A1.75 1.75 0 0 1 1 10.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 44,
+    fileName: _jsxFileName$8,
+    lineNumber: 63,
     columnNumber: 15
   } })), issue.comments)), visibleLabels.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
-    lineNumber: 51,
+    fileName: _jsxFileName$8,
+    lineNumber: 70,
     columnNumber: 9
   } }, visibleLabels.map((l2) => {
     const bg2 = `#${l2.color}`;
@@ -7047,13 +7073,13 @@ const GithubIssueCard = ({
       background: bg2,
       color
     }, __self: void 0, __source: {
-      fileName: _jsxFileName$7,
-      lineNumber: 56,
+      fileName: _jsxFileName$8,
+      lineNumber: 75,
       columnNumber: 15
     } }, l2.name);
   })));
 };
-var _jsxFileName$6 = "/tmp/claude-github-issue/src/frontend/GithubKanbanColumn.tsx";
+var _jsxFileName$7 = "/tmp/claude-github-issue/src/frontend/GithubKanbanColumn.tsx";
 const GithubKanbanColumn = ({
   column,
   issues,
@@ -7064,49 +7090,49 @@ const GithubKanbanColumn = ({
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-column", style: {
     background: column.bgColor
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 15,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-column-header", style: {
     color: column.accentColor,
     borderBottom: `1px solid ${column.accentColor}30`
   }, onClick: onToggle, title: collapsed ? `Expand ${column.title}` : `Collapse ${column.title}`, __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 19,
     columnNumber: 7
   } }, !collapsed && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 27,
     columnNumber: 13
   } }, column.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-column-count", __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 28,
     columnNumber: 13
   } }, issues.length), /* @__PURE__ */ React.createElement("span", { className: "cgi-column-toggle", __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 29,
     columnNumber: 13
   } }, "▲")), collapsed && /* @__PURE__ */ React.createElement("span", { className: "cgi-column-toggle", style: {
     margin: "0 auto"
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 33,
     columnNumber: 11
   } }, "▼")), collapsed ? /* @__PURE__ */ React.createElement("div", { className: "cgi-column-body", style: {
     alignItems: "center",
     cursor: "pointer"
   }, onClick: onToggle, __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 38,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-column-collapsed-label", style: {
     color: column.accentColor
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 43,
     columnNumber: 11
   } }, column.title, " (", issues.length, ")")) : /* @__PURE__ */ React.createElement("div", { className: "cgi-column-body", __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 48,
     columnNumber: 9
   } }, issues.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: {
@@ -7115,16 +7141,16 @@ const GithubKanbanColumn = ({
     opacity: 0.4,
     fontSize: 12
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 50,
     columnNumber: 13
   } }, "No issues") : issues.map((issue) => /* @__PURE__ */ React.createElement(GithubIssueCard, { key: issue.id, issue, onClick: () => onOpenIssue(issue), __self: void 0, __source: {
-    fileName: _jsxFileName$6,
+    fileName: _jsxFileName$7,
     lineNumber: 55,
     columnNumber: 15
   } }))));
 };
-var _jsxFileName$5 = "/tmp/claude-github-issue/src/frontend/GithubBoard.tsx";
+var _jsxFileName$6 = "/tmp/claude-github-issue/src/frontend/GithubBoard.tsx";
 const GithubBoard = ({
   data,
   collapsedColumns,
@@ -7145,14 +7171,41 @@ const GithubBoard = ({
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-board", style: {
     gridTemplateColumns: gridTemplate
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$5,
+    fileName: _jsxFileName$6,
     lineNumber: 38,
     columnNumber: 5
   } }, COLUMNS.map((col) => /* @__PURE__ */ React.createElement(GithubKanbanColumn, { key: col.id, column: col, issues: issuesByColumn.get(col.id) ?? [], collapsed: collapsedColumns.has(col.id), onToggle: () => onToggleColumn(col.id), onOpenIssue, __self: void 0, __source: {
-    fileName: _jsxFileName$5,
+    fileName: _jsxFileName$6,
     lineNumber: 43,
     columnNumber: 9
   } })));
+};
+var _jsxFileName$5 = "/tmp/claude-github-issue/src/frontend/ImageLightbox.tsx";
+const ImageLightbox = ({
+  src,
+  alt,
+  onClose
+}) => {
+  reactExports.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  return /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-overlay", onClick: onClose, __self: void 0, __source: {
+    fileName: _jsxFileName$5,
+    lineNumber: 17,
+    columnNumber: 5
+  } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-lightbox-close", onClick: onClose, title: "Close (Esc)", __self: void 0, __source: {
+    fileName: _jsxFileName$5,
+    lineNumber: 18,
+    columnNumber: 7
+  } }, "✕"), /* @__PURE__ */ React.createElement("img", { src, alt, className: "cgi-lightbox-img", onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
+    fileName: _jsxFileName$5,
+    lineNumber: 19,
+    columnNumber: 7
+  } }));
 };
 var _jsxFileName$4 = "/tmp/claude-github-issue/src/frontend/GithubIssueModal.tsx";
 function formatDate(isoString) {
@@ -7180,6 +7233,7 @@ const GithubIssueModal = ({
   const [movingTo, setMovingTo] = reactExports.useState(null);
   const [error, setError] = reactExports.useState(null);
   const [currentIssue, setCurrentIssue] = reactExports.useState(issue);
+  const [lightbox, setLightbox] = reactExports.useState(null);
   const currentColumnId = issueToColumnId(currentIssue);
   const loadComments = reactExports.useCallback(async () => {
     setLoadingComments(true);
@@ -7238,33 +7292,37 @@ const GithubIssueModal = ({
       setSubmittingComment(false);
     }
   };
-  return /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-overlay", onClick: (e) => {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, lightbox && /* @__PURE__ */ React.createElement(ImageLightbox, { src: lightbox.src, alt: lightbox.alt, onClose: () => setLightbox(null), __self: void 0, __source: {
+    fileName: _jsxFileName$4,
+    lineNumber: 102,
+    columnNumber: 18
+  } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-overlay", onClick: (e) => {
     if (e.target === e.currentTarget) onClose();
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 98,
+    lineNumber: 103,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal", onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 99,
+    lineNumber: 104,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-header", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 101,
+    lineNumber: 106,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     flex: 1
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 102,
+    lineNumber: 107,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-title", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 103,
+    lineNumber: 108,
     columnNumber: 13
   } }, currentIssue.title), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-subtitle", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 104,
+    lineNumber: 109,
     columnNumber: 13
   } }, "#", currentIssue.number, " · opened by ", currentIssue.user.login, " on ", formatDate(currentIssue.created_at), currentIssue.state === "closed" && /* @__PURE__ */ React.createElement("span", { style: {
     marginLeft: 8,
@@ -7272,42 +7330,42 @@ const GithubIssueModal = ({
     fontWeight: 600
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 106,
+    lineNumber: 111,
     columnNumber: 51
   } }, "● Closed"))), /* @__PURE__ */ React.createElement("a", { href: currentIssue.html_url, target: "_blank", rel: "noopener noreferrer", className: "cgi-btn", title: "Open on GitHub", style: {
     textDecoration: "none",
     flexShrink: 0
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 109,
+    lineNumber: 114,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 117,
+    lineNumber: 122,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 118,
+    lineNumber: 123,
     columnNumber: 15
   } })), "GitHub"), /* @__PURE__ */ React.createElement("button", { className: "cgi-modal-close", onClick: onClose, title: "Close", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 122,
+    lineNumber: 127,
     columnNumber: 11
   } }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-body", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 125,
+    lineNumber: 130,
     columnNumber: 9
   } }, currentIssue.labels.length > 0 && /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 128,
+    lineNumber: 133,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 129,
+    lineNumber: 134,
     columnNumber: 15
   } }, "Labels"), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 130,
+    lineNumber: 135,
     columnNumber: 15
   } }, currentIssue.labels.map((l2) => /* @__PURE__ */ React.createElement("span", { key: l2.id, className: "cgi-label-chip", style: {
     background: `#${l2.color}`,
@@ -7316,31 +7374,47 @@ const GithubIssueModal = ({
     padding: "2px 8px"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 132,
+    lineNumber: 137,
     columnNumber: 19
-  } }, l2.name)))), currentIssue.body && /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
+  } }, l2.name)))), currentIssue.body && (() => {
+    const imgs = extractImages(currentIssue.body);
+    const text = stripImages(currentIssue.body);
+    return /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 159,
+      columnNumber: 15
+    } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 160,
+      columnNumber: 17
+    } }, "Description"), imgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 162,
+      columnNumber: 19
+    } }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox(img), title: "Click to enlarge", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 164,
+      columnNumber: 23
+    } }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 165,
+      columnNumber: 25
+    } })))), text && /* @__PURE__ */ React.createElement("pre", { className: "cgi-issue-body", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 170,
+      columnNumber: 26
+    } }, text));
+  })(), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 151,
-    columnNumber: 13
-  } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 152,
-    columnNumber: 15
-  } }, "Description"), /* @__PURE__ */ React.createElement("pre", { className: "cgi-issue-body", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 153,
-    columnNumber: 15
-  } }, currentIssue.body)), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 158,
+    lineNumber: 176,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 159,
+    lineNumber: 177,
     columnNumber: 13
   } }, "Move to column"), /* @__PURE__ */ React.createElement("div", { className: "cgi-column-selector", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 160,
+    lineNumber: 178,
     columnNumber: 13
   } }, COLUMNS.map((col) => {
     const isActive = col.id === issueToColumnId(currentIssue);
@@ -7349,95 +7423,113 @@ const GithubIssueModal = ({
       borderColor: col.accentColor
     } : {}, onClick: () => handleMoveToColumn(col.id), disabled: isActive || movingTo !== null, __self: void 0, __source: {
       fileName: _jsxFileName$4,
-      lineNumber: 164,
+      lineNumber: 182,
       columnNumber: 19
     } }, movingTo === col.id ? "..." : col.title);
   }))), error && /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 179,
+    lineNumber: 197,
     columnNumber: 21
   } }, error), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 182,
+    lineNumber: 200,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 183,
+    lineNumber: 201,
     columnNumber: 13
   } }, "Comments ", !loadingComments && `(${comments.length})`), loadingComments ? /* @__PURE__ */ React.createElement("div", { style: {
     color: "var(--cgi-text-muted)",
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 187,
+    lineNumber: 205,
     columnNumber: 15
   } }, "Loading comments...") : comments.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-comments-list", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 189,
+    lineNumber: 207,
     columnNumber: 15
-  } }, comments.map((c) => /* @__PURE__ */ React.createElement("div", { key: c.id, className: "cgi-comment", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 191,
-    columnNumber: 19
-  } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-header", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 192,
-    columnNumber: 21
-  } }, /* @__PURE__ */ React.createElement("img", { src: c.user.avatar_url, alt: c.user.login, className: "cgi-avatar", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 193,
-    columnNumber: 23
-  } }), /* @__PURE__ */ React.createElement("span", { className: "cgi-comment-author", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 194,
-    columnNumber: 23
-  } }, c.user.login), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 195,
-    columnNumber: 23
-  } }, "·"), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 196,
-    columnNumber: 23
-  } }, formatDate(c.created_at))), /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-body", __self: void 0, __source: {
-    fileName: _jsxFileName$4,
-    lineNumber: 198,
-    columnNumber: 21
-  } }, c.body)))) : /* @__PURE__ */ React.createElement("div", { style: {
+  } }, comments.map((c) => {
+    const cImgs = extractImages(c.body);
+    const cText = stripImages(c.body);
+    return /* @__PURE__ */ React.createElement("div", { key: c.id, className: "cgi-comment", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 212,
+      columnNumber: 21
+    } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-header", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 213,
+      columnNumber: 23
+    } }, /* @__PURE__ */ React.createElement("img", { src: c.user.avatar_url, alt: c.user.login, className: "cgi-avatar", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 214,
+      columnNumber: 25
+    } }), /* @__PURE__ */ React.createElement("span", { className: "cgi-comment-author", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 215,
+      columnNumber: 25
+    } }, c.user.login), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 216,
+      columnNumber: 25
+    } }, "·"), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 217,
+      columnNumber: 25
+    } }, formatDate(c.created_at))), cImgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", style: {
+      marginBottom: cText ? 8 : 0
+    }, __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 220,
+      columnNumber: 25
+    } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox(img), title: "Click to enlarge", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 222,
+      columnNumber: 29
+    } }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 223,
+      columnNumber: 31
+    } })))), cText && /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-body", __self: void 0, __source: {
+      fileName: _jsxFileName$4,
+      lineNumber: 228,
+      columnNumber: 33
+    } }, cText));
+  })) : /* @__PURE__ */ React.createElement("div", { style: {
     color: "var(--cgi-text-muted)",
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 203,
+    lineNumber: 234,
     columnNumber: 15
   } }, "No comments yet.")), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 208,
+    lineNumber: 239,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 209,
+    lineNumber: 240,
     columnNumber: 13
   } }, "Add comment"), /* @__PURE__ */ React.createElement("form", { className: "cgi-comment-form", onSubmit: handleSubmitComment, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 210,
+    lineNumber: 241,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("textarea", { className: "cgi-textarea", placeholder: "Write a comment...", value: commentText, onChange: (e) => setCommentText(e.target.value), disabled: submittingComment, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 211,
+    lineNumber: 242,
     columnNumber: 15
   } }), /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
     justifyContent: "flex-end"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 218,
+    lineNumber: 249,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "cgi-btn cgi-btn-primary", disabled: !commentText.trim() || submittingComment, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 219,
+    lineNumber: 250,
     columnNumber: 17
-  } }, submittingComment ? "Posting..." : "Post comment")))))));
+  } }, submittingComment ? "Posting..." : "Post comment"))))))));
 };
 var _jsxFileName$3 = "/tmp/claude-github-issue/src/frontend/ConfigBanner.tsx";
 const ConfigBanner = ({
@@ -8038,7 +8130,7 @@ const App = () => {
     columnNumber: 9
   } }));
 };
-const stylesRaw = "/* claude-github-issue plugin styles */\n\n.cgi-root {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  width: 100%;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  font-size: 13px;\n  overflow: hidden;\n}\n\n/* Toolbar */\n.cgi-toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 16px;\n  border-bottom: 1px solid var(--cgi-border);\n  flex-shrink: 0;\n  gap: 8px;\n}\n\n.cgi-toolbar-title {\n  font-weight: 600;\n  font-size: 14px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.cgi-toolbar-actions {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.cgi-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px 10px;\n  border-radius: 6px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: background 0.15s, border-color 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-btn:hover {\n  background: var(--cgi-btn-hover-bg);\n  border-color: var(--cgi-border-strong);\n}\n\n.cgi-btn:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n\n.cgi-btn-primary {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-btn-primary:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* Board */\n.cgi-board {\n  display: grid;\n  gap: 10px;\n  padding: 12px 16px;\n  height: 100%;\n  overflow-x: auto;\n  overflow-y: hidden;\n  align-items: stretch;\n}\n\n/* Column */\n.cgi-column {\n  display: flex;\n  flex-direction: column;\n  border-radius: 10px;\n  border: 1px solid var(--cgi-border);\n  overflow: hidden;\n  min-height: 0;\n  transition: width 0.2s, min-width 0.2s;\n}\n\n.cgi-column-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 10px;\n  font-weight: 600;\n  font-size: 12px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  flex-shrink: 0;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n}\n\n.cgi-column-header:hover {\n  opacity: 0.85;\n}\n\n.cgi-column-count {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 20px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0,0,0,0.15);\n}\n\n.cgi-column-toggle {\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 4px;\n  margin-left: auto;\n  flex-shrink: 0;\n  opacity: 0.7;\n  font-size: 10px;\n}\n\n.cgi-column-body {\n  flex: 1;\n  overflow-y: auto;\n  padding: 6px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-height: 0;\n}\n\n.cgi-column-collapsed-label {\n  writing-mode: vertical-rl;\n  text-orientation: mixed;\n  transform: rotate(180deg);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  opacity: 0.8;\n  padding: 12px 0;\n  flex: 1;\n}\n\n/* Issue card */\n.cgi-card {\n  background: var(--cgi-card-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 8px 10px;\n  cursor: pointer;\n  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;\n}\n\n.cgi-card:hover {\n  border-color: var(--cgi-border-strong);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.12);\n  transform: translateY(-1px);\n}\n\n.cgi-card-title {\n  font-weight: 500;\n  font-size: 13px;\n  line-height: 1.4;\n  margin-bottom: 6px;\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-card-meta {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-number {\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  font-weight: 500;\n}\n\n.cgi-card-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 3px;\n  margin-top: 5px;\n}\n\n.cgi-label-chip {\n  display: inline-block;\n  padding: 1px 6px;\n  border-radius: 10px;\n  font-size: 10px;\n  font-weight: 600;\n  line-height: 1.6;\n}\n\n.cgi-avatar {\n  width: 18px;\n  height: 18px;\n  border-radius: 50%;\n  object-fit: cover;\n  flex-shrink: 0;\n}\n\n.cgi-card-comments {\n  display: flex;\n  align-items: center;\n  gap: 3px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  margin-left: auto;\n}\n\n/* Modal */\n.cgi-modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  z-index: 9999;\n  padding: 40px 16px;\n  overflow-y: auto;\n}\n\n.cgi-modal {\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 12px;\n  width: 100%;\n  max-width: 680px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.4);\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n}\n\n.cgi-modal-header {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 18px 20px 14px;\n  border-bottom: 1px solid var(--cgi-border);\n}\n\n.cgi-modal-title {\n  flex: 1;\n  font-size: 16px;\n  font-weight: 600;\n  line-height: 1.4;\n  color: var(--cgi-text);\n}\n\n.cgi-modal-subtitle {\n  font-size: 12px;\n  color: var(--cgi-text-muted);\n  margin-top: 2px;\n}\n\n.cgi-modal-close {\n  background: none;\n  border: none;\n  color: var(--cgi-text-muted);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  line-height: 1;\n  border-radius: 4px;\n  flex-shrink: 0;\n}\n\n.cgi-modal-close:hover {\n  color: var(--cgi-text);\n  background: var(--cgi-btn-bg);\n}\n\n.cgi-modal-body {\n  padding: 16px 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.cgi-modal-section-label {\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n  color: var(--cgi-text-muted);\n  margin-bottom: 6px;\n}\n\n.cgi-issue-body {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 12px;\n  font-size: 13px;\n  line-height: 1.6;\n  color: var(--cgi-text);\n  white-space: pre-wrap;\n  word-break: break-word;\n  max-height: 200px;\n  overflow-y: auto;\n}\n\n.cgi-column-selector {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-column-btn {\n  padding: 4px 12px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: all 0.15s;\n}\n\n.cgi-column-btn:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-column-btn-active {\n  color: #fff;\n  border-color: transparent;\n}\n\n/* Comments */\n.cgi-comments-list {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  max-height: 250px;\n  overflow-y: auto;\n}\n\n.cgi-comment {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 10px 12px;\n}\n\n.cgi-comment-header {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-comment-author {\n  font-weight: 600;\n  color: var(--cgi-text);\n}\n\n.cgi-comment-body {\n  font-size: 13px;\n  line-height: 1.5;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: var(--cgi-text);\n}\n\n/* Comment form */\n.cgi-comment-form {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.cgi-textarea {\n  width: 100%;\n  min-height: 72px;\n  padding: 8px 10px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  color: var(--cgi-text);\n  font-size: 13px;\n  font-family: inherit;\n  resize: vertical;\n  box-sizing: border-box;\n  transition: border-color 0.15s;\n  outline: none;\n}\n\n.cgi-textarea:focus {\n  border-color: var(--cgi-accent);\n}\n\n/* Config banner */\n.cgi-config-banner {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px 20px;\n  text-align: center;\n  gap: 16px;\n  color: var(--cgi-text);\n}\n\n.cgi-config-banner-icon {\n  font-size: 48px;\n  opacity: 0.5;\n}\n\n.cgi-config-banner h2 {\n  font-size: 18px;\n  font-weight: 600;\n  margin: 0;\n}\n\n.cgi-config-banner p {\n  color: var(--cgi-text-muted);\n  max-width: 420px;\n  line-height: 1.6;\n  margin: 0;\n}\n\n.cgi-config-code {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 14px 18px;\n  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;\n  font-size: 12px;\n  text-align: left;\n  white-space: pre;\n  color: var(--cgi-text);\n  max-width: 380px;\n  width: 100%;\n}\n\n/* Loading / error states */\n.cgi-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  flex-direction: column;\n  gap: 12px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-spinner {\n  width: 28px;\n  height: 28px;\n  border: 3px solid var(--cgi-border);\n  border-top-color: var(--cgi-accent);\n  border-radius: 50%;\n  animation: cgi-spin 0.8s linear infinite;\n}\n\n@keyframes cgi-spin {\n  to { transform: rotate(360deg); }\n}\n\n.cgi-error-text {\n  color: #ef4444;\n  font-size: 13px;\n}\n\n/* Scrollbars */\n.cgi-root *::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n.cgi-root *::-webkit-scrollbar-track {\n  background: transparent;\n}\n.cgi-root *::-webkit-scrollbar-thumb {\n  background: var(--cgi-scrollbar);\n  border-radius: 3px;\n}\n\n/* Dark theme variables */\n.cgi-dark {\n  --cgi-bg: #0f1117;\n  --cgi-surface: #161b22;\n  --cgi-card-bg: #1a2030;\n  --cgi-modal-bg: #161b22;\n  --cgi-code-bg: #0d1117;\n  --cgi-border: rgba(255,255,255,0.1);\n  --cgi-border-strong: rgba(255,255,255,0.2);\n  --cgi-text: #e6edf3;\n  --cgi-text-muted: #7d8590;\n  --cgi-btn-bg: rgba(255,255,255,0.06);\n  --cgi-btn-hover-bg: rgba(255,255,255,0.12);\n  --cgi-input-bg: #0d1117;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(255,255,255,0.15);\n}\n\n/* Light theme variables */\n.cgi-light {\n  --cgi-bg: #f6f8fa;\n  --cgi-surface: #ffffff;\n  --cgi-card-bg: #ffffff;\n  --cgi-modal-bg: #ffffff;\n  --cgi-code-bg: #f6f8fa;\n  --cgi-border: rgba(0,0,0,0.1);\n  --cgi-border-strong: rgba(0,0,0,0.22);\n  --cgi-text: #1f2328;\n  --cgi-text-muted: #636c76;\n  --cgi-btn-bg: rgba(0,0,0,0.04);\n  --cgi-btn-hover-bg: rgba(0,0,0,0.08);\n  --cgi-input-bg: #ffffff;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(0,0,0,0.15);\n}\n";
+const stylesRaw = "/* claude-github-issue plugin styles */\n\n.cgi-root {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  width: 100%;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  font-size: 13px;\n  overflow: hidden;\n}\n\n/* Toolbar */\n.cgi-toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 16px;\n  border-bottom: 1px solid var(--cgi-border);\n  flex-shrink: 0;\n  gap: 8px;\n}\n\n.cgi-toolbar-title {\n  font-weight: 600;\n  font-size: 14px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.cgi-toolbar-actions {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.cgi-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px 10px;\n  border-radius: 6px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: background 0.15s, border-color 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-btn:hover {\n  background: var(--cgi-btn-hover-bg);\n  border-color: var(--cgi-border-strong);\n}\n\n.cgi-btn:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n\n.cgi-btn-primary {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-btn-primary:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* Board */\n.cgi-board {\n  display: grid;\n  gap: 10px;\n  padding: 12px 16px;\n  height: 100%;\n  overflow-x: auto;\n  overflow-y: hidden;\n  align-items: stretch;\n}\n\n/* Column */\n.cgi-column {\n  display: flex;\n  flex-direction: column;\n  border-radius: 10px;\n  border: 1px solid var(--cgi-border);\n  overflow: hidden;\n  min-height: 0;\n  transition: width 0.2s, min-width 0.2s;\n}\n\n.cgi-column-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 10px;\n  font-weight: 600;\n  font-size: 12px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  flex-shrink: 0;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n}\n\n.cgi-column-header:hover {\n  opacity: 0.85;\n}\n\n.cgi-column-count {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 20px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0,0,0,0.15);\n}\n\n.cgi-column-toggle {\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 4px;\n  margin-left: auto;\n  flex-shrink: 0;\n  opacity: 0.7;\n  font-size: 10px;\n}\n\n.cgi-column-body {\n  flex: 1;\n  overflow-y: auto;\n  padding: 6px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-height: 0;\n}\n\n.cgi-column-collapsed-label {\n  writing-mode: vertical-rl;\n  text-orientation: mixed;\n  transform: rotate(180deg);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  opacity: 0.8;\n  padding: 12px 0;\n  flex: 1;\n}\n\n/* Issue card */\n.cgi-card {\n  background: var(--cgi-card-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 8px 10px;\n  cursor: pointer;\n  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;\n}\n\n.cgi-card:hover {\n  border-color: var(--cgi-border-strong);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.12);\n  transform: translateY(-1px);\n}\n\n.cgi-card-title {\n  font-weight: 500;\n  font-size: 13px;\n  line-height: 1.4;\n  margin-bottom: 6px;\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-card-meta {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-number {\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  font-weight: 500;\n}\n\n.cgi-card-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 3px;\n  margin-top: 5px;\n}\n\n.cgi-label-chip {\n  display: inline-block;\n  padding: 1px 6px;\n  border-radius: 10px;\n  font-size: 10px;\n  font-weight: 600;\n  line-height: 1.6;\n}\n\n.cgi-avatar {\n  width: 18px;\n  height: 18px;\n  border-radius: 50%;\n  object-fit: cover;\n  flex-shrink: 0;\n}\n\n.cgi-card-comments {\n  display: flex;\n  align-items: center;\n  gap: 3px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  margin-left: auto;\n}\n\n/* Modal */\n.cgi-modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  z-index: 9999;\n  padding: 40px 16px;\n  overflow-y: auto;\n}\n\n.cgi-modal {\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 12px;\n  width: 100%;\n  max-width: 680px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.4);\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n}\n\n.cgi-modal-header {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 18px 20px 14px;\n  border-bottom: 1px solid var(--cgi-border);\n}\n\n.cgi-modal-title {\n  flex: 1;\n  font-size: 16px;\n  font-weight: 600;\n  line-height: 1.4;\n  color: var(--cgi-text);\n}\n\n.cgi-modal-subtitle {\n  font-size: 12px;\n  color: var(--cgi-text-muted);\n  margin-top: 2px;\n}\n\n.cgi-modal-close {\n  background: none;\n  border: none;\n  color: var(--cgi-text-muted);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  line-height: 1;\n  border-radius: 4px;\n  flex-shrink: 0;\n}\n\n.cgi-modal-close:hover {\n  color: var(--cgi-text);\n  background: var(--cgi-btn-bg);\n}\n\n.cgi-modal-body {\n  padding: 16px 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.cgi-modal-section-label {\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n  color: var(--cgi-text-muted);\n  margin-bottom: 6px;\n}\n\n.cgi-issue-body {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 12px;\n  font-size: 13px;\n  line-height: 1.6;\n  color: var(--cgi-text);\n  white-space: pre-wrap;\n  word-break: break-word;\n  max-height: 200px;\n  overflow-y: auto;\n}\n\n.cgi-column-selector {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-column-btn {\n  padding: 4px 12px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: all 0.15s;\n}\n\n.cgi-column-btn:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-column-btn-active {\n  color: #fff;\n  border-color: transparent;\n}\n\n/* Comments */\n.cgi-comments-list {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  max-height: 250px;\n  overflow-y: auto;\n}\n\n.cgi-comment {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 10px 12px;\n}\n\n.cgi-comment-header {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-comment-author {\n  font-weight: 600;\n  color: var(--cgi-text);\n}\n\n.cgi-comment-body {\n  font-size: 13px;\n  line-height: 1.5;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: var(--cgi-text);\n}\n\n/* Comment form */\n.cgi-comment-form {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.cgi-textarea {\n  width: 100%;\n  min-height: 72px;\n  padding: 8px 10px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  color: var(--cgi-text);\n  font-size: 13px;\n  font-family: inherit;\n  resize: vertical;\n  box-sizing: border-box;\n  transition: border-color 0.15s;\n  outline: none;\n}\n\n.cgi-textarea:focus {\n  border-color: var(--cgi-accent);\n}\n\n/* Config banner */\n.cgi-config-banner {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px 20px;\n  text-align: center;\n  gap: 16px;\n  color: var(--cgi-text);\n}\n\n.cgi-config-banner-icon {\n  font-size: 48px;\n  opacity: 0.5;\n}\n\n.cgi-config-banner h2 {\n  font-size: 18px;\n  font-weight: 600;\n  margin: 0;\n}\n\n.cgi-config-banner p {\n  color: var(--cgi-text-muted);\n  max-width: 420px;\n  line-height: 1.6;\n  margin: 0;\n}\n\n.cgi-config-code {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 14px 18px;\n  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;\n  font-size: 12px;\n  text-align: left;\n  white-space: pre;\n  color: var(--cgi-text);\n  max-width: 380px;\n  width: 100%;\n}\n\n/* Loading / error states */\n.cgi-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  flex-direction: column;\n  gap: 12px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-spinner {\n  width: 28px;\n  height: 28px;\n  border: 3px solid var(--cgi-border);\n  border-top-color: var(--cgi-accent);\n  border-radius: 50%;\n  animation: cgi-spin 0.8s linear infinite;\n}\n\n@keyframes cgi-spin {\n  to { transform: rotate(360deg); }\n}\n\n.cgi-error-text {\n  color: #ef4444;\n  font-size: 13px;\n}\n\n/* Scrollbars */\n.cgi-root *::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n.cgi-root *::-webkit-scrollbar-track {\n  background: transparent;\n}\n.cgi-root *::-webkit-scrollbar-thumb {\n  background: var(--cgi-scrollbar);\n  border-radius: 3px;\n}\n\n/* Dark theme variables */\n.cgi-dark {\n  --cgi-bg: #0f1117;\n  --cgi-surface: #161b22;\n  --cgi-card-bg: #1a2030;\n  --cgi-modal-bg: #161b22;\n  --cgi-code-bg: #0d1117;\n  --cgi-border: rgba(255,255,255,0.1);\n  --cgi-border-strong: rgba(255,255,255,0.2);\n  --cgi-text: #e6edf3;\n  --cgi-text-muted: #7d8590;\n  --cgi-btn-bg: rgba(255,255,255,0.06);\n  --cgi-btn-hover-bg: rgba(255,255,255,0.12);\n  --cgi-input-bg: #0d1117;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(255,255,255,0.15);\n}\n\n/* Image thumbnails on cards */\n.cgi-card-thumbs {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n  margin-bottom: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-thumb {\n  width: 52px;\n  height: 38px;\n  object-fit: cover;\n  border-radius: 4px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-code-bg);\n  pointer-events: none;\n}\n\n.cgi-card-thumb-more {\n  font-size: 10px;\n  font-weight: 600;\n  color: var(--cgi-text-muted);\n  padding: 0 4px;\n}\n\n/* Image grid in modal / comments */\n.cgi-img-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 8px;\n}\n\n.cgi-img-thumb-btn {\n  background: none;\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  padding: 0;\n  cursor: zoom-in;\n  overflow: hidden;\n  transition: border-color 0.15s, box-shadow 0.15s;\n  flex-shrink: 0;\n}\n\n.cgi-img-thumb-btn:hover {\n  border-color: var(--cgi-accent);\n  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);\n}\n\n.cgi-img-thumb {\n  display: block;\n  width: auto;\n  height: 80px;\n  max-width: 200px;\n  object-fit: cover;\n}\n\n/* Lightbox */\n.cgi-lightbox-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.88);\n  z-index: 99999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  cursor: zoom-out;\n  padding: 24px;\n}\n\n.cgi-lightbox-img {\n  max-width: 100%;\n  max-height: 90vh;\n  object-fit: contain;\n  border-radius: 8px;\n  box-shadow: 0 8px 40px rgba(0,0,0,0.6);\n  cursor: default;\n}\n\n.cgi-lightbox-close {\n  position: fixed;\n  top: 16px;\n  right: 20px;\n  background: rgba(255,255,255,0.1);\n  border: 1px solid rgba(255,255,255,0.2);\n  color: #fff;\n  font-size: 20px;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 100000;\n  transition: background 0.15s;\n  line-height: 1;\n  padding: 0;\n}\n\n.cgi-lightbox-close:hover {\n  background: rgba(255,255,255,0.2);\n}\n\n/* Light theme variables */\n.cgi-light {\n  --cgi-bg: #f6f8fa;\n  --cgi-surface: #ffffff;\n  --cgi-card-bg: #ffffff;\n  --cgi-modal-bg: #ffffff;\n  --cgi-code-bg: #f6f8fa;\n  --cgi-border: rgba(0,0,0,0.1);\n  --cgi-border-strong: rgba(0,0,0,0.22);\n  --cgi-text: #1f2328;\n  --cgi-text-muted: #636c76;\n  --cgi-btn-bg: rgba(0,0,0,0.04);\n  --cgi-btn-hover-bg: rgba(0,0,0,0.08);\n  --cgi-input-bg: #ffffff;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(0,0,0,0.15);\n}\n";
 var _jsxFileName = "/tmp/claude-github-issue/src/frontend/index.tsx";
 const STYLE_ID = "cgi-plugin-styles";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
