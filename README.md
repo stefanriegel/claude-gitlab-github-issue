@@ -1,37 +1,92 @@
 # claude-github-issue
 
-A [claudecodeui](https://github.com/claudecodeui/claudecodeui) plugin that adds a **GitHub Issues Kanban board** tab to your workspace, plus auto-installs the `/github-task` CLI skill for managing issues directly from Claude chat.
+A [claudecodeui](https://github.com/siteboon/claudecodeui) plugin that adds a **GitHub Issues Kanban board** tab to your workspace. Manage issues visually, filter and sort them, create new ones, and prioritize with AI — all without leaving your editor.
 
-<img width="2106" height="1004" alt="image" src="https://github.com/user-attachments/assets/020995b5-6292-4e70-9af1-9eb124e4686b" />
+Also auto-installs the `/github-task` skill so Claude can manage issues directly from chat.
 
-<img width="2076" height="197" alt="image" src="https://github.com/user-attachments/assets/9deb1117-a711-46f6-8ab1-bf55a357c79d" />
+<img width="2106" height="1004" alt="GitHub Issues Board" src="https://github.com/user-attachments/assets/020995b5-6292-4e70-9af1-9eb124e4686b" />
 
+<img width="2076" height="197" alt="Toolbar with search, priority filters and sort" src="https://github.com/user-attachments/assets/9deb1117-a711-46f6-8ab1-bf55a357c79d" />
+
+---
 
 ## Features
 
-- Full kanban board with 5 columns: **To Do**, **In Progress**, **In Review**, **Blocked**, **Done**
-- Collapsible columns (state persisted in localStorage)
-- Click any issue card to open a detail modal with: full body, labels, assignees, comment history, move-to-column buttons, and add-comment form
+### Kanban Board
+- 5 columns: **To Do**, **In Progress**, **In Review**, **Blocked**, **Done**
+- Collapsible columns — state persisted per-project in localStorage
+- Drag-free: move issues by clicking a card → selecting the target column
 - Auto-refreshes every 30 seconds
-- Reads column assignment from GitHub labels — same mapping used by `/github-task`
-- Dark and light theme support
-- `/github-task` CLI skill auto-installed on first plugin load
+
+### Search, Filter & Sort
+- **Live search** — filter by title, issue number, or body text
+- **Priority pills** — filter board by High / Medium / Low priority (detected from labels)
+- **Sort dropdown** — sort by Number, Updated, Created, Comments, Title, or Priority
+- **Direction toggle** — ascending / descending with a single click
+
+### Issue Cards
+- Shows title, issue number, assignee avatars, comment count, and labels
+- **Image thumbnails** — images in issue body appear as inline previews
+- Click any thumbnail to open a full-screen **lightbox**
+- Color-coded **priority dot** (red / amber / gray) after AI prioritization
+
+### Issue Detail Modal
+- Full description with image thumbnails and lightbox
+- Labels, assignees, timestamps
+- **Move to column** — instantly reassigns labels (and closes/reopens as needed)
+- **Comments** — full history with user avatars, images, and timestamps
+- **Add comment** — post directly to GitHub from the modal
+- Open on GitHub link
+
+### New Issue
+- **+ New Issue** button in the toolbar
+- Quick form: title (required) + description (optional)
+- Issue appears on the board immediately after creation
+
+### AI Prioritize
+- Single **★ AI Prioritize** button — always works, no setup required
+- Without API key: uses smart heuristics (labels, age, engagement)
+- With Anthropic API key: sends issues to **Claude Haiku** for semantic analysis
+- Results: color-coded priority dots on cards + hover tooltips with reasoning
+- Auto-switches sort to Priority after analysis
+- **Claude.ai subscription mode** — available in ⚙ Settings → "Use claude.ai →": generates a ready-to-paste prompt, paste Claude's JSON response back to apply priorities
+
+### Settings (⚙ per project)
+- GitHub Personal Access Token
+- Repository owner and name
+- Optional Anthropic API key (enables real AI prioritization)
+- Link to `/github-task` skill documentation
+- Config stored in `.GitHubBoard/github-sync.json` in the project root (not committed if added to `.gitignore`)
+
+### /github-task CLI Skill
+On first plugin load, installs `/github-task` skill to `~/.claude/skills/github-task/SKILL.md` — available in every Claude Code chat session:
+
+```
+/github-task list to do
+/github-task move #42 to in-progress
+/github-task what needs testing?
+/github-task update #17 — implemented the new login flow
+```
+
+---
 
 ## Installation
 
-1. Open claudecodeui
+1. Open **claudecodeui**
 2. Go to **Settings → Plugins**
-3. Paste this repository URL:
+3. Paste the repository URL:
    ```
    https://github.com/szmidtpiotr/claude-github-issue
    ```
-4. Click **Install** — the plugin installs and appears as a new tab
+4. Click **Install**
 
-No global configuration needed. Each project configures its own GitHub connection.
+The plugin appears as a new **GitHub Issues** tab. No global configuration needed — each project configures its own GitHub connection.
+
+---
 
 ## Project Configuration
 
-Create `.taskmaster/github-sync.json` in the root of any project you want to use with the board:
+Click the **⚙** button in the board toolbar to open settings, or create `.GitHubBoard/github-sync.json` manually:
 
 ```json
 {
@@ -42,43 +97,39 @@ Create `.taskmaster/github-sync.json` in the root of any project you want to use
 }
 ```
 
-**Generate a token:** GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic)
+**Generate a token:** GitHub → Settings → Developer settings → Personal access tokens → Generate new (classic)
+Required scope: `repo`
 
-Required scopes: `repo` (full repository access for reading/writing issues and comments)
-
-Switch to that project in claudecodeui — the board will load automatically.
-
-## /github-task CLI Skill
-
-When the plugin loads for the first time it installs the `/github-task` skill to `~/.claude/skills/github-task/SKILL.md`. This makes the following available in any Claude Code chat session:
-
-```
-/github-task
+To enable real AI prioritization, also add:
+```json
+{
+  "anthropicKey": "sk-ant-api03-..."
+}
 ```
 
-Example usage:
-- `/github-task sprawdź taski` — list To Do column
-- `/github-task przenieś #42 do in-progress`
-- `/github-task what needs testing?`
-- `/github-task update #17 — implemented the new login flow`
-
-The skill reads config from `.taskmaster/github-sync.json` in the current project.
+---
 
 ## Column → Label Mapping
 
-| Column     | Trigger                          |
-|------------|----------------------------------|
-| To Do      | open issues, no status labels    |
-| In Progress| has label `in-progress`          |
-| In Review  | has label `review`               |
-| Blocked    | has label `blocked`              |
-| Done       | issue is closed                  |
+| Column      | Condition                        |
+|-------------|----------------------------------|
+| To Do       | Open issue, no status labels     |
+| In Progress | Has label `in-progress`          |
+| In Review   | Has label `review`               |
+| Blocked     | Has label `blocked`              |
+| Done        | Issue is closed                  |
 
-Moving an issue via the board UI updates labels (and state for Done) via the GitHub API immediately.
+Moving an issue via the UI updates labels and state via the GitHub API immediately.
 
-## Screenshots
+### Priority Detection (from labels)
 
-*(screenshots placeholder)*
+| Priority | Detected from labels                                                            |
+|----------|---------------------------------------------------------------------------------|
+| High     | `critical`, `blocker`, `p0`, `urgent`, `security`, `high`, `priority:high`      |
+| Medium   | `p1`, `important`, `medium`, `priority:medium`                                  |
+| Low      | `p2`, `p3`, `low`, `nice-to-have`, `enhancement`, `priority:low`               |
+
+---
 
 ## Development
 
@@ -90,12 +141,24 @@ npm run build
 ```
 
 Output:
-- `dist/frontend.js` — IIFE bundle with React included
-- `dist/backend.js` — CommonJS Node.js server
+- `dist/frontend.js` — browser bundle (React, classic JSX runtime)
+- `dist/backend.js` — CommonJS Node.js server (listens on random port, reports `{"ready":true,"port":N}`)
+
+### Dev watch mode
+```bash
+npm run dev
+```
+
+### Stack
+- **Frontend:** React 18, TypeScript, Vite
+- **Backend:** Node.js HTTP server, TypeScript, esbuild
+- **Plugin protocol:** `manifest.json` + `mount(container, api)` / `unmount(container)` exports
+
+---
 
 ## Contributing
 
-PRs welcome. Please open an issue first to discuss significant changes.
+PRs welcome. Please open an issue first for significant changes.
 
 ## License
 
