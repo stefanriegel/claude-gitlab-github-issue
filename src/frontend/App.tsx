@@ -288,29 +288,17 @@ export const App: React.FC = () => {
             </button>
           )}
           {data && project && (
-            <div className="cgi-ai-btn-group">
-              <button
-                className={`cgi-btn cgi-btn-ai${aiPrioritizing ? ' cgi-btn-ai-loading' : ''}`}
-                onClick={handleAIPrioritize}
-                disabled={aiPrioritizing}
-                title={hasAnthropicKey ? 'Prioritize using Claude API (Anthropic key configured)' : 'Prioritize using smart heuristics — add Anthropic API key in ⚙ settings for AI analysis'}
-                style={{ borderRadius: '6px 0 0 6px', borderRight: 'none' }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-                </svg>
-                {aiPrioritizing ? 'Analyzing…' : aiUsed ? 'AI Prioritized' : 'AI Prioritize'}
-              </button>
-              <button
-                className="cgi-btn cgi-btn-ai cgi-btn-ai-sub"
-                onClick={() => setShowSubscriptionModal(true)}
-                disabled={aiPrioritizing}
-                title="Prioritize via Claude.ai subscription — copy prompt, paste response"
-                style={{ borderRadius: '0 6px 6px 0', padding: '4px 8px', fontSize: 11 }}
-              >
-                claude.ai
-              </button>
-            </div>
+            <button
+              className={`cgi-btn cgi-btn-ai${aiPrioritizing ? ' cgi-btn-ai-loading' : ''}`}
+              onClick={handleAIPrioritize}
+              disabled={aiPrioritizing}
+              title={hasAnthropicKey ? 'AI Prioritize — using Anthropic Claude API' : 'AI Prioritize — using smart heuristics (add Anthropic API key in ⚙ settings for real AI)'}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+              </svg>
+              {aiPrioritizing ? 'Analyzing…' : aiUsed ? 'Re-prioritize' : 'AI Prioritize'}
+            </button>
           )}
           <button className="cgi-btn" onClick={fetchIssues} disabled={loading} title="Refresh issues">
             {loading ? '↻ Refreshing…' : '↻ Refresh'}
@@ -440,6 +428,10 @@ export const App: React.FC = () => {
             setShowSettings(false);
             void fetchIssues();
           }}
+          onManualPrioritize={data ? () => {
+            setShowSettings(false);
+            setShowSubscriptionModal(true);
+          } : undefined}
         />
       )}
 

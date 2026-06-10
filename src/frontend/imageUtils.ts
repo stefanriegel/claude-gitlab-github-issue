@@ -3,13 +3,26 @@ export interface ExtractedImage {
   url: string;
 }
 
+/** Decode HTML entities in a URL extracted from raw HTML text */
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x2F;/g, '/');
+}
+
 /** Extract all image URLs from markdown AND inline HTML <img> tags */
 export function extractImages(text: string): ExtractedImage[] {
   const results: ExtractedImage[] = [];
   const seen = new Set<string>();
 
-  const add = (url: string, alt: string) => {
-    if (!url || seen.has(url)) return;
+  const add = (rawUrl: string, alt: string) => {
+    if (!rawUrl) return;
+    const url = decodeHtmlEntities(rawUrl);
+    if (seen.has(url)) return;
     seen.add(url);
     results.push({ alt, url });
   };

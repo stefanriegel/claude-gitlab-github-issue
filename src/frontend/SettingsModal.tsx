@@ -5,6 +5,7 @@ interface Props {
   projectPath: string;
   onClose: () => void;
   onSaved: () => void;
+  onManualPrioritize?: () => void;
 }
 
 interface ConfigState {
@@ -14,7 +15,7 @@ interface ConfigState {
   anthropicKey: string;
 }
 
-export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved }) => {
+export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, onManualPrioritize }) => {
   const api = usePluginAPI();
   const [form, setForm] = useState<ConfigState>({ token: '', owner: '', repo: '', anthropicKey: '' });
   const [showAnthropicKey, setShowAnthropicKey] = useState(false);
@@ -190,8 +191,17 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved }
                   {showAnthropicKey ? 'hide' : 'show'}
                 </button>
               </div>
-              <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4 }}>
-                Without a key, AI Prioritize uses smart heuristics (labels, age, engagement). With a key, it uses Claude Haiku for deeper analysis.
+              <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                <span>Without a key, AI Prioritize uses smart heuristics. With a key, it uses Claude Haiku for deeper AI analysis.</span>
+                {onManualPrioritize && (
+                  <button
+                    onClick={onManualPrioritize}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-accent)', fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap', flexShrink: 0 }}
+                    title="Use Claude.ai subscription: generate a prompt, paste back the response"
+                  >
+                    Use claude.ai →
+                  </button>
+                )}
               </div>
             </div>
 

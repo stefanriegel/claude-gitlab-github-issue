@@ -7026,11 +7026,16 @@ function sortIssues(issues, sortBy, sortDir, priorityMap) {
     return sortDir === "asc" ? -cmp : cmp;
   });
 }
+function decodeHtmlEntities(text) {
+  return text.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#x2F;/g, "/");
+}
 function extractImages(text) {
   const results = [];
   const seen = /* @__PURE__ */ new Set();
-  const add = (url, alt) => {
-    if (!url || seen.has(url)) return;
+  const add = (rawUrl, alt) => {
+    if (!rawUrl) return;
+    const url = decodeHtmlEntities(rawUrl);
+    if (seen.has(url)) return;
     seen.add(url);
     results.push({ alt, url });
   };
@@ -7267,25 +7272,55 @@ const ImageLightbox = ({
   alt,
   onClose
 }) => {
+  const [error, setError] = reactExports.useState(false);
   reactExports.useEffect(() => {
+    setError(false);
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, src]);
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-overlay", onClick: onClose, __self: void 0, __source: {
     fileName: _jsxFileName$7,
-    lineNumber: 17,
+    lineNumber: 20,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-lightbox-close", onClick: onClose, title: "Close (Esc)", __self: void 0, __source: {
     fileName: _jsxFileName$7,
-    lineNumber: 18,
+    lineNumber: 21,
     columnNumber: 7
-  } }, "✕"), /* @__PURE__ */ React.createElement("img", { src, alt, className: "cgi-lightbox-img", onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
+  } }, "✕"), error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-error", onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
     fileName: _jsxFileName$7,
-    lineNumber: 19,
-    columnNumber: 7
+    lineNumber: 23,
+    columnNumber: 9
+  } }, /* @__PURE__ */ React.createElement("div", { style: {
+    fontSize: 32,
+    marginBottom: 8,
+    opacity: 0.5
+  }, __self: void 0, __source: {
+    fileName: _jsxFileName$7,
+    lineNumber: 24,
+    columnNumber: 11
+  } }, "🖼"), /* @__PURE__ */ React.createElement("div", { style: {
+    fontSize: 13,
+    opacity: 0.8
+  }, __self: void 0, __source: {
+    fileName: _jsxFileName$7,
+    lineNumber: 25,
+    columnNumber: 11
+  } }, "Image could not be loaded"), /* @__PURE__ */ React.createElement("a", { href: src, target: "_blank", rel: "noopener noreferrer", style: {
+    fontSize: 12,
+    color: "#60a5fa",
+    marginTop: 8,
+    display: "block"
+  }, onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
+    fileName: _jsxFileName$7,
+    lineNumber: 26,
+    columnNumber: 11
+  } }, "Open original URL ↗")) : /* @__PURE__ */ React.createElement("img", { src, alt, className: "cgi-lightbox-img", onClick: (e) => e.stopPropagation(), onError: () => setError(true), __self: void 0, __source: {
+    fileName: _jsxFileName$7,
+    lineNumber: 37,
+    columnNumber: 9
   } }));
 };
 var _jsxFileName$6 = "/tmp/claude-github-issue/src/frontend/GithubIssueModal.tsx";
@@ -8248,7 +8283,8 @@ var _jsxFileName$2 = "/tmp/claude-github-issue/src/frontend/SettingsModal.tsx";
 const SettingsModal = ({
   projectPath,
   onClose,
-  onSaved
+  onSaved,
+  onManualPrioritize
 }) => {
   const api = usePluginAPI();
   const [form, setForm] = reactExports.useState({
@@ -8347,7 +8383,7 @@ const SettingsModal = ({
     if (e.target === e.currentTarget) onClose();
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 102,
+    lineNumber: 103,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     background: "var(--cgi-surface)",
@@ -8361,7 +8397,7 @@ const SettingsModal = ({
     gap: 18
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 106,
+    lineNumber: 107,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
@@ -8369,7 +8405,7 @@ const SettingsModal = ({
     justifyContent: "space-between"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 108,
+    lineNumber: 109,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
@@ -8379,15 +8415,15 @@ const SettingsModal = ({
     fontSize: 15
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 109,
+    lineNumber: 110,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 110,
+    lineNumber: 111,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 111,
+    lineNumber: 112,
     columnNumber: 15
   } })), "GitHub Issues Board — Settings"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: {
     background: "none",
@@ -8400,7 +8436,7 @@ const SettingsModal = ({
     padding: "2px 6px"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 115,
+    lineNumber: 116,
     columnNumber: 11
   } }, "×")), loading ? /* @__PURE__ */ React.createElement("div", { style: {
     textAlign: "center",
@@ -8408,21 +8444,21 @@ const SettingsModal = ({
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 119,
+    lineNumber: 120,
     columnNumber: 11
   } }, "Loading current settings…") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 123,
+    lineNumber: 124,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("label", { style: labelStyle, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 124,
+    lineNumber: 125,
     columnNumber: 15
   } }, "GitHub Personal Access Token"), /* @__PURE__ */ React.createElement("div", { style: {
     position: "relative"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 125,
+    lineNumber: 126,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("input", { type: showToken ? "text" : "password", value: form.token, onChange: (e) => setForm((f) => ({
     ...f,
@@ -8432,7 +8468,7 @@ const SettingsModal = ({
     paddingRight: 38
   }, autoComplete: "off", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 126,
+    lineNumber: 127,
     columnNumber: 17
   } }), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowToken((v2) => !v2), style: {
     position: "absolute",
@@ -8447,7 +8483,7 @@ const SettingsModal = ({
     fontSize: 12
   }, title: showToken ? "Hide token" : "Show token", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 134,
+    lineNumber: 135,
     columnNumber: 17
   } }, showToken ? "hide" : "show")), /* @__PURE__ */ React.createElement("div", { style: {
     fontSize: 11,
@@ -8455,49 +8491,49 @@ const SettingsModal = ({
     marginTop: 4
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 142,
+    lineNumber: 143,
     columnNumber: 15
   } }, "Generate at github.com → Settings → Developer settings → Personal access tokens. Requires ", /* @__PURE__ */ React.createElement("code", { __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 143,
+    lineNumber: 144,
     columnNumber: 107
   } }, "repo"), " scope.")), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 148,
+    lineNumber: 149,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("label", { style: labelStyle, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 149,
+    lineNumber: 150,
     columnNumber: 15
   } }, "Repository Owner (username or org)"), /* @__PURE__ */ React.createElement("input", { type: "text", value: form.owner, onChange: (e) => setForm((f) => ({
     ...f,
     owner: e.target.value
   })), placeholder: "your-github-username", style: inputStyle, autoComplete: "off", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 150,
+    lineNumber: 151,
     columnNumber: 15
   } })), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 161,
+    lineNumber: 162,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("label", { style: labelStyle, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 162,
+    lineNumber: 163,
     columnNumber: 15
   } }, "Repository Name"), /* @__PURE__ */ React.createElement("input", { type: "text", value: form.repo, onChange: (e) => setForm((f) => ({
     ...f,
     repo: e.target.value
   })), placeholder: "your-repository-name", style: inputStyle, autoComplete: "off", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 163,
+    lineNumber: 164,
     columnNumber: 15
   } })), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 174,
+    lineNumber: 175,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("label", { style: labelStyle, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 175,
+    lineNumber: 176,
     columnNumber: 15
   } }, "Anthropic API Key ", /* @__PURE__ */ React.createElement("span", { style: {
     opacity: 0.5,
@@ -8506,13 +8542,13 @@ const SettingsModal = ({
     fontSize: 11
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 175,
+    lineNumber: 176,
     columnNumber: 59
   } }, "(optional — enables real AI prioritization)")), /* @__PURE__ */ React.createElement("div", { style: {
     position: "relative"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 176,
+    lineNumber: 177,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("input", { type: showAnthropicKey ? "text" : "password", value: form.anthropicKey, onChange: (e) => setForm((f) => ({
     ...f,
@@ -8522,7 +8558,7 @@ const SettingsModal = ({
     paddingRight: 38
   }, autoComplete: "off", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 177,
+    lineNumber: 178,
     columnNumber: 17
   } }), /* @__PURE__ */ React.createElement("button", { onClick: () => setShowAnthropicKey((v2) => !v2), style: {
     position: "absolute",
@@ -8537,17 +8573,40 @@ const SettingsModal = ({
     fontSize: 12
   }, title: showAnthropicKey ? "Hide key" : "Show key", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 185,
+    lineNumber: 186,
     columnNumber: 17
   } }, showAnthropicKey ? "hide" : "show")), /* @__PURE__ */ React.createElement("div", { style: {
     fontSize: 11,
     opacity: 0.5,
-    marginTop: 4
+    marginTop: 4,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 193,
+    lineNumber: 194,
     columnNumber: 15
-  } }, "Without a key, AI Prioritize uses smart heuristics (labels, age, engagement). With a key, it uses Claude Haiku for deeper analysis.")), error && /* @__PURE__ */ React.createElement("div", { style: {
+  } }, /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
+    fileName: _jsxFileName$2,
+    lineNumber: 195,
+    columnNumber: 17
+  } }, "Without a key, AI Prioritize uses smart heuristics. With a key, it uses Claude Haiku for deeper AI analysis."), onManualPrioritize && /* @__PURE__ */ React.createElement("button", { onClick: onManualPrioritize, style: {
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    color: "var(--cgi-accent)",
+    fontSize: 11,
+    fontWeight: 600,
+    padding: "2px 6px",
+    borderRadius: 4,
+    whiteSpace: "nowrap",
+    flexShrink: 0
+  }, title: "Use Claude.ai subscription: generate a prompt, paste back the response", __self: void 0, __source: {
+    fileName: _jsxFileName$2,
+    lineNumber: 197,
+    columnNumber: 19
+  } }, "Use claude.ai →"))), error && /* @__PURE__ */ React.createElement("div", { style: {
     background: "rgba(239,68,68,0.12)",
     border: "1px solid rgba(239,68,68,0.3)",
     borderRadius: 6,
@@ -8556,7 +8615,7 @@ const SettingsModal = ({
     color: "#ef4444"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 200,
+    lineNumber: 210,
     columnNumber: 15
   } }, error), /* @__PURE__ */ React.createElement("div", { style: {
     borderTop: "1px solid var(--cgi-border)",
@@ -8567,14 +8626,14 @@ const SettingsModal = ({
     gap: 10
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 206,
+    lineNumber: 216,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     fontSize: 12,
     opacity: 0.6
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 207,
+    lineNumber: 217,
     columnNumber: 15
   } }, "Use ", /* @__PURE__ */ React.createElement("code", { style: {
     background: "var(--cgi-code-bg)",
@@ -8582,7 +8641,7 @@ const SettingsModal = ({
     borderRadius: 4
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 208,
+    lineNumber: 218,
     columnNumber: 21
   } }, "/github-task"), " skill in Claude chat to manage issues via AI"), /* @__PURE__ */ React.createElement("a", { href: "https://github.com/szmidtpiotr/claude-github-issue/blob/main/skill/SKILL.md", target: "_blank", rel: "noopener noreferrer", className: "cgi-btn", style: {
     textDecoration: "none",
@@ -8591,15 +8650,15 @@ const SettingsModal = ({
     gap: 4
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 210,
+    lineNumber: 220,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("svg", { width: "11", height: "11", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 217,
+    lineNumber: 227,
     columnNumber: 17
   } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 218,
+    lineNumber: 228,
     columnNumber: 19
   } })), "View SKILL.md")), /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
@@ -8607,13 +8666,13 @@ const SettingsModal = ({
     justifyContent: "flex-end"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 225,
+    lineNumber: 235,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "cgi-btn", style: {
     opacity: 0.7
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 226,
+    lineNumber: 236,
     columnNumber: 15
   } }, "Cancel"), /* @__PURE__ */ React.createElement("button", { onClick: handleSave, disabled: saving || success, className: "cgi-btn", style: {
     background: success ? "#22c55e" : "var(--cgi-accent)",
@@ -8622,7 +8681,7 @@ const SettingsModal = ({
     fontWeight: 600
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 227,
+    lineNumber: 237,
     columnNumber: 15
   } }, success ? "✓ Saved!" : saving ? "Saving…" : "Save")))));
 };
@@ -8911,192 +8970,180 @@ const App = () => {
     fileName: _jsxFileName$1,
     lineNumber: 285,
     columnNumber: 17
-  } })), "New Issue"), data && project && /* @__PURE__ */ React.createElement("div", { className: "cgi-ai-btn-group", __self: void 0, __source: {
+  } })), "New Issue"), data && project && /* @__PURE__ */ React.createElement("button", { className: `cgi-btn cgi-btn-ai${aiPrioritizing ? " cgi-btn-ai-loading" : ""}`, onClick: handleAIPrioritize, disabled: aiPrioritizing, title: hasAnthropicKey ? "AI Prioritize — using Anthropic Claude API" : "AI Prioritize — using smart heuristics (add Anthropic API key in ⚙ settings for real AI)", __self: void 0, __source: {
     fileName: _jsxFileName$1,
     lineNumber: 291,
     columnNumber: 13
-  } }, /* @__PURE__ */ React.createElement("button", { className: `cgi-btn cgi-btn-ai${aiPrioritizing ? " cgi-btn-ai-loading" : ""}`, onClick: handleAIPrioritize, disabled: aiPrioritizing, title: hasAnthropicKey ? "Prioritize using Claude API (Anthropic key configured)" : "Prioritize using smart heuristics — add Anthropic API key in ⚙ settings for AI analysis", style: {
-    borderRadius: "6px 0 0 6px",
-    borderRight: "none"
-  }, __self: void 0, __source: {
-    fileName: _jsxFileName$1,
-    lineNumber: 292,
-    columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 299,
-    columnNumber: 17
+    lineNumber: 297,
+    columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("path", { d: "M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 300,
-    columnNumber: 19
-  } })), aiPrioritizing ? "Analyzing…" : aiUsed ? "AI Prioritized" : "AI Prioritize"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-btn-ai cgi-btn-ai-sub", onClick: () => setShowSubscriptionModal(true), disabled: aiPrioritizing, title: "Prioritize via Claude.ai subscription — copy prompt, paste response", style: {
-    borderRadius: "0 6px 6px 0",
-    padding: "4px 8px",
-    fontSize: 11
-  }, __self: void 0, __source: {
+    lineNumber: 298,
+    columnNumber: 17
+  } })), aiPrioritizing ? "Analyzing…" : aiUsed ? "Re-prioritize" : "AI Prioritize"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues, disabled: loading, title: "Refresh issues", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 304,
-    columnNumber: 15
-  } }, "claude.ai")), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues, disabled: loading, title: "Refresh issues", __self: void 0, __source: {
-    fileName: _jsxFileName$1,
-    lineNumber: 315,
+    lineNumber: 303,
     columnNumber: 11
   } }, loading ? "↻ Refreshing…" : "↻ Refresh"), project && /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: () => setShowSettings(true), title: "Settings", style: {
     padding: "4px 8px"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 319,
+    lineNumber: 307,
     columnNumber: 13
   } }, "⚙"))), data && /* @__PURE__ */ React.createElement("div", { className: "cgi-filterbar", style: {
     background: "var(--cgi-surface)",
     borderBottom: "1px solid var(--cgi-border)"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 328,
+    lineNumber: 316,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-search-wrap", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 330,
+    lineNumber: 318,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { className: "cgi-search-icon", width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 331,
+    lineNumber: 319,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 332,
+    lineNumber: 320,
     columnNumber: 15
   } })), /* @__PURE__ */ React.createElement("input", { type: "text", className: "cgi-search-input", placeholder: "Search issues…", value: searchText, onChange: (e) => setSearchText(e.target.value), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 334,
+    lineNumber: 322,
     columnNumber: 13
   } }), searchText && /* @__PURE__ */ React.createElement("button", { className: "cgi-search-clear", onClick: () => setSearchText(""), title: "Clear search", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 342,
+    lineNumber: 330,
     columnNumber: 15
   } }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-priority-pills", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 347,
+    lineNumber: 335,
     columnNumber: 11
   } }, ["all", "high", "medium", "low"].map((p2) => /* @__PURE__ */ React.createElement("button", { key: p2, className: `cgi-priority-pill${activePriority === p2 ? " active" : ""}`, onClick: () => setActivePriority(p2), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 349,
+    lineNumber: 337,
     columnNumber: 15
   } }, p2 !== "all" && /* @__PURE__ */ React.createElement("span", { className: "cgi-priority-pill-dot", style: {
     background: PRIORITY_PILL_COLORS[p2]
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 355,
+    lineNumber: 343,
     columnNumber: 19
   } }), p2 === "all" ? "All" : p2.charAt(0).toUpperCase() + p2.slice(1)))), /* @__PURE__ */ React.createElement("div", { className: "cgi-sort-controls", ref: sortMenuRef, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 363,
+    lineNumber: 351,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-sort-dir-btn", onClick: () => setSortDir((d) => d === "desc" ? "asc" : "desc"), title: sortDir === "desc" ? "Descending — click for ascending" : "Ascending — click for descending", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 364,
+    lineNumber: 352,
     columnNumber: 13
   } }, sortDir === "desc" ? "↓" : "↑"), /* @__PURE__ */ React.createElement("div", { style: {
     position: "relative"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 371,
+    lineNumber: 359,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-sort-select-btn", onClick: () => setShowSortMenu((v2) => !v2), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 372,
+    lineNumber: 360,
     columnNumber: 15
   } }, "Sort: ", SORT_LABELS[sortBy], " ", /* @__PURE__ */ React.createElement("span", { style: {
     opacity: 0.5,
     marginLeft: 2
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 376,
+    lineNumber: 364,
     columnNumber: 45
   } }, "∨")), showSortMenu && /* @__PURE__ */ React.createElement("div", { className: "cgi-sort-menu", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 379,
+    lineNumber: 367,
     columnNumber: 17
   } }, SORT_OPTIONS.map((opt) => /* @__PURE__ */ React.createElement("button", { key: opt, className: `cgi-sort-menu-item${sortBy === opt ? " active" : ""}`, onClick: () => {
     setSortBy(opt);
     setShowSortMenu(false);
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 381,
+    lineNumber: 369,
     columnNumber: 21
   } }, SORT_LABELS[opt])))))), !project ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 398,
+    lineNumber: 386,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 399,
+    lineNumber: 387,
     columnNumber: 11
   } }, "No project open."), /* @__PURE__ */ React.createElement("div", { style: {
     fontSize: 12,
     opacity: 0.4
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 400,
+    lineNumber: 388,
     columnNumber: 11
   } }, "Open a project to view its GitHub Issues.")) : notConfigured ? /* @__PURE__ */ React.createElement(ConfigBanner, { onOpenSettings: () => setShowSettings(true), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 403,
+    lineNumber: 391,
     columnNumber: 9
   } }) : loading && !data ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 405,
+    lineNumber: 393,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-spinner", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 406,
+    lineNumber: 394,
     columnNumber: 11
   } }), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 407,
+    lineNumber: 395,
     columnNumber: 11
   } }, "Loading issues…")) : error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 410,
+    lineNumber: 398,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 411,
+    lineNumber: 399,
     columnNumber: 11
   } }, error), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 412,
+    lineNumber: 400,
     columnNumber: 11
   } }, "Retry")) : data ? /* @__PURE__ */ React.createElement(GithubBoard, { issues: processedIssues, priorityMap, collapsedColumns, onToggleColumn: handleToggleColumn, onMoveIssue: handleMoveIssue, onOpenIssue: setSelectedIssue, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 415,
+    lineNumber: 403,
     columnNumber: 9
   } }) : null, selectedIssue && project && /* @__PURE__ */ React.createElement(GithubIssueModal, { issue: selectedIssue, projectPath, onClose: () => setSelectedIssue(null), onIssueUpdated: handleIssueUpdated, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 426,
+    lineNumber: 414,
     columnNumber: 9
   } }), showSettings && project && /* @__PURE__ */ React.createElement(SettingsModal, { projectPath, onClose: () => setShowSettings(false), onSaved: () => {
     setNotConfigured(false);
     setShowSettings(false);
     void fetchIssues();
-  }, __self: void 0, __source: {
+  }, onManualPrioritize: data ? () => {
+    setShowSettings(false);
+    setShowSubscriptionModal(true);
+  } : void 0, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 435,
+    lineNumber: 423,
     columnNumber: 9
   } }), showSubscriptionModal && data && /* @__PURE__ */ React.createElement(SubscriptionPriorityModal, { issues: data.issues, onApply: handleSubscriptionPriorities, onClose: () => setShowSubscriptionModal(false), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 447,
+    lineNumber: 439,
     columnNumber: 9
   } }), showNewIssue && project && /* @__PURE__ */ React.createElement(NewIssueModal, { projectPath, onClose: () => setShowNewIssue(false), onCreated: handleIssueCreated, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 455,
+    lineNumber: 447,
     columnNumber: 9
   } }));
 };
-const stylesRaw = "/* claude-github-issue plugin styles */\n\n.cgi-root {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  width: 100%;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  font-size: 13px;\n  overflow: hidden;\n}\n\n/* Toolbar */\n.cgi-toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 16px;\n  border-bottom: 1px solid var(--cgi-border);\n  flex-shrink: 0;\n  gap: 8px;\n}\n\n.cgi-toolbar-title {\n  font-weight: 600;\n  font-size: 14px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.cgi-toolbar-actions {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.cgi-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px 10px;\n  border-radius: 6px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: background 0.15s, border-color 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-btn:hover {\n  background: var(--cgi-btn-hover-bg);\n  border-color: var(--cgi-border-strong);\n}\n\n.cgi-btn:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n\n.cgi-btn-primary {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-btn-primary:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* Board */\n.cgi-board {\n  display: grid;\n  gap: 10px;\n  padding: 12px 16px;\n  height: 100%;\n  overflow-x: auto;\n  overflow-y: hidden;\n  align-items: stretch;\n}\n\n/* Column */\n.cgi-column {\n  display: flex;\n  flex-direction: column;\n  border-radius: 10px;\n  border: 1px solid var(--cgi-border);\n  overflow: hidden;\n  min-height: 0;\n  transition: width 0.2s, min-width 0.2s;\n}\n\n.cgi-column-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 10px;\n  font-weight: 600;\n  font-size: 12px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  flex-shrink: 0;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n}\n\n.cgi-column-header:hover {\n  opacity: 0.85;\n}\n\n.cgi-column-count {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 20px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0,0,0,0.15);\n}\n\n.cgi-column-toggle {\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 4px;\n  margin-left: auto;\n  flex-shrink: 0;\n  opacity: 0.7;\n  font-size: 10px;\n}\n\n.cgi-column-body {\n  flex: 1;\n  overflow-y: auto;\n  padding: 6px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-height: 0;\n}\n\n.cgi-column-collapsed-label {\n  writing-mode: vertical-rl;\n  text-orientation: mixed;\n  transform: rotate(180deg);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  opacity: 0.8;\n  padding: 12px 0;\n  flex: 1;\n}\n\n/* Issue card */\n.cgi-card {\n  background: var(--cgi-card-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 8px 10px;\n  cursor: pointer;\n  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;\n}\n\n.cgi-card:hover {\n  border-color: var(--cgi-border-strong);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.12);\n  transform: translateY(-1px);\n}\n\n.cgi-card-title {\n  font-weight: 500;\n  font-size: 13px;\n  line-height: 1.4;\n  margin-bottom: 6px;\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-card-meta {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-number {\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  font-weight: 500;\n}\n\n.cgi-card-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 3px;\n  margin-top: 5px;\n}\n\n.cgi-label-chip {\n  display: inline-block;\n  padding: 1px 6px;\n  border-radius: 10px;\n  font-size: 10px;\n  font-weight: 600;\n  line-height: 1.6;\n}\n\n.cgi-avatar {\n  width: 18px;\n  height: 18px;\n  border-radius: 50%;\n  object-fit: cover;\n  flex-shrink: 0;\n}\n\n.cgi-card-comments {\n  display: flex;\n  align-items: center;\n  gap: 3px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  margin-left: auto;\n}\n\n/* Modal */\n.cgi-modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  z-index: 9999;\n  padding: 40px 16px;\n  overflow-y: auto;\n}\n\n.cgi-modal {\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 12px;\n  width: 100%;\n  max-width: 680px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.4);\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n}\n\n.cgi-modal-header {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 18px 20px 14px;\n  border-bottom: 1px solid var(--cgi-border);\n}\n\n.cgi-modal-title {\n  flex: 1;\n  font-size: 16px;\n  font-weight: 600;\n  line-height: 1.4;\n  color: var(--cgi-text);\n}\n\n.cgi-modal-subtitle {\n  font-size: 12px;\n  color: var(--cgi-text-muted);\n  margin-top: 2px;\n}\n\n.cgi-modal-close {\n  background: none;\n  border: none;\n  color: var(--cgi-text-muted);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  line-height: 1;\n  border-radius: 4px;\n  flex-shrink: 0;\n}\n\n.cgi-modal-close:hover {\n  color: var(--cgi-text);\n  background: var(--cgi-btn-bg);\n}\n\n.cgi-modal-body {\n  padding: 16px 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.cgi-modal-section-label {\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n  color: var(--cgi-text-muted);\n  margin-bottom: 6px;\n}\n\n.cgi-issue-body {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 12px;\n  font-size: 13px;\n  line-height: 1.6;\n  color: var(--cgi-text);\n  white-space: pre-wrap;\n  word-break: break-word;\n  max-height: 200px;\n  overflow-y: auto;\n}\n\n.cgi-column-selector {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-column-btn {\n  padding: 4px 12px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: all 0.15s;\n}\n\n.cgi-column-btn:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-column-btn-active {\n  color: #fff;\n  border-color: transparent;\n}\n\n/* Comments */\n.cgi-comments-list {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  max-height: 250px;\n  overflow-y: auto;\n}\n\n.cgi-comment {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 10px 12px;\n}\n\n.cgi-comment-header {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-comment-author {\n  font-weight: 600;\n  color: var(--cgi-text);\n}\n\n.cgi-comment-body {\n  font-size: 13px;\n  line-height: 1.5;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: var(--cgi-text);\n}\n\n/* Comment form */\n.cgi-comment-form {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.cgi-textarea {\n  width: 100%;\n  min-height: 72px;\n  padding: 8px 10px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  color: var(--cgi-text);\n  font-size: 13px;\n  font-family: inherit;\n  resize: vertical;\n  box-sizing: border-box;\n  transition: border-color 0.15s;\n  outline: none;\n}\n\n.cgi-textarea:focus {\n  border-color: var(--cgi-accent);\n}\n\n/* Config banner */\n.cgi-config-banner {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px 20px;\n  text-align: center;\n  gap: 16px;\n  color: var(--cgi-text);\n}\n\n.cgi-config-banner-icon {\n  font-size: 48px;\n  opacity: 0.5;\n}\n\n.cgi-config-banner h2 {\n  font-size: 18px;\n  font-weight: 600;\n  margin: 0;\n}\n\n.cgi-config-banner p {\n  color: var(--cgi-text-muted);\n  max-width: 420px;\n  line-height: 1.6;\n  margin: 0;\n}\n\n.cgi-config-code {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 14px 18px;\n  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;\n  font-size: 12px;\n  text-align: left;\n  white-space: pre;\n  color: var(--cgi-text);\n  max-width: 380px;\n  width: 100%;\n}\n\n/* Loading / error states */\n.cgi-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  flex-direction: column;\n  gap: 12px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-spinner {\n  width: 28px;\n  height: 28px;\n  border: 3px solid var(--cgi-border);\n  border-top-color: var(--cgi-accent);\n  border-radius: 50%;\n  animation: cgi-spin 0.8s linear infinite;\n}\n\n@keyframes cgi-spin {\n  to { transform: rotate(360deg); }\n}\n\n.cgi-error-text {\n  color: #ef4444;\n  font-size: 13px;\n}\n\n/* Scrollbars */\n.cgi-root *::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n.cgi-root *::-webkit-scrollbar-track {\n  background: transparent;\n}\n.cgi-root *::-webkit-scrollbar-thumb {\n  background: var(--cgi-scrollbar);\n  border-radius: 3px;\n}\n\n/* Dark theme variables */\n.cgi-dark {\n  --cgi-bg: #0f1117;\n  --cgi-surface: #161b22;\n  --cgi-card-bg: #1a2030;\n  --cgi-modal-bg: #161b22;\n  --cgi-code-bg: #0d1117;\n  --cgi-border: rgba(255,255,255,0.1);\n  --cgi-border-strong: rgba(255,255,255,0.2);\n  --cgi-text: #e6edf3;\n  --cgi-text-muted: #7d8590;\n  --cgi-btn-bg: rgba(255,255,255,0.06);\n  --cgi-btn-hover-bg: rgba(255,255,255,0.12);\n  --cgi-input-bg: #0d1117;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(255,255,255,0.15);\n}\n\n/* New Issue button */\n.cgi-btn-new-issue {\n  background: var(--cgi-accent);\n  color: #fff;\n  border-color: var(--cgi-accent);\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-new-issue:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* AI Prioritize button */\n.cgi-btn-ai {\n  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);\n  color: #fff;\n  border-color: transparent;\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-ai:hover {\n  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);\n  border-color: transparent;\n}\n.cgi-btn-ai-loading {\n  opacity: 0.75;\n}\n\n/* AI button split group */\n.cgi-ai-btn-group {\n  display: flex;\n  align-items: stretch;\n}\n\n.cgi-btn-ai-sub {\n  opacity: 0.85;\n  font-size: 11px !important;\n  letter-spacing: 0.01em;\n  border-left: 1px solid rgba(255,255,255,0.2) !important;\n}\n\n.cgi-btn-ai-sub:hover {\n  opacity: 1;\n}\n\n/* Filter bar */\n.cgi-filterbar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 14px;\n  flex-shrink: 0;\n  flex-wrap: wrap;\n}\n\n/* Search */\n.cgi-search-wrap {\n  position: relative;\n  display: flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n.cgi-search-icon {\n  position: absolute;\n  left: 8px;\n  color: var(--cgi-text-muted);\n  pointer-events: none;\n}\n\n.cgi-search-input {\n  padding: 4px 28px 4px 26px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  color: var(--cgi-text);\n  font-size: 12px;\n  outline: none;\n  width: 160px;\n  transition: border-color 0.15s, width 0.2s;\n}\n\n.cgi-search-input:focus {\n  border-color: var(--cgi-accent);\n  width: 200px;\n}\n\n.cgi-search-input::placeholder {\n  color: var(--cgi-text-muted);\n}\n\n.cgi-search-clear {\n  position: absolute;\n  right: 6px;\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: var(--cgi-text-muted);\n  font-size: 11px;\n  padding: 1px 2px;\n  line-height: 1;\n  border-radius: 3px;\n}\n.cgi-search-clear:hover {\n  color: var(--cgi-text);\n}\n\n/* Priority pills */\n.cgi-priority-pills {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n}\n\n.cgi-priority-pill {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  padding: 3px 10px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-priority-pill:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-priority-pill.active {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-priority-pill-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.cgi-priority-pill.active .cgi-priority-pill-dot {\n  background: rgba(255,255,255,0.8) !important;\n}\n\n/* Sort controls */\n.cgi-sort-controls {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  margin-left: auto;\n  position: relative;\n}\n\n.cgi-sort-dir-btn {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 3px 8px;\n  min-width: 28px;\n  justify-content: center;\n}\n\n.cgi-sort-select-btn {\n  white-space: nowrap;\n  min-width: 120px;\n  justify-content: space-between;\n}\n\n.cgi-sort-menu {\n  position: absolute;\n  top: calc(100% + 4px);\n  right: 0;\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  box-shadow: 0 8px 24px rgba(0,0,0,0.25);\n  z-index: 100;\n  min-width: 130px;\n  overflow: hidden;\n}\n\n.cgi-sort-menu-item {\n  display: block;\n  width: 100%;\n  text-align: left;\n  padding: 7px 14px;\n  background: none;\n  border: none;\n  color: var(--cgi-text);\n  font-size: 13px;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n.cgi-sort-menu-item:hover {\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-sort-menu-item.active {\n  color: var(--cgi-accent);\n  font-weight: 600;\n}\n\n/* Priority dot on card */\n.cgi-card-title-row {\n  display: flex;\n  align-items: flex-start;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n\n.cgi-card-title-row .cgi-card-title {\n  margin-bottom: 0;\n  flex: 1;\n}\n\n.cgi-priority-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n  margin-top: 4px;\n  cursor: help;\n}\n\n/* Image thumbnails on cards */\n.cgi-card-thumbs {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n  margin-bottom: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-thumb {\n  width: 52px;\n  height: 38px;\n  object-fit: cover;\n  border-radius: 4px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-code-bg);\n  pointer-events: none;\n}\n\n.cgi-card-thumb-more {\n  font-size: 10px;\n  font-weight: 600;\n  color: var(--cgi-text-muted);\n  padding: 0 4px;\n}\n\n/* Image grid in modal / comments */\n.cgi-img-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 8px;\n}\n\n.cgi-img-thumb-btn {\n  background: none;\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  padding: 0;\n  cursor: zoom-in;\n  overflow: hidden;\n  transition: border-color 0.15s, box-shadow 0.15s;\n  flex-shrink: 0;\n}\n\n.cgi-img-thumb-btn:hover {\n  border-color: var(--cgi-accent);\n  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);\n}\n\n.cgi-img-thumb {\n  display: block;\n  width: auto;\n  height: 80px;\n  max-width: 200px;\n  object-fit: cover;\n}\n\n/* Lightbox */\n.cgi-lightbox-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.88);\n  z-index: 99999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  cursor: zoom-out;\n  padding: 24px;\n}\n\n.cgi-lightbox-img {\n  max-width: 100%;\n  max-height: 90vh;\n  object-fit: contain;\n  border-radius: 8px;\n  box-shadow: 0 8px 40px rgba(0,0,0,0.6);\n  cursor: default;\n}\n\n.cgi-lightbox-close {\n  position: fixed;\n  top: 16px;\n  right: 20px;\n  background: rgba(255,255,255,0.1);\n  border: 1px solid rgba(255,255,255,0.2);\n  color: #fff;\n  font-size: 20px;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 100000;\n  transition: background 0.15s;\n  line-height: 1;\n  padding: 0;\n}\n\n.cgi-lightbox-close:hover {\n  background: rgba(255,255,255,0.2);\n}\n\n/* Light theme variables */\n.cgi-light {\n  --cgi-bg: #f6f8fa;\n  --cgi-surface: #ffffff;\n  --cgi-card-bg: #ffffff;\n  --cgi-modal-bg: #ffffff;\n  --cgi-code-bg: #f6f8fa;\n  --cgi-border: rgba(0,0,0,0.1);\n  --cgi-border-strong: rgba(0,0,0,0.22);\n  --cgi-text: #1f2328;\n  --cgi-text-muted: #636c76;\n  --cgi-btn-bg: rgba(0,0,0,0.04);\n  --cgi-btn-hover-bg: rgba(0,0,0,0.08);\n  --cgi-input-bg: #ffffff;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(0,0,0,0.15);\n}\n";
+const stylesRaw = "/* claude-github-issue plugin styles */\n\n.cgi-root {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  width: 100%;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  font-size: 13px;\n  overflow: hidden;\n}\n\n/* Toolbar */\n.cgi-toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 16px;\n  border-bottom: 1px solid var(--cgi-border);\n  flex-shrink: 0;\n  gap: 8px;\n}\n\n.cgi-toolbar-title {\n  font-weight: 600;\n  font-size: 14px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.cgi-toolbar-actions {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.cgi-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px 10px;\n  border-radius: 6px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: background 0.15s, border-color 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-btn:hover {\n  background: var(--cgi-btn-hover-bg);\n  border-color: var(--cgi-border-strong);\n}\n\n.cgi-btn:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n\n.cgi-btn-primary {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-btn-primary:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* Board */\n.cgi-board {\n  display: grid;\n  gap: 10px;\n  padding: 12px 16px;\n  height: 100%;\n  overflow-x: auto;\n  overflow-y: hidden;\n  align-items: stretch;\n}\n\n/* Column */\n.cgi-column {\n  display: flex;\n  flex-direction: column;\n  border-radius: 10px;\n  border: 1px solid var(--cgi-border);\n  overflow: hidden;\n  min-height: 0;\n  transition: width 0.2s, min-width 0.2s;\n}\n\n.cgi-column-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 10px;\n  font-weight: 600;\n  font-size: 12px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  flex-shrink: 0;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n}\n\n.cgi-column-header:hover {\n  opacity: 0.85;\n}\n\n.cgi-column-count {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 20px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0,0,0,0.15);\n}\n\n.cgi-column-toggle {\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 4px;\n  margin-left: auto;\n  flex-shrink: 0;\n  opacity: 0.7;\n  font-size: 10px;\n}\n\n.cgi-column-body {\n  flex: 1;\n  overflow-y: auto;\n  padding: 6px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-height: 0;\n}\n\n.cgi-column-collapsed-label {\n  writing-mode: vertical-rl;\n  text-orientation: mixed;\n  transform: rotate(180deg);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  opacity: 0.8;\n  padding: 12px 0;\n  flex: 1;\n}\n\n/* Issue card */\n.cgi-card {\n  background: var(--cgi-card-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 8px 10px;\n  cursor: pointer;\n  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;\n}\n\n.cgi-card:hover {\n  border-color: var(--cgi-border-strong);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.12);\n  transform: translateY(-1px);\n}\n\n.cgi-card-title {\n  font-weight: 500;\n  font-size: 13px;\n  line-height: 1.4;\n  margin-bottom: 6px;\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-card-meta {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-number {\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  font-weight: 500;\n}\n\n.cgi-card-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 3px;\n  margin-top: 5px;\n}\n\n.cgi-label-chip {\n  display: inline-block;\n  padding: 1px 6px;\n  border-radius: 10px;\n  font-size: 10px;\n  font-weight: 600;\n  line-height: 1.6;\n}\n\n.cgi-avatar {\n  width: 18px;\n  height: 18px;\n  border-radius: 50%;\n  object-fit: cover;\n  flex-shrink: 0;\n}\n\n.cgi-card-comments {\n  display: flex;\n  align-items: center;\n  gap: 3px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  margin-left: auto;\n}\n\n/* Modal */\n.cgi-modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: flex-start;\n  justify-content: center;\n  z-index: 9999;\n  padding: 40px 16px;\n  overflow-y: auto;\n}\n\n.cgi-modal {\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 12px;\n  width: 100%;\n  max-width: 680px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.4);\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n}\n\n.cgi-modal-header {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 18px 20px 14px;\n  border-bottom: 1px solid var(--cgi-border);\n}\n\n.cgi-modal-title {\n  flex: 1;\n  font-size: 16px;\n  font-weight: 600;\n  line-height: 1.4;\n  color: var(--cgi-text);\n}\n\n.cgi-modal-subtitle {\n  font-size: 12px;\n  color: var(--cgi-text-muted);\n  margin-top: 2px;\n}\n\n.cgi-modal-close {\n  background: none;\n  border: none;\n  color: var(--cgi-text-muted);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  line-height: 1;\n  border-radius: 4px;\n  flex-shrink: 0;\n}\n\n.cgi-modal-close:hover {\n  color: var(--cgi-text);\n  background: var(--cgi-btn-bg);\n}\n\n.cgi-modal-body {\n  padding: 16px 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n.cgi-modal-section-label {\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n  color: var(--cgi-text-muted);\n  margin-bottom: 6px;\n}\n\n.cgi-issue-body {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 12px;\n  font-size: 13px;\n  line-height: 1.6;\n  color: var(--cgi-text);\n  white-space: pre-wrap;\n  word-break: break-word;\n  max-height: 200px;\n  overflow-y: auto;\n}\n\n.cgi-column-selector {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-column-btn {\n  padding: 4px 12px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: all 0.15s;\n}\n\n.cgi-column-btn:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-column-btn-active {\n  color: #fff;\n  border-color: transparent;\n}\n\n/* Comments */\n.cgi-comments-list {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  max-height: 250px;\n  overflow-y: auto;\n}\n\n.cgi-comment {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 10px 12px;\n}\n\n.cgi-comment-header {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-comment-author {\n  font-weight: 600;\n  color: var(--cgi-text);\n}\n\n.cgi-comment-body {\n  font-size: 13px;\n  line-height: 1.5;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: var(--cgi-text);\n}\n\n/* Comment form */\n.cgi-comment-form {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.cgi-textarea {\n  width: 100%;\n  min-height: 72px;\n  padding: 8px 10px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  color: var(--cgi-text);\n  font-size: 13px;\n  font-family: inherit;\n  resize: vertical;\n  box-sizing: border-box;\n  transition: border-color 0.15s;\n  outline: none;\n}\n\n.cgi-textarea:focus {\n  border-color: var(--cgi-accent);\n}\n\n/* Config banner */\n.cgi-config-banner {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px 20px;\n  text-align: center;\n  gap: 16px;\n  color: var(--cgi-text);\n}\n\n.cgi-config-banner-icon {\n  font-size: 48px;\n  opacity: 0.5;\n}\n\n.cgi-config-banner h2 {\n  font-size: 18px;\n  font-weight: 600;\n  margin: 0;\n}\n\n.cgi-config-banner p {\n  color: var(--cgi-text-muted);\n  max-width: 420px;\n  line-height: 1.6;\n  margin: 0;\n}\n\n.cgi-config-code {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 14px 18px;\n  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;\n  font-size: 12px;\n  text-align: left;\n  white-space: pre;\n  color: var(--cgi-text);\n  max-width: 380px;\n  width: 100%;\n}\n\n/* Loading / error states */\n.cgi-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  flex-direction: column;\n  gap: 12px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-spinner {\n  width: 28px;\n  height: 28px;\n  border: 3px solid var(--cgi-border);\n  border-top-color: var(--cgi-accent);\n  border-radius: 50%;\n  animation: cgi-spin 0.8s linear infinite;\n}\n\n@keyframes cgi-spin {\n  to { transform: rotate(360deg); }\n}\n\n.cgi-error-text {\n  color: #ef4444;\n  font-size: 13px;\n}\n\n/* Scrollbars */\n.cgi-root *::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n.cgi-root *::-webkit-scrollbar-track {\n  background: transparent;\n}\n.cgi-root *::-webkit-scrollbar-thumb {\n  background: var(--cgi-scrollbar);\n  border-radius: 3px;\n}\n\n/* Dark theme variables */\n.cgi-dark {\n  --cgi-bg: #0f1117;\n  --cgi-surface: #161b22;\n  --cgi-card-bg: #1a2030;\n  --cgi-modal-bg: #161b22;\n  --cgi-code-bg: #0d1117;\n  --cgi-border: rgba(255,255,255,0.1);\n  --cgi-border-strong: rgba(255,255,255,0.2);\n  --cgi-text: #e6edf3;\n  --cgi-text-muted: #7d8590;\n  --cgi-btn-bg: rgba(255,255,255,0.06);\n  --cgi-btn-hover-bg: rgba(255,255,255,0.12);\n  --cgi-input-bg: #0d1117;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(255,255,255,0.15);\n}\n\n/* New Issue button */\n.cgi-btn-new-issue {\n  background: var(--cgi-accent);\n  color: #fff;\n  border-color: var(--cgi-accent);\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-new-issue:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* AI Prioritize button */\n.cgi-btn-ai {\n  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);\n  color: #fff;\n  border-color: transparent;\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-ai:hover {\n  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);\n  border-color: transparent;\n}\n.cgi-btn-ai-loading {\n  opacity: 0.75;\n}\n\n/* AI button split group */\n.cgi-ai-btn-group {\n  display: flex;\n  align-items: stretch;\n}\n\n.cgi-btn-ai-sub {\n  opacity: 0.85;\n  font-size: 11px !important;\n  letter-spacing: 0.01em;\n  border-left: 1px solid rgba(255,255,255,0.2) !important;\n}\n\n.cgi-btn-ai-sub:hover {\n  opacity: 1;\n}\n\n/* Filter bar */\n.cgi-filterbar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 14px;\n  flex-shrink: 0;\n  flex-wrap: wrap;\n}\n\n/* Search */\n.cgi-search-wrap {\n  position: relative;\n  display: flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n.cgi-search-icon {\n  position: absolute;\n  left: 8px;\n  color: var(--cgi-text-muted);\n  pointer-events: none;\n}\n\n.cgi-search-input {\n  padding: 4px 28px 4px 26px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  color: var(--cgi-text);\n  font-size: 12px;\n  outline: none;\n  width: 160px;\n  transition: border-color 0.15s, width 0.2s;\n}\n\n.cgi-search-input:focus {\n  border-color: var(--cgi-accent);\n  width: 200px;\n}\n\n.cgi-search-input::placeholder {\n  color: var(--cgi-text-muted);\n}\n\n.cgi-search-clear {\n  position: absolute;\n  right: 6px;\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: var(--cgi-text-muted);\n  font-size: 11px;\n  padding: 1px 2px;\n  line-height: 1;\n  border-radius: 3px;\n}\n.cgi-search-clear:hover {\n  color: var(--cgi-text);\n}\n\n/* Priority pills */\n.cgi-priority-pills {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n}\n\n.cgi-priority-pill {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  padding: 3px 10px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-priority-pill:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-priority-pill.active {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-priority-pill-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.cgi-priority-pill.active .cgi-priority-pill-dot {\n  background: rgba(255,255,255,0.8) !important;\n}\n\n/* Sort controls */\n.cgi-sort-controls {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  margin-left: auto;\n  position: relative;\n}\n\n.cgi-sort-dir-btn {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 3px 8px;\n  min-width: 28px;\n  justify-content: center;\n}\n\n.cgi-sort-select-btn {\n  white-space: nowrap;\n  min-width: 120px;\n  justify-content: space-between;\n}\n\n.cgi-sort-menu {\n  position: absolute;\n  top: calc(100% + 4px);\n  right: 0;\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  box-shadow: 0 8px 24px rgba(0,0,0,0.25);\n  z-index: 100;\n  min-width: 130px;\n  overflow: hidden;\n}\n\n.cgi-sort-menu-item {\n  display: block;\n  width: 100%;\n  text-align: left;\n  padding: 7px 14px;\n  background: none;\n  border: none;\n  color: var(--cgi-text);\n  font-size: 13px;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n.cgi-sort-menu-item:hover {\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-sort-menu-item.active {\n  color: var(--cgi-accent);\n  font-weight: 600;\n}\n\n/* Priority dot on card */\n.cgi-card-title-row {\n  display: flex;\n  align-items: flex-start;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n\n.cgi-card-title-row .cgi-card-title {\n  margin-bottom: 0;\n  flex: 1;\n}\n\n.cgi-priority-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n  margin-top: 4px;\n  cursor: help;\n}\n\n/* Image thumbnails on cards */\n.cgi-card-thumbs {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n  margin-bottom: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-thumb {\n  width: 52px;\n  height: 38px;\n  object-fit: cover;\n  border-radius: 4px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-code-bg);\n  pointer-events: none;\n}\n\n.cgi-card-thumb-more {\n  font-size: 10px;\n  font-weight: 600;\n  color: var(--cgi-text-muted);\n  padding: 0 4px;\n}\n\n/* Image grid in modal / comments */\n.cgi-img-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 8px;\n}\n\n.cgi-img-thumb-btn {\n  background: none;\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  padding: 0;\n  cursor: zoom-in;\n  overflow: hidden;\n  transition: border-color 0.15s, box-shadow 0.15s;\n  flex-shrink: 0;\n}\n\n.cgi-img-thumb-btn:hover {\n  border-color: var(--cgi-accent);\n  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);\n}\n\n.cgi-img-thumb {\n  display: block;\n  width: auto;\n  height: 80px;\n  max-width: 200px;\n  object-fit: cover;\n}\n\n/* Lightbox */\n.cgi-lightbox-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.88);\n  z-index: 99999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  cursor: zoom-out;\n  padding: 24px;\n}\n\n.cgi-lightbox-img {\n  max-width: 100%;\n  max-height: 90vh;\n  object-fit: contain;\n  border-radius: 8px;\n  box-shadow: 0 8px 40px rgba(0,0,0,0.6);\n  cursor: default;\n}\n\n.cgi-lightbox-close {\n  position: fixed;\n  top: 16px;\n  right: 20px;\n  background: rgba(255,255,255,0.1);\n  border: 1px solid rgba(255,255,255,0.2);\n  color: #fff;\n  font-size: 20px;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 100000;\n  transition: background 0.15s;\n  line-height: 1;\n  padding: 0;\n}\n\n.cgi-lightbox-close:hover {\n  background: rgba(255,255,255,0.2);\n}\n\n.cgi-lightbox-error {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  color: #fff;\n  cursor: default;\n  text-align: center;\n}\n\n/* Light theme variables */\n.cgi-light {\n  --cgi-bg: #f6f8fa;\n  --cgi-surface: #ffffff;\n  --cgi-card-bg: #ffffff;\n  --cgi-modal-bg: #ffffff;\n  --cgi-code-bg: #f6f8fa;\n  --cgi-border: rgba(0,0,0,0.1);\n  --cgi-border-strong: rgba(0,0,0,0.22);\n  --cgi-text: #1f2328;\n  --cgi-text-muted: #636c76;\n  --cgi-btn-bg: rgba(0,0,0,0.04);\n  --cgi-btn-hover-bg: rgba(0,0,0,0.08);\n  --cgi-input-bg: #ffffff;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(0,0,0,0.15);\n}\n";
 var _jsxFileName = "/tmp/claude-github-issue/src/frontend/index.tsx";
 const STYLE_ID = "cgi-plugin-styles";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {

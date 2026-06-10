@@ -865,6 +865,15 @@
   background: rgba(255,255,255,0.2);
 }
 
+.cgi-lightbox-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  cursor: default;
+  text-align: center;
+}
+
 /* Light theme variables */
 .cgi-light {
   --cgi-bg: #f6f8fa;
