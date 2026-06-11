@@ -122,55 +122,49 @@ Keep responses short. List multiple issues as a compact table. No markdown prose
 
 ## Screenshot pipeline — attach a screen to an issue comment
 
-You can capture a live screenshot of the DEV app and post it directly as a GitHub issue comment. Three steps:
+When the user asks to take a screenshot and attach it to a GitHub issue, follow this pipeline regardless of how the screenshot is captured.
 
-### Step 1 — Take the screenshot
+### Step 1 — Get the screenshot file
 
-Use the `/game-screen` skill:
+Use whatever screenshot tool is appropriate for the context:
 
-```
-/game-screen               → heroes screen (default)
-/game-screen campaign 999  → gameplay for campaign 999
-/game-screen death 999     → death screen for campaign 999
-```
+- `/screen` — generic screenshot skill (saves PNG to `temp-img/` in the current project)
+- Project-specific screen command if one exists
+- User-provided image path (e.g. they already have the file)
 
-The skill saves the PNG to `temp-img/<timestamp>_game_screen.png` on the Claude VM.
+The result is a local PNG/JPG file path, e.g. `temp-img/1234567890_screen.png`.
 
-### Step 2 — Upload image to GitHub
+If the user just says "take a screenshot and add to issue #N" with no further context, ask: **what URL or app should I screenshot?** then use the appropriate tool.
 
-Upload as a release asset to get a public URL:
+### Step 2 — Upload image to GitHub as release asset
+
+GitHub issue comments don't support direct binary uploads via API. Use a release asset as image host:
 
 ```bash
-# Use the latest release tag (check with: gh release list --repo $OWNER/$REPO)
-gh release upload <tag> <path-to-png> --repo $OWNER/$REPO --clobber
+# Read config
+TOKEN_FILE=$(find . -name "github-sync.json" -path "*GitHubBoard*" 2>/dev/null | head -1)
+OWNER=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d['owner'])")
+REPO=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d['repo'])")
 
-# Get the download URL
-gh release view <tag> --repo $OWNER/$REPO --json assets \
-  --jq '.assets[] | select(.name == "<filename>") | .url'
+FILE="<path-to-screenshot>"
+FNAME=$(basename $FILE)
+
+# Get latest release tag
+TAG=$(gh release list --repo $OWNER/$REPO --limit 1 --json tagName --jq '.[0].tagName')
+
+# Upload (--clobber overwrites if name already exists)
+gh release upload $TAG $FILE --repo $OWNER/$REPO --clobber
+
+# Get public URL
+URL=$(gh release view $TAG --repo $OWNER/$REPO --json assets \
+  --jq ".assets[] | select(.name == \"$FNAME\") | .url")
 ```
 
 ### Step 3 — Post comment with image
 
 ```bash
 gh issue comment <NUMBER> --repo $OWNER/$REPO \
-  --body "![screenshot](<download-url>)"
+  --body "![screenshot]($URL)"
 ```
 
-### Full example
-
-```bash
-TOKEN_FILE=$(find . -name "github-sync.json" -path "*GitHubBoard*" 2>/dev/null | head -1)
-OWNER=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d['owner'])")
-REPO=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d['repo'])")
-
-# After /game-screen runs and saves to e.g. temp-img/1234_game_screen.png:
-FILE="temp-img/1234_game_screen.png"
-FNAME=$(basename $FILE)
-TAG=$(gh release list --repo $OWNER/$REPO --limit 1 --json tagName --jq '.[0].tagName')
-
-gh release upload $TAG $FILE --repo $OWNER/$REPO --clobber
-URL=$(gh release view $TAG --repo $OWNER/$REPO --json assets \
-  --jq ".assets[] | select(.name == \"$FNAME\") | .url")
-
-gh issue comment <NUMBER> --repo $OWNER/$REPO --body "![screenshot]($URL)"
-```
+Add context above the image if useful (what was captured, when, etc.).
