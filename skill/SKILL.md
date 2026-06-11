@@ -119,3 +119,58 @@ Or for comment:
 ```
 
 Keep responses short. List multiple issues as a compact table. No markdown prose.
+
+## Screenshot pipeline — attach a screen to an issue comment
+
+You can capture a live screenshot of the DEV app and post it directly as a GitHub issue comment. Three steps:
+
+### Step 1 — Take the screenshot
+
+Use the `/game-screen` skill:
+
+```
+/game-screen               → heroes screen (default)
+/game-screen campaign 999  → gameplay for campaign 999
+/game-screen death 999     → death screen for campaign 999
+```
+
+The skill saves the PNG to `temp-img/<timestamp>_game_screen.png` on the Claude VM.
+
+### Step 2 — Upload image to GitHub
+
+Upload as a release asset to get a public URL:
+
+```bash
+# Use the latest release tag (check with: gh release list --repo $OWNER/$REPO)
+gh release upload <tag> <path-to-png> --repo $OWNER/$REPO --clobber
+
+# Get the download URL
+gh release view <tag> --repo $OWNER/$REPO --json assets \
+  --jq '.assets[] | select(.name == "<filename>") | .url'
+```
+
+### Step 3 — Post comment with image
+
+```bash
+gh issue comment <NUMBER> --repo $OWNER/$REPO \
+  --body "![screenshot](<download-url>)"
+```
+
+### Full example
+
+```bash
+TOKEN_FILE=$(find . -name "github-sync.json" -path "*GitHubBoard*" 2>/dev/null | head -1)
+OWNER=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d['owner'])")
+REPO=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d['repo'])")
+
+# After /game-screen runs and saves to e.g. temp-img/1234_game_screen.png:
+FILE="temp-img/1234_game_screen.png"
+FNAME=$(basename $FILE)
+TAG=$(gh release list --repo $OWNER/$REPO --limit 1 --json tagName --jq '.[0].tagName')
+
+gh release upload $TAG $FILE --repo $OWNER/$REPO --clobber
+URL=$(gh release view $TAG --repo $OWNER/$REPO --json assets \
+  --jq ".assets[] | select(.name == \"$FNAME\") | .url")
+
+gh issue comment <NUMBER> --repo $OWNER/$REPO --body "![screenshot]($URL)"
+```

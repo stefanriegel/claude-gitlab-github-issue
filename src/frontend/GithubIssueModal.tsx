@@ -162,7 +162,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
     <>
     {lightbox && <ImageLightbox src={lightbox.src} alt={lightbox.alt} onClose={() => setLightbox(null)} />}
     <div className="cgi-modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="cgi-modal" style={{ width: modalSize.width, height: modalSize.height }} onClick={e => e.stopPropagation()}>
+      <div className="cgi-modal" style={{ width: modalSize.width, maxHeight: modalSize.height }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="cgi-modal-header">
           <div style={{ flex: 1 }}>
