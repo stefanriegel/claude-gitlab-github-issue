@@ -18,6 +18,7 @@ export const GithubBoard: React.FC<Props> = ({
   priorityMap,
   collapsedColumns,
   onToggleColumn,
+  onMoveIssue,
   onOpenIssue,
 }) => {
   const issuesByColumn = React.useMemo(() => {
@@ -46,6 +47,7 @@ export const GithubBoard: React.FC<Props> = ({
           collapsed={collapsedColumns.has(col.id)}
           onToggle={() => onToggleColumn(col.id)}
           onOpenIssue={onOpenIssue}
+          onMoveIssue={onMoveIssue}
         />
       ))}
     </div>

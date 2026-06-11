@@ -170,14 +170,37 @@
   border: 1px solid var(--cgi-border);
   border-radius: 8px;
   padding: 8px 10px;
-  cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  cursor: grab;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s, opacity 0.15s;
 }
 
 .cgi-card:hover {
   border-color: var(--cgi-border-strong);
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   transform: translateY(-1px);
+}
+
+.cgi-card--dragging {
+  opacity: 0.35;
+  transform: scale(0.98);
+  cursor: grabbing;
+}
+
+.cgi-column-body--drag-over {
+  background: rgba(255,255,255,0.03);
+}
+
+.cgi-column-empty {
+  text-align: center;
+  padding: 20px 0;
+  opacity: 0.4;
+  font-size: 12px;
+  transition: opacity 0.15s;
+}
+
+.cgi-column-empty--drag-over {
+  opacity: 0.9;
+  font-weight: 600;
 }
 
 .cgi-card-title {

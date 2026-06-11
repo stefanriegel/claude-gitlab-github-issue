@@ -8,6 +8,7 @@ interface Props {
   issue: GithubIssue;
   priority: PriorityLevel | null;
   priorityReason?: string;
+  columnId: string;
   onClick: () => void;
 }
 
@@ -31,13 +32,29 @@ function labelTextColor(hex: string): string {
   return lum > 140 ? '#000000' : '#ffffff';
 }
 
-export const GithubIssueCard: React.FC<Props> = ({ issue, priority, priorityReason, onClick }) => {
+export const GithubIssueCard: React.FC<Props> = ({ issue, priority, priorityReason, columnId, onClick }) => {
   const visibleLabels = issue.labels.filter(l => !STATUS_LABELS.includes(l.name));
   const images = issue.body ? extractImages(issue.body) : [];
   const previewImages = images.slice(0, 3);
+  const [dragging, setDragging] = React.useState(false);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({ issueNumber: issue.number, fromColumnId: columnId }));
+    e.dataTransfer.effectAllowed = 'move';
+    setDragging(true);
+  };
 
   return (
-    <div className="cgi-card" onClick={onClick} role="button" tabIndex={0} onKeyDown={e => e.key === 'Enter' && onClick()}>
+    <div
+      className={`cgi-card${dragging ? ' cgi-card--dragging' : ''}`}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={() => setDragging(false)}
+      onKeyDown={e => e.key === 'Enter' && onClick()}
+    >
       {previewImages.length > 0 && (
         <div className="cgi-card-thumbs">
           {previewImages.map((img, i) => (
