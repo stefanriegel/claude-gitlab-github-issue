@@ -99,9 +99,8 @@ async function createComment(token, owner, repo, issueNumber, body) {
 var import_path = __toESM(require("path"));
 var import_fs = require("fs");
 var SYNC_FILE = ".GitHubBoard/github-sync.json";
-async function readConfig(projectPath) {
-  if (!projectPath) return null;
-  const filePath = import_path.default.join(projectPath, SYNC_FILE);
+var TASKMASTER_SYNC_FILE = ".taskmaster/github-sync.json";
+async function readConfigFile(filePath) {
   try {
     const content = await import_fs.promises.readFile(filePath, "utf8");
     const parsed = JSON.parse(content);
@@ -116,6 +115,10 @@ async function readConfig(projectPath) {
   } catch {
     return null;
   }
+}
+async function readConfig(projectPath) {
+  if (!projectPath) return null;
+  return await readConfigFile(import_path.default.join(projectPath, SYNC_FILE)) ?? await readConfigFile(import_path.default.join(projectPath, TASKMASTER_SYNC_FILE));
 }
 async function writeConfig(projectPath, config) {
   if (!projectPath) throw new Error("projectPath required");
