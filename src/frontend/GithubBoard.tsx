@@ -13,6 +13,26 @@ interface Props {
   onOpenIssue: (issue: GithubIssue) => void;
 }
 
+// Collapsed columns as 52px vertical strips eat too much width on phones, so
+// below this breakpoint they move out of the grid into a pill bar above it.
+const MOBILE_MAX_WIDTH = 640;
+
+function useIsMobile(): boolean {
+  const query = `(max-width: ${MOBILE_MAX_WIDTH}px)`;
+  const [isMobile, setIsMobile] = React.useState(
+    () => typeof window !== 'undefined' && window.matchMedia(query).matches
+  );
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mql.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, [query]);
+  return isMobile;
+}
+
 export const GithubBoard: React.FC<Props> = ({
   issues,
   priorityMap,
@@ -21,6 +41,8 @@ export const GithubBoard: React.FC<Props> = ({
   onMoveIssue,
   onOpenIssue,
 }) => {
+  const isMobile = useIsMobile();
+
   const issuesByColumn = React.useMemo(() => {
     const map = new Map<string, GithubIssue[]>();
     for (const col of COLUMNS) map.set(col.id, []);
@@ -32,24 +54,47 @@ export const GithubBoard: React.FC<Props> = ({
     return map;
   }, [issues]);
 
-  const gridTemplate = COLUMNS.map(col =>
+  // On mobile collapsed columns are pulled out of the grid entirely.
+  const gridColumns = isMobile ? COLUMNS.filter(c => !collapsedColumns.has(c.id)) : COLUMNS;
+  const collapsedChips = isMobile ? COLUMNS.filter(c => collapsedColumns.has(c.id)) : [];
+
+  const gridTemplate = gridColumns.map(col =>
     collapsedColumns.has(col.id) ? '52px' : 'minmax(0, 1fr)'
   ).join(' ');
 
   return (
-    <div className="cgi-board" style={{ gridTemplateColumns: gridTemplate }}>
-      {COLUMNS.map(col => (
-        <GithubKanbanColumn
-          key={col.id}
-          column={col}
-          issues={issuesByColumn.get(col.id) ?? []}
-          priorityMap={priorityMap}
-          collapsed={collapsedColumns.has(col.id)}
-          onToggle={() => onToggleColumn(col.id)}
-          onOpenIssue={onOpenIssue}
-          onMoveIssue={onMoveIssue}
-        />
-      ))}
+    <div className="cgi-board-wrap">
+      {collapsedChips.length > 0 && (
+        <div className="cgi-collapsed-bar">
+          {collapsedChips.map(col => (
+            <button
+              key={col.id}
+              className="cgi-collapsed-chip"
+              style={{ color: col.accentColor, borderColor: `${col.accentColor}55`, background: col.bgColor }}
+              onClick={() => onToggleColumn(col.id)}
+              title={`Expand ${col.title}`}
+            >
+              <span className="cgi-collapsed-chip-dot" style={{ background: col.accentColor }} />
+              {col.title}
+              <span className="cgi-collapsed-chip-count">{(issuesByColumn.get(col.id) ?? []).length}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="cgi-board" style={{ gridTemplateColumns: gridTemplate }}>
+        {gridColumns.map(col => (
+          <GithubKanbanColumn
+            key={col.id}
+            column={col}
+            issues={issuesByColumn.get(col.id) ?? []}
+            priorityMap={priorityMap}
+            collapsed={collapsedColumns.has(col.id)}
+            onToggle={() => onToggleColumn(col.id)}
+            onOpenIssue={onOpenIssue}
+            onMoveIssue={onMoveIssue}
+          />
+        ))}
+      </div>
     </div>
   );
 };
