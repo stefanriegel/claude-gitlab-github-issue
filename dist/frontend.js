@@ -6938,14 +6938,14 @@ var m = reactDomExports;
   createRoot = m.createRoot;
   m.hydrateRoot;
 }
-var _jsxFileName$b = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/PluginContext.tsx";
+var _jsxFileName$c = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/PluginContext.tsx";
 const PluginContext = reactExports.createContext(null);
 const PluginProvider = ({
   api,
   children
 }) => {
   return /* @__PURE__ */ React.createElement(PluginContext.Provider, { value: api, __self: void 0, __source: {
-    fileName: _jsxFileName$b,
+    fileName: _jsxFileName$c,
     lineNumber: 7,
     columnNumber: 10
   } }, children);
@@ -7058,7 +7058,7 @@ function extractImages(text) {
 function stripImages(text) {
   return text.replace(/!\[[^\]]*\]\(https?:\/\/[^)\s]+\)/g, "").replace(/<img\b[^>]*>/gi, "").replace(/\n{3,}/g, "\n\n").trim();
 }
-var _jsxFileName$a = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubIssueCard.tsx";
+var _jsxFileName$b = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubIssueCard.tsx";
 const PRIORITY_COLORS = {
   high: "#ef4444",
   medium: "#f59e0b",
@@ -7100,61 +7100,61 @@ const GithubIssueCard = ({
     setDragging(true);
   };
   return /* @__PURE__ */ React.createElement("div", { className: `cgi-card${dragging ? " cgi-card--dragging" : ""}`, onClick, role: "button", tabIndex: 0, draggable: true, onDragStart: handleDragStart, onDragEnd: () => setDragging(false), onKeyDown: (e) => e.key === "Enter" && onClick(), __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 48,
     columnNumber: 5
   } }, previewImages.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-card-thumbs", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 59,
     columnNumber: 9
   } }, previewImages.map((img, i) => /* @__PURE__ */ React.createElement("img", { key: i, src: img.url, alt: img.alt || "image", className: "cgi-card-thumb", loading: "lazy", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 61,
     columnNumber: 13
   } })), images.length > 3 && /* @__PURE__ */ React.createElement("span", { className: "cgi-card-thumb-more", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 70,
     columnNumber: 13
   } }, "+", images.length - 3)), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-title-row", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 74,
     columnNumber: 7
   } }, priority && /* @__PURE__ */ React.createElement("span", { className: "cgi-priority-dot", style: {
     background: PRIORITY_COLORS[priority]
   }, title: priorityReason ? `${priority}: ${priorityReason}` : priority, __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 76,
     columnNumber: 11
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-title", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 82,
     columnNumber: 9
   } }, issue.title)), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-meta", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 84,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-card-number", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 85,
     columnNumber: 9
   } }, "#", issue.number), issue.assignees.map((a) => /* @__PURE__ */ React.createElement("img", { key: a.login, src: a.avatar_url, alt: a.login, title: a.login, className: "cgi-avatar", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 87,
     columnNumber: 11
   } })), issue.comments > 0 && /* @__PURE__ */ React.createElement("span", { className: "cgi-card-comments", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 96,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { width: "11", height: "11", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 97,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 13.25 12H9.06l-2.573 2.573A1.458 1.458 0 0 1 4 13.543V12H2.75A1.75 1.75 0 0 1 1 10.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h4.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 98,
     columnNumber: 15
   } })), issue.comments)), visibleLabels.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels", __self: void 0, __source: {
-    fileName: _jsxFileName$a,
+    fileName: _jsxFileName$b,
     lineNumber: 105,
     columnNumber: 9
   } }, visibleLabels.map((l2) => {
@@ -7164,13 +7164,13 @@ const GithubIssueCard = ({
       background: bg2,
       color
     }, __self: void 0, __source: {
-      fileName: _jsxFileName$a,
+      fileName: _jsxFileName$b,
       lineNumber: 110,
       columnNumber: 15
     } }, l2.name);
   })));
 };
-var _jsxFileName$9 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubKanbanColumn.tsx";
+var _jsxFileName$a = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubKanbanColumn.tsx";
 const GithubKanbanColumn = ({
   column,
   issues,
@@ -7218,67 +7218,67 @@ const GithubKanbanColumn = ({
     background: column.bgColor,
     ...dragStyle
   }, onDragEnter: handleDragEnter, onDragLeave: handleDragLeave, onDragOver: handleDragOver, onDrop: handleDrop, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 54,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-column-header", style: {
     color: column.accentColor,
     borderBottom: `1px solid ${column.accentColor}30`
   }, onClick: onToggle, title: collapsed ? `Expand ${column.title}` : `Collapse ${column.title}`, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 62,
     columnNumber: 7
   } }, !collapsed && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 70,
     columnNumber: 13
   } }, column.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-column-count", __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 71,
     columnNumber: 13
   } }, issues.length), /* @__PURE__ */ React.createElement("span", { className: "cgi-column-toggle", __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 72,
     columnNumber: 13
   } }, "▲")), collapsed && /* @__PURE__ */ React.createElement("span", { className: "cgi-column-toggle", style: {
     margin: "0 auto"
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 76,
     columnNumber: 11
   } }, "▼")), collapsed ? /* @__PURE__ */ React.createElement("div", { className: "cgi-column-body", style: {
     alignItems: "center",
     cursor: "pointer"
   }, onClick: onToggle, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 81,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-column-collapsed-label", style: {
     color: column.accentColor
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 86,
     columnNumber: 11
   } }, column.title, " (", issues.length, ")")) : /* @__PURE__ */ React.createElement("div", { className: `cgi-column-body${isDragOver ? " cgi-column-body--drag-over" : ""}`, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 91,
     columnNumber: 9
   } }, issues.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: `cgi-column-empty${isDragOver ? " cgi-column-empty--drag-over" : ""}`, style: {
     color: column.accentColor
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$9,
+    fileName: _jsxFileName$a,
     lineNumber: 93,
     columnNumber: 13
   } }, isDragOver ? "↓ Drop here" : "No issues") : issues.map((issue) => {
     var _a, _b;
     return /* @__PURE__ */ React.createElement(GithubIssueCard, { key: issue.id, issue, priority: ((_a = priorityMap.get(issue.number)) == null ? void 0 : _a.priority) ?? null, priorityReason: (_b = priorityMap.get(issue.number)) == null ? void 0 : _b.reason, columnId: column.id, onClick: () => onOpenIssue(issue), __self: void 0, __source: {
-      fileName: _jsxFileName$9,
+      fileName: _jsxFileName$a,
       lineNumber: 98,
       columnNumber: 15
     } });
   })));
 };
-var _jsxFileName$8 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubBoard.tsx";
+var _jsxFileName$9 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubBoard.tsx";
 const MOBILE_MAX_WIDTH = 640;
 function useIsMobile() {
   const query = `(max-width: ${MOBILE_MAX_WIDTH}px)`;
@@ -7316,11 +7316,11 @@ const GithubBoard = ({
   const collapsedChips = isMobile ? COLUMNS.filter((c) => collapsedColumns.has(c.id)) : [];
   const gridTemplate = gridColumns.map((col) => collapsedColumns.has(col.id) ? "52px" : "minmax(0, 1fr)").join(" ");
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-board-wrap", __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 66,
     columnNumber: 5
   } }, collapsedChips.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-collapsed-bar", __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 68,
     columnNumber: 9
   } }, collapsedChips.map((col) => /* @__PURE__ */ React.createElement("button", { key: col.id, className: "cgi-collapsed-chip", style: {
@@ -7328,32 +7328,32 @@ const GithubBoard = ({
     borderColor: `${col.accentColor}55`,
     background: col.bgColor
   }, onClick: () => onToggleColumn(col.id), title: `Expand ${col.title}`, __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 70,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-collapsed-chip-dot", style: {
     background: col.accentColor
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 77,
     columnNumber: 15
   } }), col.title, /* @__PURE__ */ React.createElement("span", { className: "cgi-collapsed-chip-count", __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 79,
     columnNumber: 15
   } }, (issuesByColumn.get(col.id) ?? []).length)))), /* @__PURE__ */ React.createElement("div", { className: "cgi-board", style: {
     gridTemplateColumns: gridTemplate
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 84,
     columnNumber: 7
   } }, gridColumns.map((col) => /* @__PURE__ */ React.createElement(GithubKanbanColumn, { key: col.id, column: col, issues: issuesByColumn.get(col.id) ?? [], priorityMap, collapsed: collapsedColumns.has(col.id), onToggle: () => onToggleColumn(col.id), onOpenIssue, onMoveIssue, __self: void 0, __source: {
-    fileName: _jsxFileName$8,
+    fileName: _jsxFileName$9,
     lineNumber: 86,
     columnNumber: 11
   } }))));
 };
-var _jsxFileName$7 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/ImageLightbox.tsx";
+var _jsxFileName$8 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/ImageLightbox.tsx";
 const ImageLightbox = ({
   src,
   alt,
@@ -7369,15 +7369,15 @@ const ImageLightbox = ({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, src]);
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-overlay", onClick: onClose, __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 20,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-lightbox-close", onClick: onClose, title: "Close (Esc)", __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 21,
     columnNumber: 7
   } }, "✕"), error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-error", onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 23,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
@@ -7385,14 +7385,14 @@ const ImageLightbox = ({
     marginBottom: 8,
     opacity: 0.5
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 24,
     columnNumber: 11
   } }, "🖼"), /* @__PURE__ */ React.createElement("div", { style: {
     fontSize: 13,
     opacity: 0.8
   }, __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 25,
     columnNumber: 11
   } }, "Image could not be loaded"), /* @__PURE__ */ React.createElement("a", { href: src, target: "_blank", rel: "noopener noreferrer", style: {
@@ -7401,14 +7401,277 @@ const ImageLightbox = ({
     marginTop: 8,
     display: "block"
   }, onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 26,
     columnNumber: 11
   } }, "Open original URL ↗")) : /* @__PURE__ */ React.createElement("img", { src, alt, className: "cgi-lightbox-img", onClick: (e) => e.stopPropagation(), onError: () => setError(true), __self: void 0, __source: {
-    fileName: _jsxFileName$7,
+    fileName: _jsxFileName$8,
     lineNumber: 37,
     columnNumber: 9
   } }));
+};
+var _jsxFileName$7 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/Markdown.tsx";
+function renderInline(text, keyPrefix) {
+  const nodes = [];
+  let remaining = text;
+  let i = 0;
+  const patterns = [{
+    re: /`([^`]+)`/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("code", { key: k, className: "cgi-md-code", __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 31,
+      columnNumber: 25
+    } }, m2[1])
+  }, {
+    re: /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("a", { key: k, href: m2[2], target: "_blank", rel: "noopener noreferrer", className: "cgi-md-link", __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 36,
+      columnNumber: 9
+    } }, m2[1])
+  }, {
+    re: /\*\*([^*]+)\*\*/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("strong", { key: k, __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 43,
+      columnNumber: 25
+    } }, renderInline(m2[1], k))
+  }, {
+    re: /__([^_]+)__/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("strong", { key: k, __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 47,
+      columnNumber: 25
+    } }, renderInline(m2[1], k))
+  }, {
+    re: /~~([^~]+)~~/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("del", { key: k, __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 51,
+      columnNumber: 25
+    } }, renderInline(m2[1], k))
+  }, {
+    re: /\*([^*]+)\*/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("em", { key: k, __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 55,
+      columnNumber: 25
+    } }, renderInline(m2[1], k))
+  }, {
+    re: /_([^_]+)_/,
+    render: (m2, k) => /* @__PURE__ */ React.createElement("em", { key: k, __self: this, __source: {
+      fileName: _jsxFileName$7,
+      lineNumber: 59,
+      columnNumber: 25
+    } }, renderInline(m2[1], k))
+  }];
+  while (remaining.length > 0) {
+    let best = null;
+    for (const p2 of patterns) {
+      const m2 = p2.re.exec(remaining);
+      if (m2 && (best === null || m2.index < best.index)) {
+        best = {
+          index: m2.index,
+          match: m2,
+          p: p2
+        };
+      }
+    }
+    if (!best) {
+      nodes.push(remaining);
+      break;
+    }
+    if (best.index > 0) {
+      nodes.push(remaining.slice(0, best.index));
+    }
+    nodes.push(best.p.render(best.match, `${keyPrefix}-i${i++}`));
+    remaining = remaining.slice(best.index + best.match[0].length);
+  }
+  return nodes;
+}
+function splitTableRow(line) {
+  let s = line.trim();
+  if (s.startsWith("|")) s = s.slice(1);
+  if (s.endsWith("|")) s = s.slice(0, -1);
+  return s.split("|").map((c) => c.trim());
+}
+function isTableSeparator(line) {
+  return /^\s*\|?\s*:?-{1,}:?\s*(\|\s*:?-{1,}:?\s*)+\|?\s*$/.test(line);
+}
+const Markdown = ({
+  text,
+  className
+}) => {
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  const blocks = [];
+  let key = 0;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.trim() === "") {
+      i++;
+      continue;
+    }
+    const fence = line.match(/^\s*```(.*)$/);
+    if (fence) {
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      i++;
+      blocks.push(/* @__PURE__ */ React.createElement("pre", { key: key++, className: "cgi-md-pre", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 128,
+        columnNumber: 9
+      } }, /* @__PURE__ */ React.createElement("code", { __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 129,
+        columnNumber: 11
+      } }, codeLines.join("\n"))));
+      continue;
+    }
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) {
+      const level = heading[1].length;
+      const Tag = `h${Math.min(level, 6)}`;
+      blocks.push(/* @__PURE__ */ React.createElement(Tag, { key: key++, className: `cgi-md-h cgi-md-h${level}`, __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 141,
+        columnNumber: 9
+      } }, renderInline(heading[2], key)));
+      i++;
+      continue;
+    }
+    if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+      blocks.push(/* @__PURE__ */ React.createElement("hr", { key: key++, className: "cgi-md-hr", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 151,
+        columnNumber: 19
+      } }));
+      i++;
+      continue;
+    }
+    if (line.includes("|") && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+      const header = splitTableRow(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim() !== "") {
+        rows.push(splitTableRow(lines[i]));
+        i++;
+      }
+      blocks.push(/* @__PURE__ */ React.createElement("div", { key: key++, className: "cgi-md-table-wrap", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 166,
+        columnNumber: 9
+      } }, /* @__PURE__ */ React.createElement("table", { className: "cgi-md-table", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 167,
+        columnNumber: 11
+      } }, /* @__PURE__ */ React.createElement("thead", { __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 168,
+        columnNumber: 13
+      } }, /* @__PURE__ */ React.createElement("tr", { __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 169,
+        columnNumber: 15
+      } }, header.map((c, ci2) => /* @__PURE__ */ React.createElement("th", { key: ci2, __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 171,
+        columnNumber: 19
+      } }, renderInline(c, `${key}-th${ci2}`))))), /* @__PURE__ */ React.createElement("tbody", { __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 175,
+        columnNumber: 13
+      } }, rows.map((r2, ri2) => /* @__PURE__ */ React.createElement("tr", { key: ri2, __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 177,
+        columnNumber: 17
+      } }, r2.map((c, ci2) => /* @__PURE__ */ React.createElement("td", { key: ci2, __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 179,
+        columnNumber: 21
+      } }, renderInline(c, `${key}-td${ri2}-${ci2}`)))))))));
+      continue;
+    }
+    if (/^\s*>\s?/.test(line)) {
+      const quoteLines = [];
+      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+        quoteLines.push(lines[i].replace(/^\s*>\s?/, ""));
+        i++;
+      }
+      blocks.push(/* @__PURE__ */ React.createElement("blockquote", { key: key++, className: "cgi-md-quote", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 198,
+        columnNumber: 9
+      } }, renderInline(quoteLines.join(" "), key)));
+      continue;
+    }
+    if (/^\s*\d+\.\s+/.test(line)) {
+      const items = [];
+      let li2 = 0;
+      while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+        const content = lines[i].replace(/^\s*\d+\.\s+/, "");
+        items.push(/* @__PURE__ */ React.createElement("li", { key: li2++, __self: void 0, __source: {
+          fileName: _jsxFileName$7,
+          lineNumber: 211,
+          columnNumber: 20
+        } }, renderInline(content, `${key}-ol${li2}`)));
+        i++;
+      }
+      blocks.push(/* @__PURE__ */ React.createElement("ol", { key: key++, className: "cgi-md-ol", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 214,
+        columnNumber: 19
+      } }, items));
+      continue;
+    }
+    if (/^\s*[-*+]\s+/.test(line)) {
+      const items = [];
+      let li2 = 0;
+      while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
+        const content = lines[i].replace(/^\s*[-*+]\s+/, "");
+        items.push(/* @__PURE__ */ React.createElement("li", { key: li2++, __self: void 0, __source: {
+          fileName: _jsxFileName$7,
+          lineNumber: 224,
+          columnNumber: 20
+        } }, renderInline(content, `${key}-ul${li2}`)));
+        i++;
+      }
+      blocks.push(/* @__PURE__ */ React.createElement("ul", { key: key++, className: "cgi-md-ul", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 227,
+        columnNumber: 19
+      } }, items));
+      continue;
+    }
+    const paraLines = [];
+    while (i < lines.length && lines[i].trim() !== "" && !/^\s*```/.test(lines[i]) && !/^(#{1,6})\s+/.test(lines[i]) && !/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(lines[i]) && !/^\s*>\s?/.test(lines[i]) && !/^\s*\d+\.\s+/.test(lines[i]) && !/^\s*[-*+]\s+/.test(lines[i]) && !(lines[i].includes("|") && i + 1 < lines.length && isTableSeparator(lines[i + 1]))) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+    if (paraLines.length > 0) {
+      blocks.push(/* @__PURE__ */ React.createElement("p", { key: key++, className: "cgi-md-p", __self: void 0, __source: {
+        fileName: _jsxFileName$7,
+        lineNumber: 249,
+        columnNumber: 9
+      } }, renderInline(paraLines.join("\n"), key).flatMap((node, ni2, arr) => (
+        // Preserve single line breaks within a paragraph.
+        typeof node === "string" ? node.split("\n").flatMap((seg, si2, segs) => si2 < segs.length - 1 ? [seg, /* @__PURE__ */ React.createElement("br", { key: `br-${ni2}-${si2}`, __self: void 0, __source: {
+          fileName: _jsxFileName$7,
+          lineNumber: 254,
+          columnNumber: 48
+        } })] : [seg]) : [node]
+      ))));
+    }
+  }
+  return /* @__PURE__ */ React.createElement("div", { className: `cgi-md${className ? " " + className : ""}`, __self: void 0, __source: {
+    fileName: _jsxFileName$7,
+    lineNumber: 263,
+    columnNumber: 10
+  } }, blocks);
 };
 var _jsxFileName$6 = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/GithubIssueModal.tsx";
 const MODAL_MIN_W = 400;
@@ -7553,38 +7816,38 @@ const GithubIssueModal = ({
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, lightbox && /* @__PURE__ */ React.createElement(ImageLightbox, { src: lightbox.src, alt: lightbox.alt, onClose: () => setLightbox(null), __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 163,
+    lineNumber: 164,
     columnNumber: 18
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-overlay", onClick: (e) => {
     if (e.target === e.currentTarget) onClose();
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 164,
+    lineNumber: 165,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal", style: {
     width: modalSize.width,
     maxHeight: modalSize.height
   }, onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 165,
+    lineNumber: 166,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-header", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 167,
+    lineNumber: 168,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     flex: 1
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 168,
+    lineNumber: 169,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-title", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 169,
+    lineNumber: 170,
     columnNumber: 13
   } }, currentIssue.title), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-subtitle", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 170,
+    lineNumber: 171,
     columnNumber: 13
   } }, "#", currentIssue.number, " · opened by ", currentIssue.user.login, " on ", formatDate(currentIssue.created_at), currentIssue.state === "closed" && /* @__PURE__ */ React.createElement("span", { style: {
     marginLeft: 8,
@@ -7592,42 +7855,42 @@ const GithubIssueModal = ({
     fontWeight: 600
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 172,
+    lineNumber: 173,
     columnNumber: 51
   } }, "● Closed"))), /* @__PURE__ */ React.createElement("a", { href: currentIssue.html_url, target: "_blank", rel: "noopener noreferrer", className: "cgi-btn", title: "Open on GitHub", style: {
     textDecoration: "none",
     flexShrink: 0
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 175,
+    lineNumber: 176,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 183,
+    lineNumber: 184,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 184,
+    lineNumber: 185,
     columnNumber: 15
   } })), "GitHub"), /* @__PURE__ */ React.createElement("button", { className: "cgi-modal-close", onClick: onClose, title: "Close", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 188,
+    lineNumber: 189,
     columnNumber: 11
   } }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-body", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 191,
+    lineNumber: 192,
     columnNumber: 9
   } }, currentIssue.labels.length > 0 && /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 194,
+    lineNumber: 195,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 195,
+    lineNumber: 196,
     columnNumber: 15
   } }, "Labels"), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 196,
+    lineNumber: 197,
     columnNumber: 15
   } }, currentIssue.labels.map((l2) => /* @__PURE__ */ React.createElement("span", { key: l2.id, className: "cgi-label-chip", style: {
     background: `#${l2.color}`,
@@ -7636,50 +7899,50 @@ const GithubIssueModal = ({
     padding: "2px 8px"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 198,
+    lineNumber: 199,
     columnNumber: 19
   } }, l2.name)))), currentIssue.body && (() => {
     const imgs = extractImages(currentIssue.body);
     const text = stripImages(currentIssue.body);
     return /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 220,
+      lineNumber: 221,
       columnNumber: 15
     } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 221,
+      lineNumber: 222,
       columnNumber: 17
     } }, "Description"), imgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 223,
+      lineNumber: 224,
       columnNumber: 19
     } }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({
       src: img.url,
       alt: img.alt
     }), title: "Click to enlarge", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 225,
+      lineNumber: 226,
       columnNumber: 23
     } }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 226,
+      lineNumber: 227,
       columnNumber: 25
-    } })))), text && /* @__PURE__ */ React.createElement("pre", { className: "cgi-issue-body", __self: void 0, __source: {
+    } })))), text && /* @__PURE__ */ React.createElement(Markdown, { text, className: "cgi-issue-body", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 231,
+      lineNumber: 232,
       columnNumber: 26
-    } }, text));
+    } }));
   })(), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 237,
+    lineNumber: 238,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 238,
+    lineNumber: 239,
     columnNumber: 13
   } }, "Move to column"), /* @__PURE__ */ React.createElement("div", { className: "cgi-column-selector", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 239,
+    lineNumber: 240,
     columnNumber: 13
   } }, COLUMNS.map((col) => {
     const isActive = col.id === issueToColumnId(currentIssue);
@@ -7688,126 +7951,126 @@ const GithubIssueModal = ({
       borderColor: col.accentColor
     } : {}, onClick: () => handleMoveToColumn(col.id), disabled: isActive || movingTo !== null, __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 243,
+      lineNumber: 244,
       columnNumber: 19
     } }, movingTo === col.id ? "..." : col.title);
   }))), error && /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 258,
+    lineNumber: 259,
     columnNumber: 21
   } }, error), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 261,
+    lineNumber: 262,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 262,
+    lineNumber: 263,
     columnNumber: 13
   } }, "Comments ", !loadingComments && `(${comments.length})`), loadingComments ? /* @__PURE__ */ React.createElement("div", { style: {
     color: "var(--cgi-text-muted)",
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 266,
+    lineNumber: 267,
     columnNumber: 15
   } }, "Loading comments...") : comments.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-comments-list", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 268,
+    lineNumber: 269,
     columnNumber: 15
   } }, comments.map((c) => {
     const cImgs = extractImages(c.body);
     const cText = stripImages(c.body);
     return /* @__PURE__ */ React.createElement("div", { key: c.id, className: "cgi-comment", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 273,
+      lineNumber: 274,
       columnNumber: 21
     } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-header", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 274,
+      lineNumber: 275,
       columnNumber: 23
     } }, /* @__PURE__ */ React.createElement("img", { src: c.user.avatar_url, alt: c.user.login, className: "cgi-avatar", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 275,
+      lineNumber: 276,
       columnNumber: 25
     } }), /* @__PURE__ */ React.createElement("span", { className: "cgi-comment-author", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 276,
+      lineNumber: 277,
       columnNumber: 25
     } }, c.user.login), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 277,
+      lineNumber: 278,
       columnNumber: 25
     } }, "·"), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 278,
+      lineNumber: 279,
       columnNumber: 25
     } }, formatDate(c.created_at))), cImgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", style: {
       marginBottom: cText ? 8 : 0
     }, __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 281,
+      lineNumber: 282,
       columnNumber: 25
     } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({
       src: img.url,
       alt: img.alt
     }), title: "Click to enlarge", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 283,
+      lineNumber: 284,
       columnNumber: 29
     } }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 284,
+      lineNumber: 285,
       columnNumber: 31
-    } })))), cText && /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-body", __self: void 0, __source: {
+    } })))), cText && /* @__PURE__ */ React.createElement(Markdown, { text: cText, className: "cgi-comment-body", __self: void 0, __source: {
       fileName: _jsxFileName$6,
-      lineNumber: 289,
+      lineNumber: 290,
       columnNumber: 33
-    } }, cText));
+    } }));
   })) : /* @__PURE__ */ React.createElement("div", { style: {
     color: "var(--cgi-text-muted)",
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 295,
+    lineNumber: 296,
     columnNumber: 15
   } }, "No comments yet.")), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 300,
+    lineNumber: 301,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 301,
+    lineNumber: 302,
     columnNumber: 13
   } }, "Add comment"), /* @__PURE__ */ React.createElement("form", { className: "cgi-comment-form", onSubmit: handleSubmitComment, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 302,
+    lineNumber: 303,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("textarea", { className: "cgi-textarea", placeholder: "Write a comment...", value: commentText, onChange: (e) => setCommentText(e.target.value), disabled: submittingComment, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 303,
+    lineNumber: 304,
     columnNumber: 15
   } }), /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
     justifyContent: "flex-end"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 310,
+    lineNumber: 311,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "cgi-btn cgi-btn-primary", disabled: !commentText.trim() || submittingComment, __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 311,
+    lineNumber: 312,
     columnNumber: 17
   } }, submittingComment ? "Posting..." : "Post comment"))))), /* @__PURE__ */ React.createElement("div", { className: "cgi-resize-e", onMouseDown: (e) => startResize(e, "e"), __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 324,
+    lineNumber: 325,
     columnNumber: 9
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-resize-s", onMouseDown: (e) => startResize(e, "s"), __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 325,
+    lineNumber: 326,
     columnNumber: 9
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-resize-se", onMouseDown: (e) => startResize(e, "se"), __self: void 0, __source: {
     fileName: _jsxFileName$6,
-    lineNumber: 326,
+    lineNumber: 327,
     columnNumber: 9
   } }))));
 };
@@ -9307,7 +9570,7 @@ const App = () => {
     columnNumber: 9
   } }));
 };
-const stylesRaw = "/* claude-github-issue plugin styles */\n\n.cgi-root {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  width: 100%;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  font-size: 13px;\n  overflow: hidden;\n}\n\n/* Toolbar */\n.cgi-toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 16px;\n  border-bottom: 1px solid var(--cgi-border);\n  flex-shrink: 0;\n  gap: 8px;\n}\n\n.cgi-toolbar-title {\n  font-weight: 600;\n  font-size: 14px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.cgi-toolbar-actions {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.cgi-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px 10px;\n  border-radius: 6px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: background 0.15s, border-color 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-btn:hover {\n  background: var(--cgi-btn-hover-bg);\n  border-color: var(--cgi-border-strong);\n}\n\n.cgi-btn:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n\n.cgi-btn-primary {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-btn-primary:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* Board */\n.cgi-board-wrap {\n  display: flex;\n  flex-direction: column;\n  flex: 1;\n  min-height: 0;\n}\n\n.cgi-board {\n  display: grid;\n  gap: 10px;\n  padding: 12px 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-x: auto;\n  overflow-y: hidden;\n  align-items: stretch;\n}\n\n/* Collapsed-column pills (mobile) */\n.cgi-collapsed-bar {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  padding: 10px 16px 0;\n  flex-shrink: 0;\n}\n\n.cgi-collapsed-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 5px 10px;\n  border-radius: 999px;\n  border: 1px solid;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  cursor: pointer;\n  white-space: nowrap;\n  transition: filter 0.15s;\n}\n\n.cgi-collapsed-chip:hover {\n  filter: brightness(1.15);\n}\n\n.cgi-collapsed-chip-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.cgi-collapsed-chip-count {\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0, 0, 0, 0.2);\n  border-radius: 9px;\n  padding: 0 5px;\n  min-width: 16px;\n  text-align: center;\n}\n\n/* Column */\n.cgi-column {\n  display: flex;\n  flex-direction: column;\n  border-radius: 10px;\n  border: 1px solid var(--cgi-border);\n  overflow: hidden;\n  min-height: 0;\n  transition: width 0.2s, min-width 0.2s;\n}\n\n.cgi-column-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 10px;\n  font-weight: 600;\n  font-size: 12px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  flex-shrink: 0;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n}\n\n.cgi-column-header:hover {\n  opacity: 0.85;\n}\n\n.cgi-column-count {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 20px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0,0,0,0.15);\n}\n\n.cgi-column-toggle {\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 4px;\n  margin-left: auto;\n  flex-shrink: 0;\n  opacity: 0.7;\n  font-size: 10px;\n}\n\n.cgi-column-body {\n  flex: 1;\n  overflow-y: auto;\n  padding: 6px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-height: 0;\n}\n\n.cgi-column-collapsed-label {\n  writing-mode: vertical-rl;\n  text-orientation: mixed;\n  transform: rotate(180deg);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  opacity: 0.8;\n  padding: 12px 0;\n  flex: 1;\n}\n\n/* Issue card */\n.cgi-card {\n  background: var(--cgi-card-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 8px 10px;\n  cursor: grab;\n  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s, opacity 0.15s;\n}\n\n.cgi-card:hover {\n  border-color: var(--cgi-border-strong);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.12);\n  transform: translateY(-1px);\n}\n\n.cgi-card--dragging {\n  opacity: 0.35;\n  transform: scale(0.98);\n  cursor: grabbing;\n}\n\n.cgi-column-body--drag-over {\n  background: rgba(255,255,255,0.03);\n}\n\n.cgi-column-empty {\n  text-align: center;\n  padding: 20px 0;\n  opacity: 0.4;\n  font-size: 12px;\n  transition: opacity 0.15s;\n}\n\n.cgi-column-empty--drag-over {\n  opacity: 0.9;\n  font-weight: 600;\n}\n\n.cgi-card-title {\n  font-weight: 500;\n  font-size: 13px;\n  line-height: 1.4;\n  margin-bottom: 6px;\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-card-meta {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-number {\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  font-weight: 500;\n}\n\n.cgi-card-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 3px;\n  margin-top: 5px;\n}\n\n.cgi-label-chip {\n  display: inline-block;\n  padding: 1px 6px;\n  border-radius: 10px;\n  font-size: 10px;\n  font-weight: 600;\n  line-height: 1.6;\n}\n\n.cgi-avatar {\n  width: 18px;\n  height: 18px;\n  border-radius: 50%;\n  object-fit: cover;\n  flex-shrink: 0;\n}\n\n.cgi-card-comments {\n  display: flex;\n  align-items: center;\n  gap: 3px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  margin-left: auto;\n}\n\n/* Modal */\n.cgi-modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 9999;\n  overflow: hidden;\n}\n\n.cgi-modal {\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 12px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.4);\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: hidden;\n  height: auto;\n}\n\n.cgi-resize-e,\n.cgi-resize-s,\n.cgi-resize-se {\n  position: absolute;\n  z-index: 20;\n}\n\n.cgi-resize-e {\n  top: 40px;\n  right: 0;\n  bottom: 20px;\n  width: 6px;\n  cursor: ew-resize;\n}\n\n.cgi-resize-s {\n  bottom: 0;\n  left: 20px;\n  right: 20px;\n  height: 6px;\n  cursor: ns-resize;\n}\n\n.cgi-resize-se {\n  bottom: 0;\n  right: 0;\n  width: 20px;\n  height: 20px;\n  cursor: nwse-resize;\n}\n\n.cgi-resize-e:hover,\n.cgi-resize-s:hover {\n  background: rgba(255,255,255,0.07);\n}\n\n.cgi-resize-se::after {\n  content: '';\n  position: absolute;\n  bottom: 4px;\n  right: 4px;\n  width: 10px;\n  height: 10px;\n  background-image: radial-gradient(circle, var(--cgi-text-muted) 1.2px, transparent 1.2px);\n  background-size: 4px 4px;\n  opacity: 0.45;\n}\n\n.cgi-modal-header {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 18px 20px 14px;\n  border-bottom: 1px solid var(--cgi-border);\n}\n\n.cgi-modal-title {\n  flex: 1;\n  font-size: 16px;\n  font-weight: 600;\n  line-height: 1.4;\n  color: var(--cgi-text);\n}\n\n.cgi-modal-subtitle {\n  font-size: 12px;\n  color: var(--cgi-text-muted);\n  margin-top: 2px;\n}\n\n.cgi-modal-close {\n  background: none;\n  border: none;\n  color: var(--cgi-text-muted);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  line-height: 1;\n  border-radius: 4px;\n  flex-shrink: 0;\n}\n\n.cgi-modal-close:hover {\n  color: var(--cgi-text);\n  background: var(--cgi-btn-bg);\n}\n\n.cgi-modal-body {\n  padding: 16px 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n.cgi-modal-section-label {\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n  color: var(--cgi-text-muted);\n  margin-bottom: 6px;\n}\n\n.cgi-issue-body {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 12px;\n  font-size: 13px;\n  line-height: 1.6;\n  color: var(--cgi-text);\n  white-space: pre-wrap;\n  word-break: break-word;\n  overflow: hidden;\n}\n\n.cgi-column-selector {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-column-btn {\n  padding: 4px 12px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: all 0.15s;\n}\n\n.cgi-column-btn:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-column-btn-active {\n  color: #fff;\n  border-color: transparent;\n}\n\n/* Comments */\n.cgi-comments-list {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n\n.cgi-comment {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 10px 12px;\n}\n\n.cgi-comment-header {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-comment-author {\n  font-weight: 600;\n  color: var(--cgi-text);\n}\n\n.cgi-comment-body {\n  font-size: 13px;\n  line-height: 1.5;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: var(--cgi-text);\n}\n\n/* Comment form */\n.cgi-comment-form {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.cgi-textarea {\n  width: 100%;\n  min-height: 72px;\n  padding: 8px 10px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  color: var(--cgi-text);\n  font-size: 13px;\n  font-family: inherit;\n  resize: vertical;\n  box-sizing: border-box;\n  transition: border-color 0.15s;\n  outline: none;\n}\n\n.cgi-textarea:focus {\n  border-color: var(--cgi-accent);\n}\n\n/* Config banner */\n.cgi-config-banner {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px 20px;\n  text-align: center;\n  gap: 16px;\n  color: var(--cgi-text);\n}\n\n.cgi-config-banner-icon {\n  font-size: 48px;\n  opacity: 0.5;\n}\n\n.cgi-config-banner h2 {\n  font-size: 18px;\n  font-weight: 600;\n  margin: 0;\n}\n\n.cgi-config-banner p {\n  color: var(--cgi-text-muted);\n  max-width: 420px;\n  line-height: 1.6;\n  margin: 0;\n}\n\n.cgi-config-code {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 14px 18px;\n  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;\n  font-size: 12px;\n  text-align: left;\n  white-space: pre;\n  color: var(--cgi-text);\n  max-width: 380px;\n  width: 100%;\n}\n\n/* Loading / error states */\n.cgi-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  flex-direction: column;\n  gap: 12px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-spinner {\n  width: 28px;\n  height: 28px;\n  border: 3px solid var(--cgi-border);\n  border-top-color: var(--cgi-accent);\n  border-radius: 50%;\n  animation: cgi-spin 0.8s linear infinite;\n}\n\n@keyframes cgi-spin {\n  to { transform: rotate(360deg); }\n}\n\n.cgi-error-text {\n  color: #ef4444;\n  font-size: 13px;\n}\n\n/* Scrollbars */\n.cgi-root *::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n.cgi-root *::-webkit-scrollbar-track {\n  background: transparent;\n}\n.cgi-root *::-webkit-scrollbar-thumb {\n  background: var(--cgi-scrollbar);\n  border-radius: 3px;\n}\n\n/* Dark theme variables */\n.cgi-dark {\n  --cgi-bg: #0f1117;\n  --cgi-surface: #161b22;\n  --cgi-card-bg: #1a2030;\n  --cgi-modal-bg: #161b22;\n  --cgi-code-bg: #0d1117;\n  --cgi-border: rgba(255,255,255,0.1);\n  --cgi-border-strong: rgba(255,255,255,0.2);\n  --cgi-text: #e6edf3;\n  --cgi-text-muted: #7d8590;\n  --cgi-btn-bg: rgba(255,255,255,0.06);\n  --cgi-btn-hover-bg: rgba(255,255,255,0.12);\n  --cgi-input-bg: #0d1117;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(255,255,255,0.15);\n}\n\n/* New Issue button */\n.cgi-btn-new-issue {\n  background: var(--cgi-accent);\n  color: #fff;\n  border-color: var(--cgi-accent);\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-new-issue:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* AI Prioritize button */\n.cgi-btn-ai {\n  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);\n  color: #fff;\n  border-color: transparent;\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-ai:hover {\n  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);\n  border-color: transparent;\n}\n.cgi-btn-ai-loading {\n  opacity: 0.75;\n}\n\n/* AI button split group */\n.cgi-ai-btn-group {\n  display: flex;\n  align-items: stretch;\n}\n\n.cgi-btn-ai-sub {\n  opacity: 0.85;\n  font-size: 11px !important;\n  letter-spacing: 0.01em;\n  border-left: 1px solid rgba(255,255,255,0.2) !important;\n}\n\n.cgi-btn-ai-sub:hover {\n  opacity: 1;\n}\n\n/* Filter bar */\n.cgi-filterbar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 14px;\n  flex-shrink: 0;\n  flex-wrap: wrap;\n}\n\n/* Search */\n.cgi-search-wrap {\n  position: relative;\n  display: flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n.cgi-search-icon {\n  position: absolute;\n  left: 8px;\n  color: var(--cgi-text-muted);\n  pointer-events: none;\n}\n\n.cgi-search-input {\n  padding: 4px 28px 4px 26px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  color: var(--cgi-text);\n  font-size: 12px;\n  outline: none;\n  width: 160px;\n  transition: border-color 0.15s, width 0.2s;\n}\n\n.cgi-search-input:focus {\n  border-color: var(--cgi-accent);\n  width: 200px;\n}\n\n.cgi-search-input::placeholder {\n  color: var(--cgi-text-muted);\n}\n\n.cgi-search-clear {\n  position: absolute;\n  right: 6px;\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: var(--cgi-text-muted);\n  font-size: 11px;\n  padding: 1px 2px;\n  line-height: 1;\n  border-radius: 3px;\n}\n.cgi-search-clear:hover {\n  color: var(--cgi-text);\n}\n\n/* Priority pills */\n.cgi-priority-pills {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n}\n\n.cgi-priority-pill {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  padding: 3px 10px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-priority-pill:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-priority-pill.active {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-priority-pill-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.cgi-priority-pill.active .cgi-priority-pill-dot {\n  background: rgba(255,255,255,0.8) !important;\n}\n\n/* Sort controls */\n.cgi-sort-controls {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  margin-left: auto;\n  position: relative;\n}\n\n.cgi-sort-dir-btn {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 3px 8px;\n  min-width: 28px;\n  justify-content: center;\n}\n\n.cgi-sort-select-btn {\n  white-space: nowrap;\n  min-width: 120px;\n  justify-content: space-between;\n}\n\n.cgi-sort-menu {\n  position: absolute;\n  top: calc(100% + 4px);\n  right: 0;\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  box-shadow: 0 8px 24px rgba(0,0,0,0.25);\n  z-index: 100;\n  min-width: 130px;\n  overflow: hidden;\n}\n\n.cgi-sort-menu-item {\n  display: block;\n  width: 100%;\n  text-align: left;\n  padding: 7px 14px;\n  background: none;\n  border: none;\n  color: var(--cgi-text);\n  font-size: 13px;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n.cgi-sort-menu-item:hover {\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-sort-menu-item.active {\n  color: var(--cgi-accent);\n  font-weight: 600;\n}\n\n/* Priority dot on card */\n.cgi-card-title-row {\n  display: flex;\n  align-items: flex-start;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n\n.cgi-card-title-row .cgi-card-title {\n  margin-bottom: 0;\n  flex: 1;\n}\n\n.cgi-priority-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n  margin-top: 4px;\n  cursor: help;\n}\n\n/* Image thumbnails on cards */\n.cgi-card-thumbs {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n  margin-bottom: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-thumb {\n  width: 52px;\n  height: 38px;\n  object-fit: cover;\n  border-radius: 4px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-code-bg);\n  pointer-events: none;\n}\n\n.cgi-card-thumb-more {\n  font-size: 10px;\n  font-weight: 600;\n  color: var(--cgi-text-muted);\n  padding: 0 4px;\n}\n\n/* Image grid in modal / comments */\n.cgi-img-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 8px;\n}\n\n.cgi-img-thumb-btn {\n  background: none;\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  padding: 0;\n  cursor: zoom-in;\n  overflow: hidden;\n  transition: border-color 0.15s, box-shadow 0.15s;\n  flex-shrink: 0;\n}\n\n.cgi-img-thumb-btn:hover {\n  border-color: var(--cgi-accent);\n  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);\n}\n\n.cgi-img-thumb {\n  display: block;\n  width: auto;\n  height: 80px;\n  max-width: 200px;\n  object-fit: cover;\n}\n\n/* Lightbox */\n.cgi-lightbox-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.88);\n  z-index: 99999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  cursor: zoom-out;\n  padding: 24px;\n}\n\n.cgi-lightbox-img {\n  max-width: 100%;\n  max-height: 90vh;\n  object-fit: contain;\n  border-radius: 8px;\n  box-shadow: 0 8px 40px rgba(0,0,0,0.6);\n  cursor: default;\n}\n\n.cgi-lightbox-close {\n  position: fixed;\n  top: 16px;\n  right: 20px;\n  background: rgba(255,255,255,0.1);\n  border: 1px solid rgba(255,255,255,0.2);\n  color: #fff;\n  font-size: 20px;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 100000;\n  transition: background 0.15s;\n  line-height: 1;\n  padding: 0;\n}\n\n.cgi-lightbox-close:hover {\n  background: rgba(255,255,255,0.2);\n}\n\n.cgi-lightbox-error {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  color: #fff;\n  cursor: default;\n  text-align: center;\n}\n\n/* Light theme variables */\n.cgi-light {\n  --cgi-bg: #f6f8fa;\n  --cgi-surface: #ffffff;\n  --cgi-card-bg: #ffffff;\n  --cgi-modal-bg: #ffffff;\n  --cgi-code-bg: #f6f8fa;\n  --cgi-border: rgba(0,0,0,0.1);\n  --cgi-border-strong: rgba(0,0,0,0.22);\n  --cgi-text: #1f2328;\n  --cgi-text-muted: #636c76;\n  --cgi-btn-bg: rgba(0,0,0,0.04);\n  --cgi-btn-hover-bg: rgba(0,0,0,0.08);\n  --cgi-input-bg: #ffffff;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(0,0,0,0.15);\n}\n";
+const stylesRaw = "/* claude-github-issue plugin styles */\n\n.cgi-root {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  width: 100%;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n  font-size: 13px;\n  overflow: hidden;\n}\n\n/* Toolbar */\n.cgi-toolbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 16px;\n  border-bottom: 1px solid var(--cgi-border);\n  flex-shrink: 0;\n  gap: 8px;\n}\n\n.cgi-toolbar-title {\n  font-weight: 600;\n  font-size: 14px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.cgi-toolbar-actions {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n\n.cgi-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px 10px;\n  border-radius: 6px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: background 0.15s, border-color 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-btn:hover {\n  background: var(--cgi-btn-hover-bg);\n  border-color: var(--cgi-border-strong);\n}\n\n.cgi-btn:disabled {\n  opacity: 0.5;\n  cursor: default;\n}\n\n.cgi-btn-primary {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-btn-primary:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* Board */\n.cgi-board-wrap {\n  display: flex;\n  flex-direction: column;\n  flex: 1;\n  min-height: 0;\n}\n\n.cgi-board {\n  display: grid;\n  gap: 10px;\n  padding: 12px 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-x: auto;\n  overflow-y: hidden;\n  align-items: stretch;\n}\n\n/* Collapsed-column pills (mobile) */\n.cgi-collapsed-bar {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  padding: 10px 16px 0;\n  flex-shrink: 0;\n}\n\n.cgi-collapsed-chip {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 5px 10px;\n  border-radius: 999px;\n  border: 1px solid;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  cursor: pointer;\n  white-space: nowrap;\n  transition: filter 0.15s;\n}\n\n.cgi-collapsed-chip:hover {\n  filter: brightness(1.15);\n}\n\n.cgi-collapsed-chip-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.cgi-collapsed-chip-count {\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0, 0, 0, 0.2);\n  border-radius: 9px;\n  padding: 0 5px;\n  min-width: 16px;\n  text-align: center;\n}\n\n/* Column */\n.cgi-column {\n  display: flex;\n  flex-direction: column;\n  border-radius: 10px;\n  border: 1px solid var(--cgi-border);\n  overflow: hidden;\n  min-height: 0;\n  transition: width 0.2s, min-width 0.2s;\n}\n\n.cgi-column-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 8px 10px;\n  font-weight: 600;\n  font-size: 12px;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  flex-shrink: 0;\n  gap: 6px;\n  cursor: pointer;\n  user-select: none;\n}\n\n.cgi-column-header:hover {\n  opacity: 0.85;\n}\n\n.cgi-column-count {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 20px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 10px;\n  font-weight: 700;\n  background: rgba(0,0,0,0.15);\n}\n\n.cgi-column-toggle {\n  width: 18px;\n  height: 18px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 4px;\n  margin-left: auto;\n  flex-shrink: 0;\n  opacity: 0.7;\n  font-size: 10px;\n}\n\n.cgi-column-body {\n  flex: 1;\n  overflow-y: auto;\n  padding: 6px;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-height: 0;\n}\n\n.cgi-column-collapsed-label {\n  writing-mode: vertical-rl;\n  text-orientation: mixed;\n  transform: rotate(180deg);\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  opacity: 0.8;\n  padding: 12px 0;\n  flex: 1;\n}\n\n/* Issue card */\n.cgi-card {\n  background: var(--cgi-card-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 8px 10px;\n  cursor: grab;\n  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s, opacity 0.15s;\n}\n\n.cgi-card:hover {\n  border-color: var(--cgi-border-strong);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.12);\n  transform: translateY(-1px);\n}\n\n.cgi-card--dragging {\n  opacity: 0.35;\n  transform: scale(0.98);\n  cursor: grabbing;\n}\n\n.cgi-column-body--drag-over {\n  background: rgba(255,255,255,0.03);\n}\n\n.cgi-column-empty {\n  text-align: center;\n  padding: 20px 0;\n  opacity: 0.4;\n  font-size: 12px;\n  transition: opacity 0.15s;\n}\n\n.cgi-column-empty--drag-over {\n  opacity: 0.9;\n  font-weight: 600;\n}\n\n.cgi-card-title {\n  font-weight: 500;\n  font-size: 13px;\n  line-height: 1.4;\n  margin-bottom: 6px;\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-card-meta {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-number {\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  font-weight: 500;\n}\n\n.cgi-card-labels {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 3px;\n  margin-top: 5px;\n}\n\n.cgi-label-chip {\n  display: inline-block;\n  padding: 1px 6px;\n  border-radius: 10px;\n  font-size: 10px;\n  font-weight: 600;\n  line-height: 1.6;\n}\n\n.cgi-avatar {\n  width: 18px;\n  height: 18px;\n  border-radius: 50%;\n  object-fit: cover;\n  flex-shrink: 0;\n}\n\n.cgi-card-comments {\n  display: flex;\n  align-items: center;\n  gap: 3px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n  margin-left: auto;\n}\n\n/* Modal */\n.cgi-modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.55);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 9999;\n  overflow: hidden;\n}\n\n.cgi-modal {\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 12px;\n  box-shadow: 0 20px 60px rgba(0,0,0,0.4);\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  overflow: hidden;\n  height: auto;\n}\n\n.cgi-resize-e,\n.cgi-resize-s,\n.cgi-resize-se {\n  position: absolute;\n  z-index: 20;\n}\n\n.cgi-resize-e {\n  top: 40px;\n  right: 0;\n  bottom: 20px;\n  width: 6px;\n  cursor: ew-resize;\n}\n\n.cgi-resize-s {\n  bottom: 0;\n  left: 20px;\n  right: 20px;\n  height: 6px;\n  cursor: ns-resize;\n}\n\n.cgi-resize-se {\n  bottom: 0;\n  right: 0;\n  width: 20px;\n  height: 20px;\n  cursor: nwse-resize;\n}\n\n.cgi-resize-e:hover,\n.cgi-resize-s:hover {\n  background: rgba(255,255,255,0.07);\n}\n\n.cgi-resize-se::after {\n  content: '';\n  position: absolute;\n  bottom: 4px;\n  right: 4px;\n  width: 10px;\n  height: 10px;\n  background-image: radial-gradient(circle, var(--cgi-text-muted) 1.2px, transparent 1.2px);\n  background-size: 4px 4px;\n  opacity: 0.45;\n}\n\n.cgi-modal-header {\n  display: flex;\n  align-items: flex-start;\n  gap: 10px;\n  padding: 18px 20px 14px;\n  border-bottom: 1px solid var(--cgi-border);\n}\n\n.cgi-modal-title {\n  flex: 1;\n  font-size: 16px;\n  font-weight: 600;\n  line-height: 1.4;\n  color: var(--cgi-text);\n}\n\n.cgi-modal-subtitle {\n  font-size: 12px;\n  color: var(--cgi-text-muted);\n  margin-top: 2px;\n}\n\n.cgi-modal-close {\n  background: none;\n  border: none;\n  color: var(--cgi-text-muted);\n  font-size: 20px;\n  cursor: pointer;\n  padding: 0 4px;\n  line-height: 1;\n  border-radius: 4px;\n  flex-shrink: 0;\n}\n\n.cgi-modal-close:hover {\n  color: var(--cgi-text);\n  background: var(--cgi-btn-bg);\n}\n\n.cgi-modal-body {\n  padding: 16px 20px;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n.cgi-modal-section-label {\n  font-size: 11px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n  color: var(--cgi-text-muted);\n  margin-bottom: 6px;\n}\n\n.cgi-issue-body {\n  font-size: 13px;\n  line-height: 1.6;\n  color: var(--cgi-text);\n  word-break: break-word;\n  overflow: hidden;\n}\n\n.cgi-column-selector {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-column-btn {\n  padding: 4px 12px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  cursor: pointer;\n  transition: all 0.15s;\n}\n\n.cgi-column-btn:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-column-btn-active {\n  color: #fff;\n  border-color: transparent;\n}\n\n/* Comments */\n.cgi-comments-list {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n\n.cgi-comment {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 10px 12px;\n}\n\n.cgi-comment-header {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n  font-size: 11px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-comment-author {\n  font-weight: 600;\n  color: var(--cgi-text);\n}\n\n.cgi-comment-body {\n  font-size: 13px;\n  line-height: 1.5;\n  word-break: break-word;\n  color: var(--cgi-text);\n}\n\n/* ---------------------------------------------------------------------------\n   Markdown rendering (Markdown.tsx) — GitHub-flavored subset\n   --------------------------------------------------------------------------- */\n.cgi-md {\n  color: var(--cgi-text);\n  word-break: break-word;\n}\n\n.cgi-md > *:first-child { margin-top: 0; }\n.cgi-md > *:last-child { margin-bottom: 0; }\n\n.cgi-md-p {\n  margin: 0 0 10px;\n  line-height: 1.6;\n}\n\n.cgi-md-h {\n  margin: 18px 0 10px;\n  font-weight: 600;\n  line-height: 1.3;\n  color: var(--cgi-text);\n}\n.cgi-md-h1 { font-size: 20px; padding-bottom: 6px; border-bottom: 1px solid var(--cgi-border); }\n.cgi-md-h2 { font-size: 17px; padding-bottom: 5px; border-bottom: 1px solid var(--cgi-border); }\n.cgi-md-h3 { font-size: 15px; }\n.cgi-md-h4 { font-size: 14px; }\n.cgi-md-h5 { font-size: 13px; }\n.cgi-md-h6 { font-size: 13px; color: var(--cgi-text-muted); }\n\n.cgi-md-link {\n  color: var(--cgi-accent);\n  text-decoration: none;\n}\n.cgi-md-link:hover { text-decoration: underline; }\n\n.cgi-md-code {\n  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n  font-size: 0.86em;\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 4px;\n  padding: 1px 5px;\n  white-space: break-spaces;\n}\n\n.cgi-md-pre {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 12px;\n  overflow-x: auto;\n  margin: 0 0 12px;\n}\n.cgi-md-pre code {\n  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n  font-size: 12px;\n  line-height: 1.5;\n  white-space: pre;\n  background: none;\n  border: none;\n  padding: 0;\n  color: var(--cgi-text);\n}\n\n.cgi-md-ul,\n.cgi-md-ol {\n  margin: 0 0 10px;\n  padding-left: 22px;\n}\n.cgi-md-ul { list-style: disc; }\n.cgi-md-ol { list-style: decimal; }\n.cgi-md-ul li,\n.cgi-md-ol li {\n  margin: 3px 0;\n  line-height: 1.55;\n}\n\n.cgi-md-quote {\n  margin: 0 0 12px;\n  padding: 2px 12px;\n  border-left: 3px solid var(--cgi-border-strong);\n  color: var(--cgi-text-muted);\n}\n\n.cgi-md-hr {\n  border: none;\n  border-top: 1px solid var(--cgi-border);\n  margin: 16px 0;\n}\n\n.cgi-md-table-wrap {\n  overflow-x: auto;\n  margin: 0 0 12px;\n}\n.cgi-md-table {\n  border-collapse: collapse;\n  font-size: 12.5px;\n  width: auto;\n}\n.cgi-md-table th,\n.cgi-md-table td {\n  border: 1px solid var(--cgi-border);\n  padding: 6px 11px;\n  text-align: left;\n  vertical-align: top;\n}\n.cgi-md-table th {\n  background: var(--cgi-code-bg);\n  font-weight: 600;\n}\n.cgi-md-table tr:nth-child(even) td {\n  background: var(--cgi-code-bg);\n}\n\n/* Comment form */\n.cgi-comment-form {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n.cgi-textarea {\n  width: 100%;\n  min-height: 72px;\n  padding: 8px 10px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  color: var(--cgi-text);\n  font-size: 13px;\n  font-family: inherit;\n  resize: vertical;\n  box-sizing: border-box;\n  transition: border-color 0.15s;\n  outline: none;\n}\n\n.cgi-textarea:focus {\n  border-color: var(--cgi-accent);\n}\n\n/* Config banner */\n.cgi-config-banner {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px 20px;\n  text-align: center;\n  gap: 16px;\n  color: var(--cgi-text);\n}\n\n.cgi-config-banner-icon {\n  font-size: 48px;\n  opacity: 0.5;\n}\n\n.cgi-config-banner h2 {\n  font-size: 18px;\n  font-weight: 600;\n  margin: 0;\n}\n\n.cgi-config-banner p {\n  color: var(--cgi-text-muted);\n  max-width: 420px;\n  line-height: 1.6;\n  margin: 0;\n}\n\n.cgi-config-code {\n  background: var(--cgi-code-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  padding: 14px 18px;\n  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;\n  font-size: 12px;\n  text-align: left;\n  white-space: pre;\n  color: var(--cgi-text);\n  max-width: 380px;\n  width: 100%;\n}\n\n/* Loading / error states */\n.cgi-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  flex-direction: column;\n  gap: 12px;\n  color: var(--cgi-text-muted);\n}\n\n.cgi-spinner {\n  width: 28px;\n  height: 28px;\n  border: 3px solid var(--cgi-border);\n  border-top-color: var(--cgi-accent);\n  border-radius: 50%;\n  animation: cgi-spin 0.8s linear infinite;\n}\n\n@keyframes cgi-spin {\n  to { transform: rotate(360deg); }\n}\n\n.cgi-error-text {\n  color: #ef4444;\n  font-size: 13px;\n}\n\n/* Scrollbars */\n.cgi-root *::-webkit-scrollbar {\n  width: 6px;\n  height: 6px;\n}\n.cgi-root *::-webkit-scrollbar-track {\n  background: transparent;\n}\n.cgi-root *::-webkit-scrollbar-thumb {\n  background: var(--cgi-scrollbar);\n  border-radius: 3px;\n}\n\n/* Dark theme variables */\n.cgi-dark {\n  --cgi-bg: #0f1117;\n  --cgi-surface: #161b22;\n  --cgi-card-bg: #1a2030;\n  --cgi-modal-bg: #161b22;\n  --cgi-code-bg: #0d1117;\n  --cgi-border: rgba(255,255,255,0.1);\n  --cgi-border-strong: rgba(255,255,255,0.2);\n  --cgi-text: #e6edf3;\n  --cgi-text-muted: #7d8590;\n  --cgi-btn-bg: rgba(255,255,255,0.06);\n  --cgi-btn-hover-bg: rgba(255,255,255,0.12);\n  --cgi-input-bg: #0d1117;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(255,255,255,0.15);\n}\n\n/* New Issue button */\n.cgi-btn-new-issue {\n  background: var(--cgi-accent);\n  color: #fff;\n  border-color: var(--cgi-accent);\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-new-issue:hover {\n  background: var(--cgi-accent-hover);\n  border-color: var(--cgi-accent-hover);\n}\n\n/* AI Prioritize button */\n.cgi-btn-ai {\n  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);\n  color: #fff;\n  border-color: transparent;\n  font-weight: 600;\n  gap: 5px;\n}\n.cgi-btn-ai:hover {\n  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);\n  border-color: transparent;\n}\n.cgi-btn-ai-loading {\n  opacity: 0.75;\n}\n\n/* AI button split group */\n.cgi-ai-btn-group {\n  display: flex;\n  align-items: stretch;\n}\n\n.cgi-btn-ai-sub {\n  opacity: 0.85;\n  font-size: 11px !important;\n  letter-spacing: 0.01em;\n  border-left: 1px solid rgba(255,255,255,0.2) !important;\n}\n\n.cgi-btn-ai-sub:hover {\n  opacity: 1;\n}\n\n/* Filter bar */\n.cgi-filterbar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 14px;\n  flex-shrink: 0;\n  flex-wrap: wrap;\n}\n\n/* Search */\n.cgi-search-wrap {\n  position: relative;\n  display: flex;\n  align-items: center;\n  flex-shrink: 0;\n}\n\n.cgi-search-icon {\n  position: absolute;\n  left: 8px;\n  color: var(--cgi-text-muted);\n  pointer-events: none;\n}\n\n.cgi-search-input {\n  padding: 4px 28px 4px 26px;\n  background: var(--cgi-input-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  color: var(--cgi-text);\n  font-size: 12px;\n  outline: none;\n  width: 160px;\n  transition: border-color 0.15s, width 0.2s;\n}\n\n.cgi-search-input:focus {\n  border-color: var(--cgi-accent);\n  width: 200px;\n}\n\n.cgi-search-input::placeholder {\n  color: var(--cgi-text-muted);\n}\n\n.cgi-search-clear {\n  position: absolute;\n  right: 6px;\n  background: none;\n  border: none;\n  cursor: pointer;\n  color: var(--cgi-text-muted);\n  font-size: 11px;\n  padding: 1px 2px;\n  line-height: 1;\n  border-radius: 3px;\n}\n.cgi-search-clear:hover {\n  color: var(--cgi-text);\n}\n\n/* Priority pills */\n.cgi-priority-pills {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n}\n\n.cgi-priority-pill {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  padding: 3px 10px;\n  border-radius: 20px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-btn-bg);\n  color: var(--cgi-text);\n  font-size: 12px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s;\n  white-space: nowrap;\n}\n\n.cgi-priority-pill:hover {\n  border-color: var(--cgi-border-strong);\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-priority-pill.active {\n  background: var(--cgi-accent);\n  border-color: var(--cgi-accent);\n  color: #fff;\n}\n\n.cgi-priority-pill-dot {\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  flex-shrink: 0;\n}\n\n.cgi-priority-pill.active .cgi-priority-pill-dot {\n  background: rgba(255,255,255,0.8) !important;\n}\n\n/* Sort controls */\n.cgi-sort-controls {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  margin-left: auto;\n  position: relative;\n}\n\n.cgi-sort-dir-btn {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 3px 8px;\n  min-width: 28px;\n  justify-content: center;\n}\n\n.cgi-sort-select-btn {\n  white-space: nowrap;\n  min-width: 120px;\n  justify-content: space-between;\n}\n\n.cgi-sort-menu {\n  position: absolute;\n  top: calc(100% + 4px);\n  right: 0;\n  background: var(--cgi-modal-bg);\n  border: 1px solid var(--cgi-border);\n  border-radius: 8px;\n  box-shadow: 0 8px 24px rgba(0,0,0,0.25);\n  z-index: 100;\n  min-width: 130px;\n  overflow: hidden;\n}\n\n.cgi-sort-menu-item {\n  display: block;\n  width: 100%;\n  text-align: left;\n  padding: 7px 14px;\n  background: none;\n  border: none;\n  color: var(--cgi-text);\n  font-size: 13px;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n.cgi-sort-menu-item:hover {\n  background: var(--cgi-btn-hover-bg);\n}\n\n.cgi-sort-menu-item.active {\n  color: var(--cgi-accent);\n  font-weight: 600;\n}\n\n/* Priority dot on card */\n.cgi-card-title-row {\n  display: flex;\n  align-items: flex-start;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n\n.cgi-card-title-row .cgi-card-title {\n  margin-bottom: 0;\n  flex: 1;\n}\n\n.cgi-priority-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  flex-shrink: 0;\n  margin-top: 4px;\n  cursor: help;\n}\n\n/* Image thumbnails on cards */\n.cgi-card-thumbs {\n  display: flex;\n  gap: 4px;\n  align-items: center;\n  margin-bottom: 6px;\n  flex-wrap: wrap;\n}\n\n.cgi-card-thumb {\n  width: 52px;\n  height: 38px;\n  object-fit: cover;\n  border-radius: 4px;\n  border: 1px solid var(--cgi-border);\n  background: var(--cgi-code-bg);\n  pointer-events: none;\n}\n\n.cgi-card-thumb-more {\n  font-size: 10px;\n  font-weight: 600;\n  color: var(--cgi-text-muted);\n  padding: 0 4px;\n}\n\n/* Image grid in modal / comments */\n.cgi-img-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 8px;\n}\n\n.cgi-img-thumb-btn {\n  background: none;\n  border: 1px solid var(--cgi-border);\n  border-radius: 6px;\n  padding: 0;\n  cursor: zoom-in;\n  overflow: hidden;\n  transition: border-color 0.15s, box-shadow 0.15s;\n  flex-shrink: 0;\n}\n\n.cgi-img-thumb-btn:hover {\n  border-color: var(--cgi-accent);\n  box-shadow: 0 0 0 2px rgba(37,99,235,0.25);\n}\n\n.cgi-img-thumb {\n  display: block;\n  width: auto;\n  height: 80px;\n  max-width: 200px;\n  object-fit: cover;\n}\n\n/* Lightbox */\n.cgi-lightbox-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0,0,0,0.88);\n  z-index: 99999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  cursor: zoom-out;\n  padding: 24px;\n}\n\n.cgi-lightbox-img {\n  max-width: 100%;\n  max-height: 90vh;\n  object-fit: contain;\n  border-radius: 8px;\n  box-shadow: 0 8px 40px rgba(0,0,0,0.6);\n  cursor: default;\n}\n\n.cgi-lightbox-close {\n  position: fixed;\n  top: 16px;\n  right: 20px;\n  background: rgba(255,255,255,0.1);\n  border: 1px solid rgba(255,255,255,0.2);\n  color: #fff;\n  font-size: 20px;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  z-index: 100000;\n  transition: background 0.15s;\n  line-height: 1;\n  padding: 0;\n}\n\n.cgi-lightbox-close:hover {\n  background: rgba(255,255,255,0.2);\n}\n\n.cgi-lightbox-error {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  color: #fff;\n  cursor: default;\n  text-align: center;\n}\n\n/* Light theme variables */\n.cgi-light {\n  --cgi-bg: #f6f8fa;\n  --cgi-surface: #ffffff;\n  --cgi-card-bg: #ffffff;\n  --cgi-modal-bg: #ffffff;\n  --cgi-code-bg: #f6f8fa;\n  --cgi-border: rgba(0,0,0,0.1);\n  --cgi-border-strong: rgba(0,0,0,0.22);\n  --cgi-text: #1f2328;\n  --cgi-text-muted: #636c76;\n  --cgi-btn-bg: rgba(0,0,0,0.04);\n  --cgi-btn-hover-bg: rgba(0,0,0,0.08);\n  --cgi-input-bg: #ffffff;\n  --cgi-accent: #2563eb;\n  --cgi-accent-hover: #1d4ed8;\n  --cgi-scrollbar: rgba(0,0,0,0.15);\n}\n";
 var _jsxFileName = "/home/claude/projects/claude-github-issue/claude-github-issue/src/frontend/index.tsx";
 const STYLE_ID = "cgi-plugin-styles";
 if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {

@@ -443,14 +443,9 @@
 }
 
 .cgi-issue-body {
-  background: var(--cgi-code-bg);
-  border: 1px solid var(--cgi-border);
-  border-radius: 8px;
-  padding: 12px;
   font-size: 13px;
   line-height: 1.6;
   color: var(--cgi-text);
-  white-space: pre-wrap;
   word-break: break-word;
   overflow: hidden;
 }
@@ -513,9 +508,122 @@
 .cgi-comment-body {
   font-size: 13px;
   line-height: 1.5;
-  white-space: pre-wrap;
   word-break: break-word;
   color: var(--cgi-text);
+}
+
+/* ---------------------------------------------------------------------------
+   Markdown rendering (Markdown.tsx) — GitHub-flavored subset
+   --------------------------------------------------------------------------- */
+.cgi-md {
+  color: var(--cgi-text);
+  word-break: break-word;
+}
+
+.cgi-md > *:first-child { margin-top: 0; }
+.cgi-md > *:last-child { margin-bottom: 0; }
+
+.cgi-md-p {
+  margin: 0 0 10px;
+  line-height: 1.6;
+}
+
+.cgi-md-h {
+  margin: 18px 0 10px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--cgi-text);
+}
+.cgi-md-h1 { font-size: 20px; padding-bottom: 6px; border-bottom: 1px solid var(--cgi-border); }
+.cgi-md-h2 { font-size: 17px; padding-bottom: 5px; border-bottom: 1px solid var(--cgi-border); }
+.cgi-md-h3 { font-size: 15px; }
+.cgi-md-h4 { font-size: 14px; }
+.cgi-md-h5 { font-size: 13px; }
+.cgi-md-h6 { font-size: 13px; color: var(--cgi-text-muted); }
+
+.cgi-md-link {
+  color: var(--cgi-accent);
+  text-decoration: none;
+}
+.cgi-md-link:hover { text-decoration: underline; }
+
+.cgi-md-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  background: var(--cgi-code-bg);
+  border: 1px solid var(--cgi-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: break-spaces;
+}
+
+.cgi-md-pre {
+  background: var(--cgi-code-bg);
+  border: 1px solid var(--cgi-border);
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  margin: 0 0 12px;
+}
+.cgi-md-pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cgi-text);
+}
+
+.cgi-md-ul,
+.cgi-md-ol {
+  margin: 0 0 10px;
+  padding-left: 22px;
+}
+.cgi-md-ul { list-style: disc; }
+.cgi-md-ol { list-style: decimal; }
+.cgi-md-ul li,
+.cgi-md-ol li {
+  margin: 3px 0;
+  line-height: 1.55;
+}
+
+.cgi-md-quote {
+  margin: 0 0 12px;
+  padding: 2px 12px;
+  border-left: 3px solid var(--cgi-border-strong);
+  color: var(--cgi-text-muted);
+}
+
+.cgi-md-hr {
+  border: none;
+  border-top: 1px solid var(--cgi-border);
+  margin: 16px 0;
+}
+
+.cgi-md-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 12px;
+}
+.cgi-md-table {
+  border-collapse: collapse;
+  font-size: 12.5px;
+  width: auto;
+}
+.cgi-md-table th,
+.cgi-md-table td {
+  border: 1px solid var(--cgi-border);
+  padding: 6px 11px;
+  text-align: left;
+  vertical-align: top;
+}
+.cgi-md-table th {
+  background: var(--cgi-code-bg);
+  font-weight: 600;
+}
+.cgi-md-table tr:nth-child(even) td {
+  background: var(--cgi-code-bg);
 }
 
 /* Comment form */

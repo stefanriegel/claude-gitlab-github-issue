@@ -4,6 +4,7 @@ import { COLUMNS, issueToColumnId, columnChangePatch } from './types';
 import { usePluginAPI } from './PluginContext';
 import { extractImages, stripImages } from './imageUtils';
 import { ImageLightbox } from './ImageLightbox';
+import { Markdown } from './Markdown';
 
 const MODAL_MIN_W = 400;
 const MODAL_MIN_H = 300;
@@ -228,7 +229,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
                     ))}
                   </div>
                 )}
-                {text && <pre className="cgi-issue-body">{text}</pre>}
+                {text && <Markdown text={text} className="cgi-issue-body" />}
               </div>
             );
           })()}
@@ -286,7 +287,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
                           ))}
                         </div>
                       )}
-                      {cText && <div className="cgi-comment-body">{cText}</div>}
+                      {cText && <Markdown text={cText} className="cgi-comment-body" />}
                     </div>
                   );
                 })}
