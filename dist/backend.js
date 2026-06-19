@@ -24,8 +24,8 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // src/backend/server.ts
 var import_http = __toESM(require("http"));
-var import_path2 = __toESM(require("path"));
-var import_fs2 = __toESM(require("fs"));
+var import_path3 = __toESM(require("path"));
+var import_fs3 = __toESM(require("fs"));
 var import_url = require("url");
 
 // src/backend/github.service.ts
@@ -92,6 +92,13 @@ async function createComment(token, owner, repo, issueNumber, body) {
     "POST",
     `/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
     { body }
+  );
+}
+async function listMilestones(token, owner, repo, state = "all") {
+  return githubFetch(
+    token,
+    "GET",
+    `/repos/${owner}/${repo}/milestones?state=${state}&per_page=100`
   );
 }
 
@@ -389,18 +396,94 @@ async function prioritizeIssues(issues, anthropicKey) {
   return heuristicPrioritize(issues);
 }
 
+// src/backend/plan.service.ts
+var import_path2 = __toESM(require("path"));
+var import_fs2 = require("fs");
+var PLAN_FILE = ".GitHubBoard/plan.json";
+async function readPlan(projectPath) {
+  if (!projectPath) return {};
+  const filePath = import_path2.default.join(projectPath, PLAN_FILE);
+  try {
+    const content = await import_fs2.promises.readFile(filePath, "utf8");
+    const parsed = JSON.parse(content);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return parsed;
+  } catch {
+    return {};
+  }
+}
+
+// src/backend/plan.controller.ts
+var NO_PHASE = "__no_phase__";
+async function requireConfig(projectPath) {
+  const config = await readConfig(projectPath);
+  if (!config) {
+    const err = new Error("GitHub not configured");
+    err.notConfigured = true;
+    throw err;
+  }
+  return config;
+}
+async function buildPlan(projectPath) {
+  const config = await requireConfig(projectPath);
+  const [issues, milestones, store] = await Promise.all([
+    listIssues(config.token, config.owner, config.repo, "all"),
+    listMilestones(config.token, config.owner, config.repo, "all"),
+    readPlan(projectPath)
+  ]);
+  const groups = /* @__PURE__ */ new Map();
+  for (const issue of issues) {
+    const key = issue.milestone ? String(issue.milestone.number) : NO_PHASE;
+    const arr = groups.get(key) ?? [];
+    arr.push(issue);
+    groups.set(key, arr);
+  }
+  const orderOf = (num) => {
+    const entry = store[String(num)];
+    return entry ? entry.order : Number.MAX_SAFE_INTEGER;
+  };
+  const sortGroup = (arr) => arr.sort((a, b) => {
+    const oa = orderOf(a.number);
+    const ob = orderOf(b.number);
+    if (oa !== ob) return oa - ob;
+    return a.number - b.number;
+  });
+  const phases = [];
+  for (const m of milestones) {
+    const arr = sortGroup(groups.get(String(m.number)) ?? []);
+    phases.push({
+      title: m.title,
+      milestoneNumber: m.number,
+      total: arr.length,
+      closed: arr.filter((i) => i.state === "closed").length,
+      issues: arr
+    });
+  }
+  const noPhase = sortGroup(groups.get(NO_PHASE) ?? []);
+  if (noPhase.length > 0) {
+    phases.push({
+      title: "No phase",
+      milestoneNumber: null,
+      total: noPhase.length,
+      closed: noPhase.filter((i) => i.state === "closed").length,
+      issues: noPhase
+    });
+  }
+  return { phases };
+}
+
 // src/backend/server.ts
 function installSkill() {
   try {
     const homeDir = process.env.HOME || process.env.USERPROFILE || "";
     if (!homeDir) return;
-    const skillDir = import_path2.default.join(homeDir, ".claude", "skills", "github-task");
-    const skillFile = import_path2.default.join(skillDir, "SKILL.md");
-    if (!import_fs2.default.existsSync(skillFile)) {
-      import_fs2.default.mkdirSync(skillDir, { recursive: true });
-      const sourceSkill = import_path2.default.join(__dirname, "..", "skill", "SKILL.md");
-      if (import_fs2.default.existsSync(sourceSkill)) {
-        import_fs2.default.copyFileSync(sourceSkill, skillFile);
+    const skillDir = import_path3.default.join(homeDir, ".claude", "skills", "github-task");
+    const skillFile = import_path3.default.join(skillDir, "SKILL.md");
+    if (!import_fs3.default.existsSync(skillFile)) {
+      import_fs3.default.mkdirSync(skillDir, { recursive: true });
+      const sourceSkill = import_path3.default.join(__dirname, "..", "skill", "SKILL.md");
+      if (import_fs3.default.existsSync(sourceSkill)) {
+        import_fs3.default.copyFileSync(sourceSkill, skillFile);
         console.log("[claude-github-issue] Installed /github-task skill to", skillFile);
       } else {
         console.log("[claude-github-issue] Skill source not found at", sourceSkill, "\u2014 skipping auto-install");
@@ -539,6 +622,22 @@ async function handleGetConfig(req, res) {
     sendJson(res, 500, { error: err.message ?? "Internal error" });
   }
 }
+async function handleGetPlan(req, res) {
+  const query = parseQuery(req.url ?? "");
+  const projectPath = query["path"] ?? "";
+  if (!projectPath) {
+    sendJson(res, 400, { error: "path query parameter required" });
+    return;
+  }
+  try {
+    const plan = await buildPlan(projectPath);
+    sendJson(res, 200, plan);
+  } catch (e) {
+    const err = e;
+    if (err.notConfigured) sendJson(res, 200, { notConfigured: true, error: err.message });
+    else sendJson(res, 500, { error: err.message ?? "Internal error" });
+  }
+}
 var server = import_http.default.createServer(async (req, res) => {
   const method = req.method ?? "GET";
   const rawUrl = req.url ?? "/";
@@ -564,6 +663,10 @@ var server = import_http.default.createServer(async (req, res) => {
     }
     if (method === "GET" && pathname === "/config") {
       await handleGetConfig(req, res);
+      return;
+    }
+    if (method === "GET" && pathname === "/plan") {
+      await handleGetPlan(req, res);
       return;
     }
     if (method === "POST" && pathname === "/issues") {

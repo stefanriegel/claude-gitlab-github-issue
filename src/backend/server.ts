@@ -5,6 +5,7 @@ import { URL } from 'url';
 import * as issuesService from './issues.service';
 import * as configService from './config.service';
 import { prioritizeIssues } from './ai.service';
+import * as planController from './plan.controller';
 
 // ---- Auto-install /github-task skill ----
 function installSkill(): void {
@@ -193,6 +194,20 @@ async function handleGetConfig(
   }
 }
 
+async function handleGetPlan(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  const query = parseQuery(req.url ?? '');
+  const projectPath = query['path'] ?? '';
+  if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+  try {
+    const plan = await planController.buildPlan(projectPath);
+    sendJson(res, 200, plan);
+  } catch (e) {
+    const err = e as Error & { notConfigured?: boolean };
+    if (err.notConfigured) sendJson(res, 200, { notConfigured: true, error: err.message });
+    else sendJson(res, 500, { error: err.message ?? 'Internal error' });
+  }
+}
+
 // ---- Server ----
 const server = http.createServer(async (req, res) => {
   const method = req.method ?? 'GET';
@@ -225,6 +240,12 @@ const server = http.createServer(async (req, res) => {
     // GET /config
     if (method === 'GET' && pathname === '/config') {
       await handleGetConfig(req, res);
+      return;
+    }
+
+    // GET /plan
+    if (method === 'GET' && pathname === '/plan') {
+      await handleGetPlan(req, res);
       return;
     }
 
