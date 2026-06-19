@@ -97,9 +97,63 @@ drifts from GitHub. The existing board already reads GitHub; Plan reuses it and 
 - After code changes: `npm run build`, commit `dist/`, then push the branch.
 - Verify in a running claudecodeui instance (install/reload the plugin, open the Plan tab).
 
+## END-TO-END SCOPE v2 (2026-06-19) — plan-only items + full cutover
+
+Decision (Piotr): build the **complete** system and **switch over** — retire `notes.md`'s
+task-list role. The Plan tab must hold BOTH real issues AND planned work that has no issue
+yet (e.g. the Multiplayer phase G16–G20, currently only prose in `game_mechanics.md`).
+
+### Phase A — plugin feature: plan-only items
+- **plan-only item** = a card in the Plan tab that is NOT a GitHub issue. Stored in the
+  plugin order/plan store (`.GitHubBoard/plan.json`): `{ id, phase, title, note, order }`.
+  Grouped under its phase (same sections as issue cards), reorderable alongside issues.
+- **CRUD in the UI:** add / edit / delete a plan-only item (so Piotr writes planned tasks
+  directly in the tab — the "write in UI, agent reads it" loop).
+- **Promote to issue:** a button that creates a real GitHub issue from the item (title +
+  note → body, assign the phase's Milestone, copy order), then removes the plan-only item.
+  After promotion it's a normal issue card. This is how planned → actionable.
+- **Skill update:** the bundled skill must teach the agent to (a) READ plan-only items via
+  the plugin API, (b) add/update them, (c) promote one to an issue. Same contract style as
+  the existing order/phase docs in `skill/SKILL.md`.
+
+### Phase B — migration / cutover (run after Phase A is verified in the live UI)
+Source of content = AI-GM repo (`szmidtpiotr/ai-gm`): `notes.md` + `game_mechanics.md`.
+1. **Milestones = phases:** create GitHub Milestones for every live/planned phase (L, LB,
+   B, S, FAZA 5 Multiplayer, FIX, …). Use the Plan tab's existing **bootstrap** helper.
+2. **Existing issues → milestone:** assign open issues to their phase milestone.
+3. **Planned-not-issue work → plan-only items:** transcribe the still-relevant planned
+   tasks from `notes.md`/`game_mechanics.md` (Multiplayer G16–G20, any other unstarted
+   phase tasks) into plan-only items under their phase, in order.
+4. **Done history:** already-completed phases stay as archived prose (don't recreate as
+   items/issues). Keep in `notes.md` history or move to `docs/archive/` in ai-gm.
+5. **`notes.md` → prose only:** strip the task-checklist; keep design decisions, ZAKRES,
+   dependency rationale, mechanics narrative. `game_mechanics.md` unchanged (spec).
+6. **Verify cutover:** open the Plan tab → every active + planned phase visible, ordered,
+   with progress; Multiplayer shows as plan-only items; promoting one creates a real issue.
+
+### Cross-impact — mass-implement (AI-GM) MUST be reconciled
+`mass-implement` v2 FAZA mode reads task `[ ]/[x]` sections from `notes.md`. After cutover
+those sections are gone. The unified path forward:
+- **LIST mode already reads GitHub issues** (via `fix_list.md`/board). That stays the live
+  autorunner source.
+- Planned work lives as plan-only items → **promote to issue** when ready → appears in LIST
+  mode. So FAZA mode (notes.md sections) becomes **redundant** post-cutover.
+- Action in the AI-GM repo (separate commit, separate session): update
+  `.claude/mass-implement.json` + SKILL to drop/deprecate FAZA-mode reliance on notes.md;
+  LIST mode (issues) is the single autorunner source. Do NOT silently break FAZA mode —
+  update its docs and the config in the same change.
+- Update AI-GM `STATUS.md` / `KOMENDY.md` to point at the Plan tab as the task home.
+
+> The plugin build (Phase A) ships from THIS repo on `feat/plan-tab`. The AI-GM-side
+> changes (migration content lives in ai-gm; mass-implement/STATUS/KOMENDY edits) are a
+> SEPARATE commit in the `szmidtpiotr/ai-gm` repo — never mix the two repos in one commit.
+
 ## Process
 
-1. `/brainstorming` against this brief → confirm decisions (open questions above) → spec.
-2. Build incrementally (backend store + route first, then UI tab, then drag, then skill).
-3. Verify the Plan tab live in claudecodeui; commit `dist/` each step.
+1. `/brainstorming` against this brief → confirm decisions (open questions above + the
+   plan-only item shape, promote flow, store location) → spec.
+2. Build incrementally: (Phase A) backend store + routes → UI plan-only CRUD → drag →
+   promote-to-issue → skill update. Commit `dist/` each step. Verify live in claudecodeui.
+3. (Phase B) migration: bootstrap milestones, assign issues, transcribe planned items,
+   slim notes.md, reconcile mass-implement — verify the cutover in the UI.
 4. File an implementation-record issue per the plugin repo's conventions.
