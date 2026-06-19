@@ -24,10 +24,14 @@ export const PlanCard: React.FC<PlanCardProps> = ({
   const priority = detectPriorityFromLabels(issue.labels);
   const isBug = issue.labels.some(l => l.name.toLowerCase() === 'bug');
   const done = issue.state === 'closed';
+  // Open but already implemented (post-/tdd, awaiting verification/close) — mark
+  // distinctly so it is not accidentally picked up for rework.
+  const inReview = !done && issue.labels.some(l =>
+    ['review', 'needs-testing'].includes(l.name.toLowerCase()));
 
   return (
     <div
-      className={`cgi-plan-card${done ? ' done' : ''}`}
+      className={`cgi-plan-card${done ? ' done' : ''}${inReview ? ' in-review' : ''}`}
       draggable
       onDragStart={onDragStart}
       onDragOver={onDragOver}
@@ -40,6 +44,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
       <button className="cgi-plan-card-main" onClick={() => onOpen(issue)}>
         <span className="cgi-plan-num">#{issue.number}</span>
         <span className="cgi-plan-title">{issue.title}</span>
+        {inReview && <span className="cgi-plan-review" title="Zrobione — czeka na weryfikację/zamknięcie">✓ w review</span>}
         {isBug && <span className="cgi-plan-bug">bug</span>}
       </button>
       <span className="cgi-plan-reorder">
