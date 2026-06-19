@@ -19,6 +19,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   const [notConfigured, setNotConfigured] = useState(false);
   const dragFrom = useRef<{ phase: string; index: number } | null>(null);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dataRef = useRef<PlanData | null>(null);
   const [showBootstrap, setShowBootstrap] = useState(false);
 
   const fetchPlan = useCallback(async () => {
@@ -39,6 +40,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   }, [api, projectPath]);
 
   useEffect(() => { fetchPlan(); }, [fetchPlan]);
+  useEffect(() => { dataRef.current = data; }, [data]);
   useEffect(() => {
     const schedule = () => { pollRef.current = setTimeout(() => { fetchPlan().then(schedule); }, POLL_INTERVAL_MS); };
     schedule();
@@ -49,18 +51,17 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
 
   // Compute the new order for one phase from current state, persist optimistically, PUT.
   const applyReorder = useCallback((phaseId: string, mutate: (issues: GithubIssue[]) => GithubIssue[]) => {
+    const current = dataRef.current;
+    if (!current) return;
     let payload: { phaseTitle: string | null; order: number[] } | null = null;
-    setData(prev => {
-      if (!prev) return prev;
-      const phases = prev.phases.map(p => {
-        if (phaseKey(p) !== phaseId) return p;
-        const issues = mutate(p.issues.slice());
-        payload = { phaseTitle: p.milestoneNumber === null ? null : p.title, order: issues.map(i => i.number) };
-        return { ...p, issues };
-      });
-      return { phases };
+    const phases = current.phases.map(p => {
+      if (phaseKey(p) !== phaseId) return p;
+      const issues = mutate(p.issues.slice());
+      payload = { phaseTitle: p.milestoneNumber === null ? null : p.title, order: issues.map(i => i.number) };
+      return { ...p, issues };
     });
     if (!payload) return;
+    setData({ phases });
     const body = payload;
     void (async () => {
       try {
