@@ -8985,65 +8985,64 @@ const PlanView = ({
     columnNumber: 91
   } }, "Loading plan…"));
   if (!data) return null;
-  if (data.phases.length === 0) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
+  return /* @__PURE__ */ React.createElement("div", { className: "cgi-plan", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 103,
-    columnNumber: 40
+    lineNumber: 105,
+    columnNumber: 5
+  } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-toolbar", __self: void 0, __source: {
+    fileName: _jsxFileName$2,
+    lineNumber: 106,
+    columnNumber: 7
+  } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: () => setShowBootstrap(true), __self: void 0, __source: {
+    fileName: _jsxFileName$2,
+    lineNumber: 107,
+    columnNumber: 9
+  } }, "Bootstrap phases"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchPlan, disabled: loading, __self: void 0, __source: {
+    fileName: _jsxFileName$2,
+    lineNumber: 108,
+    columnNumber: 9
+  } }, loading ? "↻ Refreshing…" : "↻ Refresh")), data.phases.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
+    fileName: _jsxFileName$2,
+    lineNumber: 111,
+    columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 103,
-    columnNumber: 68
-  } }, "No issues yet."));
-  return /* @__PURE__ */ React.createElement("div", { className: "cgi-plan", __self: void 0, __source: {
-    fileName: _jsxFileName$2,
-    lineNumber: 106,
-    columnNumber: 5
-  } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-toolbar", __self: void 0, __source: {
-    fileName: _jsxFileName$2,
-    lineNumber: 107,
-    columnNumber: 7
-  } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: () => setShowBootstrap(true), __self: void 0, __source: {
-    fileName: _jsxFileName$2,
-    lineNumber: 108,
-    columnNumber: 9
-  } }, "Bootstrap phases"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchPlan, disabled: loading, __self: void 0, __source: {
-    fileName: _jsxFileName$2,
-    lineNumber: 109,
-    columnNumber: 9
-  } }, loading ? "↻ Refreshing…" : "↻ Refresh")), data.phases.map((phase) => {
+    lineNumber: 111,
+    columnNumber: 37
+  } }, "No issues yet.")) : data.phases.map((phase) => {
     const pct = phase.total > 0 ? Math.round(phase.closed / phase.total * 100) : 0;
     return /* @__PURE__ */ React.createElement("section", { key: phaseKey(phase), className: "cgi-plan-phase", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 114,
-      columnNumber: 11
-    } }, /* @__PURE__ */ React.createElement("header", { className: "cgi-plan-phase-head", __self: void 0, __source: {
-      fileName: _jsxFileName$2,
-      lineNumber: 115,
-      columnNumber: 13
-    } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-title", __self: void 0, __source: {
-      fileName: _jsxFileName$2,
       lineNumber: 116,
-      columnNumber: 15
-    } }, phase.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-count", __self: void 0, __source: {
+      columnNumber: 13
+    } }, /* @__PURE__ */ React.createElement("header", { className: "cgi-plan-phase-head", __self: void 0, __source: {
       fileName: _jsxFileName$2,
       lineNumber: 117,
       columnNumber: 15
-    } }, phase.closed, "/", phase.total), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress", __self: void 0, __source: {
+    } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-title", __self: void 0, __source: {
       fileName: _jsxFileName$2,
       lineNumber: 118,
-      columnNumber: 15
+      columnNumber: 17
+    } }, phase.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-count", __self: void 0, __source: {
+      fileName: _jsxFileName$2,
+      lineNumber: 119,
+      columnNumber: 17
+    } }, phase.closed, "/", phase.total), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress", __self: void 0, __source: {
+      fileName: _jsxFileName$2,
+      lineNumber: 120,
+      columnNumber: 17
     } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress-bar", style: {
       width: `${pct}%`
     }, __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 118,
-      columnNumber: 51
+      lineNumber: 120,
+      columnNumber: 53
     } }))), /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-list", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 120,
-      columnNumber: 13
+      lineNumber: 122,
+      columnNumber: 15
     } }, phase.issues.map((issue, idx) => /* @__PURE__ */ React.createElement(PlanCard, { key: issue.number, issue, index: idx, count: phase.issues.length, onOpen: onOpenIssue, onMoveUp: () => reorder(phaseKey(phase), idx, idx - 1), onMoveDown: () => reorder(phaseKey(phase), idx, idx + 1), onDragStart: () => {
       dragFrom.current = {
         phase: phaseKey(phase),
@@ -9051,15 +9050,15 @@ const PlanView = ({
       };
     }, onDragOver: (e) => e.preventDefault(), onDrop: () => handleDrop(phaseKey(phase), idx), __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 122,
-      columnNumber: 17
+      lineNumber: 124,
+      columnNumber: 19
     } }))));
   }), showBootstrap && /* @__PURE__ */ React.createElement(PlanBootstrapModal, { projectPath, onClose: () => setShowBootstrap(false), onDone: () => {
     setShowBootstrap(false);
     void fetchPlan();
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 140,
+    lineNumber: 143,
     columnNumber: 9
   } }));
 };

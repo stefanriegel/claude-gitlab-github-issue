@@ -100,7 +100,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   if (error) return <div className="cgi-center"><div className="cgi-error-text">{error}</div><button className="cgi-btn" onClick={fetchPlan}>Retry</button></div>;
   if (loading && !data) return <div className="cgi-center"><div className="cgi-spinner" /><div>Loading plan…</div></div>;
   if (!data) return null;
-  if (data.phases.length === 0) return <div className="cgi-center"><div style={{ opacity: 0.5 }}>No issues yet.</div></div>;
 
   return (
     <div className="cgi-plan">
@@ -108,34 +107,38 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
         <button className="cgi-btn" onClick={() => setShowBootstrap(true)}>Bootstrap phases</button>
         <button className="cgi-btn" onClick={fetchPlan} disabled={loading}>{loading ? '↻ Refreshing…' : '↻ Refresh'}</button>
       </div>
-      {data.phases.map(phase => {
-        const pct = phase.total > 0 ? Math.round((phase.closed / phase.total) * 100) : 0;
-        return (
-          <section key={phaseKey(phase)} className="cgi-plan-phase">
-            <header className="cgi-plan-phase-head">
-              <span className="cgi-plan-phase-title">{phase.title}</span>
-              <span className="cgi-plan-phase-count">{phase.closed}/{phase.total}</span>
-              <span className="cgi-plan-progress"><span className="cgi-plan-progress-bar" style={{ width: `${pct}%` }} /></span>
-            </header>
-            <div className="cgi-plan-list">
-              {phase.issues.map((issue, idx) => (
-                <PlanCard
-                  key={issue.number}
-                  issue={issue}
-                  index={idx}
-                  count={phase.issues.length}
-                  onOpen={onOpenIssue}
-                  onMoveUp={() => reorder(phaseKey(phase), idx, idx - 1)}
-                  onMoveDown={() => reorder(phaseKey(phase), idx, idx + 1)}
-                  onDragStart={() => { dragFrom.current = { phase: phaseKey(phase), index: idx }; }}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleDrop(phaseKey(phase), idx)}
-                />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+      {data.phases.length === 0 ? (
+        <div className="cgi-center"><div style={{ opacity: 0.5 }}>No issues yet.</div></div>
+      ) : (
+        data.phases.map(phase => {
+          const pct = phase.total > 0 ? Math.round((phase.closed / phase.total) * 100) : 0;
+          return (
+            <section key={phaseKey(phase)} className="cgi-plan-phase">
+              <header className="cgi-plan-phase-head">
+                <span className="cgi-plan-phase-title">{phase.title}</span>
+                <span className="cgi-plan-phase-count">{phase.closed}/{phase.total}</span>
+                <span className="cgi-plan-progress"><span className="cgi-plan-progress-bar" style={{ width: `${pct}%` }} /></span>
+              </header>
+              <div className="cgi-plan-list">
+                {phase.issues.map((issue, idx) => (
+                  <PlanCard
+                    key={issue.number}
+                    issue={issue}
+                    index={idx}
+                    count={phase.issues.length}
+                    onOpen={onOpenIssue}
+                    onMoveUp={() => reorder(phaseKey(phase), idx, idx - 1)}
+                    onMoveDown={() => reorder(phaseKey(phase), idx, idx + 1)}
+                    onDragStart={() => { dragFrom.current = { phase: phaseKey(phase), index: idx }; }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => handleDrop(phaseKey(phase), idx)}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })
+      )}
       {showBootstrap && (
         <PlanBootstrapModal
           projectPath={projectPath}
