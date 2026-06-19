@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { GithubIssue, PlanData, PlanPhase } from './types';
 import { usePluginAPI } from './PluginContext';
 import { PlanCard } from './PlanCard';
+import { PlanBootstrapModal } from './PlanBootstrapModal';
 
 const POLL_INTERVAL_MS = 30_000;
 
@@ -18,6 +19,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   const [notConfigured, setNotConfigured] = useState(false);
   const dragFrom = useRef<{ phase: string; index: number } | null>(null);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showBootstrap, setShowBootstrap] = useState(false);
 
   const fetchPlan = useCallback(async () => {
     if (!projectPath) return;
@@ -102,6 +104,10 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
 
   return (
     <div className="cgi-plan">
+      <div className="cgi-plan-toolbar">
+        <button className="cgi-btn" onClick={() => setShowBootstrap(true)}>Bootstrap phases</button>
+        <button className="cgi-btn" onClick={fetchPlan} disabled={loading}>{loading ? '↻ Refreshing…' : '↻ Refresh'}</button>
+      </div>
       {data.phases.map(phase => {
         const pct = phase.total > 0 ? Math.round((phase.closed / phase.total) * 100) : 0;
         return (
@@ -130,6 +136,13 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
           </section>
         );
       })}
+      {showBootstrap && (
+        <PlanBootstrapModal
+          projectPath={projectPath}
+          onClose={() => setShowBootstrap(false)}
+          onDone={() => { setShowBootstrap(false); void fetchPlan(); }}
+        />
+      )}
     </div>
   );
 };

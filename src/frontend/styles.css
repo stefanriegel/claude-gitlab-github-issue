@@ -935,3 +935,11 @@
 }
 .cgi-plan-arrow:disabled { opacity: 0.15; cursor: default; }
 .cgi-plan-arrow:hover:not(:disabled) { opacity: 1; }
+.cgi-plan-toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+.cgi-plan-bootstrap { max-width: 460px; }
+.cgi-plan-bootstrap-text {
+  width: 100%; box-sizing: border-box; font-family: monospace; font-size: 13px;
+  background: var(--cgi-bg); color: var(--cgi-text);
+  border: 1px solid var(--cgi-border); border-radius: 6px; padding: 8px; margin: 8px 0;
+}
+.cgi-modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
