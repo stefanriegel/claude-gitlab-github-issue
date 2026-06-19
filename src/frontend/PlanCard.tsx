@@ -24,10 +24,10 @@ export const PlanCard: React.FC<PlanCardProps> = ({
   const priority = detectPriorityFromLabels(issue.labels);
   const isBug = issue.labels.some(l => l.name.toLowerCase() === 'bug');
   const done = issue.state === 'closed';
-  // Open but already implemented (post-/tdd, awaiting verification/close) — mark
-  // distinctly so it is not accidentally picked up for rework.
-  const inReview = !done && issue.labels.some(l =>
-    ['review', 'needs-testing'].includes(l.name.toLowerCase()));
+  // In the board's "In Review" column = the `review` label ONLY (needs-testing can
+  // coexist with a To-Do ticket, so it is NOT a done-signal). Mark these distinctly
+  // so already-implemented work isn't accidentally picked up for rework.
+  const inReview = !done && issue.labels.some(l => l.name.toLowerCase() === 'review');
 
   return (
     <div

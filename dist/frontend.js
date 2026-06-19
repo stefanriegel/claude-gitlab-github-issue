@@ -9132,7 +9132,7 @@ const PlanCard = ({
   const priority = detectPriorityFromLabels(issue.labels);
   const isBug = issue.labels.some((l2) => l2.name.toLowerCase() === "bug");
   const done = issue.state === "closed";
-  const inReview = !done && issue.labels.some((l2) => ["review", "needs-testing"].includes(l2.name.toLowerCase()));
+  const inReview = !done && issue.labels.some((l2) => l2.name.toLowerCase() === "review");
   return /* @__PURE__ */ React.createElement("div", { className: `cgi-plan-card${done ? " done" : ""}${inReview ? " in-review" : ""}`, draggable: true, onDragStart, onDragOver, onDrop, __self: void 0, __source: {
     fileName: _jsxFileName$4,
     lineNumber: 33,
