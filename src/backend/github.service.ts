@@ -113,3 +113,50 @@ export async function createComment(
     { body }
   ) as Promise<GithubComment>;
 }
+
+export interface GithubMilestone {
+  number: number;
+  title: string;
+  state: 'open' | 'closed';
+  open_issues: number;
+  closed_issues: number;
+}
+
+export async function listMilestones(
+  token: string,
+  owner: string,
+  repo: string,
+  state: 'open' | 'closed' | 'all' = 'all'
+): Promise<GithubMilestone[]> {
+  return githubFetch(
+    token, 'GET',
+    `/repos/${owner}/${repo}/milestones?state=${state}&per_page=100`
+  ) as Promise<GithubMilestone[]>;
+}
+
+export async function setIssueMilestone(
+  token: string,
+  owner: string,
+  repo: string,
+  issueNumber: number | string,
+  milestoneNumber: number | null
+): Promise<GithubIssue> {
+  return githubFetch(
+    token, 'PATCH',
+    `/repos/${owner}/${repo}/issues/${issueNumber}`,
+    { milestone: milestoneNumber }
+  ) as Promise<GithubIssue>;
+}
+
+export async function createMilestone(
+  token: string,
+  owner: string,
+  repo: string,
+  title: string
+): Promise<GithubMilestone> {
+  return githubFetch(
+    token, 'POST',
+    `/repos/${owner}/${repo}/milestones`,
+    { title }
+  ) as Promise<GithubMilestone>;
+}

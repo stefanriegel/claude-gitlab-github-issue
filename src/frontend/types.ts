@@ -12,6 +12,7 @@ export interface GithubIssue {
   columnId?: string;
   user: { login: string; avatar_url: string };
   comments: number;
+  milestone?: { number: number; title: string } | null;
 }
 
 export interface GithubColumn {
@@ -72,6 +73,18 @@ export function issueToColumnId(issue: GithubIssue): string {
     }
   }
   return 'todo';
+}
+
+export interface PlanPhase {
+  title: string;
+  milestoneNumber: number | null;
+  total: number;
+  closed: number;
+  issues: GithubIssue[];
+}
+
+export interface PlanData {
+  phases: PlanPhase[];
 }
 
 export function columnChangePatch(fromId: string, toId: string): {
