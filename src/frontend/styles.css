@@ -943,3 +943,9 @@
   border: 1px solid var(--cgi-border); border-radius: 6px; padding: 8px; margin: 8px 0;
 }
 .cgi-modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 4px; }
+
+.cgi-plan-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; opacity: 0.8; cursor: pointer; user-select: none; margin-left: 4px;
+}
+.cgi-plan-toggle input { cursor: pointer; margin: 0; }

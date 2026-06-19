@@ -21,6 +21,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dataRef = useRef<PlanData | null>(null);
   const [showBootstrap, setShowBootstrap] = useState(false);
+  const [hideDone, setHideDone] = useState<boolean>(() => {
+    try { return localStorage.getItem('cgi-plan-hide-done') !== 'false'; } catch { return true; }
+  });
+  const hideDoneRef = useRef(hideDone);
+  useEffect(() => {
+    hideDoneRef.current = hideDone;
+    try { localStorage.setItem('cgi-plan-hide-done', String(hideDone)); } catch {}
+  }, [hideDone]);
 
   const fetchPlan = useCallback(async () => {
     if (!projectPath) return;
@@ -54,9 +62,14 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
     const current = dataRef.current;
     if (!current) return;
     let payload: { phaseTitle: string | null; order: number[] } | null = null;
+    const isHidden = (i: GithubIssue) => hideDoneRef.current && i.state === 'closed';
     const phases = current.phases.map(p => {
       if (phaseKey(p) !== phaseId) return p;
-      const issues = mutate(p.issues.slice());
+      // Reorder operates on the VISIBLE issues (what the user sees/drags); hidden
+      // done issues keep their relative order and sink after the visible ones.
+      const visible = mutate(p.issues.filter(i => !isHidden(i)));
+      const hidden = p.issues.filter(isHidden);
+      const issues = [...visible, ...hidden];
       payload = { phaseTitle: p.milestoneNumber === null ? null : p.title, order: issues.map(i => i.number) };
       return { ...p, issues };
     });
@@ -107,12 +120,19 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
       <div className="cgi-plan-toolbar">
         <button className="cgi-btn" onClick={() => setShowBootstrap(true)}>Bootstrap phases</button>
         <button className="cgi-btn" onClick={fetchPlan} disabled={loading}>{loading ? '↻ Refreshing…' : '↻ Refresh'}</button>
+        <label className="cgi-plan-toggle">
+          <input type="checkbox" checked={hideDone} onChange={e => setHideDone(e.target.checked)} />
+          Hide done
+        </label>
       </div>
       {data.phases.length === 0 ? (
         <div className="cgi-center"><div style={{ opacity: 0.5 }}>No issues yet.</div></div>
       ) : (
         data.phases.map(phase => {
           const pct = phase.total > 0 ? Math.round((phase.closed / phase.total) * 100) : 0;
+          const visibleIssues = hideDone ? phase.issues.filter(i => i.state !== 'closed') : phase.issues;
+          // Hide a phase whose issues are all done when "Hide done" is on, unless it has none at all.
+          if (hideDone && phase.total > 0 && visibleIssues.length === 0) return null;
           return (
             <section key={phaseKey(phase)} className="cgi-plan-phase">
               <header className="cgi-plan-phase-head">
@@ -121,12 +141,12 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
                 <span className="cgi-plan-progress"><span className="cgi-plan-progress-bar" style={{ width: `${pct}%` }} /></span>
               </header>
               <div className="cgi-plan-list">
-                {phase.issues.map((issue, idx) => (
+                {visibleIssues.map((issue, idx) => (
                   <PlanCard
                     key={issue.number}
                     issue={issue}
                     index={idx}
-                    count={phase.issues.length}
+                    count={visibleIssues.length}
                     onOpen={onOpenIssue}
                     onMoveUp={() => reorder(phaseKey(phase), idx, idx - 1)}
                     onMoveDown={() => reorder(phaseKey(phase), idx, idx + 1)}
