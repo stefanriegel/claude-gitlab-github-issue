@@ -208,6 +208,51 @@ async function handleGetPlan(req: http.IncomingMessage, res: http.ServerResponse
   }
 }
 
+async function handlePutPlanOrder(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  const query = parseQuery(req.url ?? '');
+  const projectPath = query['path'] ?? '';
+  if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw) as { phase?: string | null; order?: number[] };
+    if (!Array.isArray(body.order)) { sendJson(res, 400, { error: 'order array required' }); return; }
+    await planController.saveOrder(projectPath, body.phase ?? null, body.order);
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+  }
+}
+
+async function handlePutPlanPhase(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  const query = parseQuery(req.url ?? '');
+  const projectPath = query['path'] ?? '';
+  if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw) as { issue?: number; milestone?: number | null };
+    if (typeof body.issue !== 'number') { sendJson(res, 400, { error: 'issue number required' }); return; }
+    await planController.assignPhase(projectPath, body.issue, body.milestone ?? null);
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+  }
+}
+
+async function handlePostPlanBootstrap(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  const query = parseQuery(req.url ?? '');
+  const projectPath = query['path'] ?? '';
+  if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw) as { phases?: Array<{ title: string; issues: number[] }> };
+    if (!Array.isArray(body.phases)) { sendJson(res, 400, { error: 'phases array required' }); return; }
+    const result = await planController.bootstrap(projectPath, body.phases);
+    sendJson(res, 200, { ok: true, ...result });
+  } catch (e) {
+    sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+  }
+}
+
 // ---- Server ----
 const server = http.createServer(async (req, res) => {
   const method = req.method ?? 'GET';
@@ -246,6 +291,24 @@ const server = http.createServer(async (req, res) => {
     // GET /plan
     if (method === 'GET' && pathname === '/plan') {
       await handleGetPlan(req, res);
+      return;
+    }
+
+    // PUT /plan/order
+    if (method === 'PUT' && pathname === '/plan/order') {
+      await handlePutPlanOrder(req, res);
+      return;
+    }
+
+    // PUT /plan/phase
+    if (method === 'PUT' && pathname === '/plan/phase') {
+      await handlePutPlanPhase(req, res);
+      return;
+    }
+
+    // POST /plan/bootstrap
+    if (method === 'POST' && pathname === '/plan/bootstrap') {
+      await handlePostPlanBootstrap(req, res);
       return;
     }
 

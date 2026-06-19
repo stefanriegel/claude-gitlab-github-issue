@@ -101,6 +101,22 @@ async function listMilestones(token, owner, repo, state = "all") {
     `/repos/${owner}/${repo}/milestones?state=${state}&per_page=100`
   );
 }
+async function setIssueMilestone(token, owner, repo, issueNumber, milestoneNumber) {
+  return githubFetch(
+    token,
+    "PATCH",
+    `/repos/${owner}/${repo}/issues/${issueNumber}`,
+    { milestone: milestoneNumber }
+  );
+}
+async function createMilestone(token, owner, repo, title) {
+  return githubFetch(
+    token,
+    "POST",
+    `/repos/${owner}/${repo}/milestones`,
+    { title }
+  );
+}
 
 // src/backend/config.service.ts
 var import_path = __toESM(require("path"));
@@ -412,6 +428,23 @@ async function readPlan(projectPath) {
     return {};
   }
 }
+async function writePlan(projectPath, store) {
+  if (!projectPath) throw new Error("projectPath required");
+  const dir = import_path2.default.join(projectPath, ".GitHubBoard");
+  await import_fs2.promises.mkdir(dir, { recursive: true });
+  const filePath = import_path2.default.join(projectPath, PLAN_FILE);
+  await import_fs2.promises.writeFile(filePath, JSON.stringify(store, null, 2), "utf8");
+}
+async function setOrder(projectPath, phase, issueNumbers) {
+  const store = await readPlan(projectPath);
+  issueNumbers.forEach((num, idx) => {
+    const key = String(num);
+    const existing = store[key] ?? { order: idx };
+    store[key] = { order: idx, phase: phase ?? existing.phase };
+  });
+  await writePlan(projectPath, store);
+  return store;
+}
 
 // src/backend/plan.controller.ts
 var NO_PHASE = "__no_phase__";
@@ -470,6 +503,35 @@ async function buildPlan(projectPath) {
     });
   }
   return { phases };
+}
+async function saveOrder(projectPath, phase, issueNumbers) {
+  await requireConfig(projectPath);
+  await setOrder(projectPath, phase, issueNumbers);
+}
+async function assignPhase(projectPath, issueNumber, milestoneNumber) {
+  const config = await requireConfig(projectPath);
+  await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, milestoneNumber);
+}
+async function bootstrap(projectPath, phases) {
+  const config = await requireConfig(projectPath);
+  const existing = await listMilestones(config.token, config.owner, config.repo, "all");
+  const byTitle = new Map(existing.map((m) => [m.title, m.number]));
+  const created = [];
+  let assigned = 0;
+  for (const phase of phases) {
+    let num = byTitle.get(phase.title);
+    if (num === void 0) {
+      const m = await createMilestone(config.token, config.owner, config.repo, phase.title);
+      num = m.number;
+      byTitle.set(phase.title, num);
+      created.push(phase.title);
+    }
+    for (const issueNumber of phase.issues) {
+      await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, num);
+      assigned++;
+    }
+  }
+  return { created, assigned };
 }
 
 // src/backend/server.ts
@@ -638,6 +700,66 @@ async function handleGetPlan(req, res) {
     else sendJson(res, 500, { error: err.message ?? "Internal error" });
   }
 }
+async function handlePutPlanOrder(req, res) {
+  const query = parseQuery(req.url ?? "");
+  const projectPath = query["path"] ?? "";
+  if (!projectPath) {
+    sendJson(res, 400, { error: "path query parameter required" });
+    return;
+  }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw);
+    if (!Array.isArray(body.order)) {
+      sendJson(res, 400, { error: "order array required" });
+      return;
+    }
+    await saveOrder(projectPath, body.phase ?? null, body.order);
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: e.message ?? "Internal error" });
+  }
+}
+async function handlePutPlanPhase(req, res) {
+  const query = parseQuery(req.url ?? "");
+  const projectPath = query["path"] ?? "";
+  if (!projectPath) {
+    sendJson(res, 400, { error: "path query parameter required" });
+    return;
+  }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw);
+    if (typeof body.issue !== "number") {
+      sendJson(res, 400, { error: "issue number required" });
+      return;
+    }
+    await assignPhase(projectPath, body.issue, body.milestone ?? null);
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: e.message ?? "Internal error" });
+  }
+}
+async function handlePostPlanBootstrap(req, res) {
+  const query = parseQuery(req.url ?? "");
+  const projectPath = query["path"] ?? "";
+  if (!projectPath) {
+    sendJson(res, 400, { error: "path query parameter required" });
+    return;
+  }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw);
+    if (!Array.isArray(body.phases)) {
+      sendJson(res, 400, { error: "phases array required" });
+      return;
+    }
+    const result = await bootstrap(projectPath, body.phases);
+    sendJson(res, 200, { ok: true, ...result });
+  } catch (e) {
+    sendJson(res, 500, { error: e.message ?? "Internal error" });
+  }
+}
 var server = import_http.default.createServer(async (req, res) => {
   const method = req.method ?? "GET";
   const rawUrl = req.url ?? "/";
@@ -667,6 +789,18 @@ var server = import_http.default.createServer(async (req, res) => {
     }
     if (method === "GET" && pathname === "/plan") {
       await handleGetPlan(req, res);
+      return;
+    }
+    if (method === "PUT" && pathname === "/plan/order") {
+      await handlePutPlanOrder(req, res);
+      return;
+    }
+    if (method === "PUT" && pathname === "/plan/phase") {
+      await handlePutPlanPhase(req, res);
+      return;
+    }
+    if (method === "POST" && pathname === "/plan/bootstrap") {
+      await handlePostPlanBootstrap(req, res);
       return;
     }
     if (method === "POST" && pathname === "/issues") {
