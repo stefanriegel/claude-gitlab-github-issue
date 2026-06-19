@@ -45,35 +45,53 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
 
   const phaseKey = (p: PlanPhase) => p.milestoneNumber === null ? '__no_phase__' : String(p.milestoneNumber);
 
-  const persistOrder = useCallback(async (phase: PlanPhase, issues: GithubIssue[]) => {
-    // Optimistic: update local state, then PUT; refetch on failure.
-    setData(prev => prev ? {
-      phases: prev.phases.map(p => phaseKey(p) === phaseKey(phase) ? { ...p, issues } : p),
-    } : prev);
-    try {
-      await api.rpc('PUT', `/plan/order?path=${encodeURIComponent(projectPath)}`, {
-        phase: phase.title === 'No phase' ? null : phase.title,
-        order: issues.map(i => i.number),
+  // Compute the new order for one phase from current state, persist optimistically, PUT.
+  const applyReorder = useCallback((phaseId: string, mutate: (issues: GithubIssue[]) => GithubIssue[]) => {
+    let payload: { phaseTitle: string | null; order: number[] } | null = null;
+    setData(prev => {
+      if (!prev) return prev;
+      const phases = prev.phases.map(p => {
+        if (phaseKey(p) !== phaseId) return p;
+        const issues = mutate(p.issues.slice());
+        payload = { phaseTitle: p.milestoneNumber === null ? null : p.title, order: issues.map(i => i.number) };
+        return { ...p, issues };
       });
-    } catch {
-      void fetchPlan();
-    }
+      return { phases };
+    });
+    if (!payload) return;
+    const body = payload;
+    void (async () => {
+      try {
+        await api.rpc('PUT', `/plan/order?path=${encodeURIComponent(projectPath)}`, {
+          phase: body.phaseTitle,
+          order: body.order,
+        });
+      } catch {
+        void fetchPlan();
+      }
+    })();
   }, [api, projectPath, fetchPlan]);
 
-  const reorder = (phase: PlanPhase, from: number, to: number) => {
-    if (to < 0 || to >= phase.issues.length) return;
-    const next = phase.issues.slice();
-    const [moved] = next.splice(from, 1);
-    next.splice(to, 0, moved);
-    void persistOrder(phase, next);
+  // Move the card at `from` to `to` (arrow buttons pass adjacent indices).
+  const reorder = (phaseId: string, from: number, to: number) => {
+    applyReorder(phaseId, issues => {
+      if (to < 0 || to >= issues.length) return issues;
+      const next = issues.slice();
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
   };
 
-  const handleDrop = (phase: PlanPhase, toIndex: number) => {
+  // Native drag drop onto a target card. Insert-before semantics; corrects the
+  // downward off-by-one (removing the source above the target shifts indices).
+  const handleDrop = (phaseId: string, toIndex: number) => {
     const src = dragFrom.current;
     dragFrom.current = null;
-    if (!src || src.phase !== phaseKey(phase)) return; // only reorder within the same phase
-    if (src.index === toIndex) return;
-    reorder(phase, src.index, toIndex);
+    if (!src || src.phase !== phaseId) return;
+    const to = src.index < toIndex ? toIndex - 1 : toIndex;
+    if (src.index === to) return;
+    reorder(phaseId, src.index, to);
   };
 
   if (notConfigured) return <div className="cgi-center"><div style={{ opacity: 0.5 }}>GitHub not configured. Open the ⚙ settings on the Issues Board tab.</div></div>;
@@ -101,11 +119,11 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
                   index={idx}
                   count={phase.issues.length}
                   onOpen={onOpenIssue}
-                  onMoveUp={() => reorder(phase, idx, idx - 1)}
-                  onMoveDown={() => reorder(phase, idx, idx + 1)}
+                  onMoveUp={() => reorder(phaseKey(phase), idx, idx - 1)}
+                  onMoveDown={() => reorder(phaseKey(phase), idx, idx + 1)}
                   onDragStart={() => { dragFrom.current = { phase: phaseKey(phase), index: idx }; }}
                   onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => handleDrop(phase, idx)}
+                  onDrop={() => handleDrop(phaseKey(phase), idx)}
                 />
               ))}
             </div>

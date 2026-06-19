@@ -8806,129 +8806,149 @@ const PlanView = ({
     };
   }, [fetchPlan]);
   const phaseKey = (p2) => p2.milestoneNumber === null ? "__no_phase__" : String(p2.milestoneNumber);
-  const persistOrder = reactExports.useCallback(async (phase, issues) => {
-    setData((prev) => prev ? {
-      phases: prev.phases.map((p2) => phaseKey(p2) === phaseKey(phase) ? {
-        ...p2,
-        issues
-      } : p2)
-    } : prev);
-    try {
-      await api.rpc("PUT", `/plan/order?path=${encodeURIComponent(projectPath)}`, {
-        phase: phase.title === "No phase" ? null : phase.title,
-        order: issues.map((i) => i.number)
+  const applyReorder = reactExports.useCallback((phaseId, mutate) => {
+    let payload = null;
+    setData((prev) => {
+      if (!prev) return prev;
+      const phases = prev.phases.map((p2) => {
+        if (phaseKey(p2) !== phaseId) return p2;
+        const issues = mutate(p2.issues.slice());
+        payload = {
+          phaseTitle: p2.milestoneNumber === null ? null : p2.title,
+          order: issues.map((i) => i.number)
+        };
+        return {
+          ...p2,
+          issues
+        };
       });
-    } catch {
-      void fetchPlan();
-    }
+      return {
+        phases
+      };
+    });
+    if (!payload) return;
+    const body = payload;
+    void (async () => {
+      try {
+        await api.rpc("PUT", `/plan/order?path=${encodeURIComponent(projectPath)}`, {
+          phase: body.phaseTitle,
+          order: body.order
+        });
+      } catch {
+        void fetchPlan();
+      }
+    })();
   }, [api, projectPath, fetchPlan]);
-  const reorder = (phase, from, to) => {
-    if (to < 0 || to >= phase.issues.length) return;
-    const next = phase.issues.slice();
-    const [moved] = next.splice(from, 1);
-    next.splice(to, 0, moved);
-    void persistOrder(phase, next);
+  const reorder = (phaseId, from, to) => {
+    applyReorder(phaseId, (issues) => {
+      if (to < 0 || to >= issues.length) return issues;
+      const next = issues.slice();
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
   };
-  const handleDrop = (phase, toIndex) => {
+  const handleDrop = (phaseId, toIndex) => {
     const src = dragFrom.current;
     dragFrom.current = null;
-    if (!src || src.phase !== phaseKey(phase)) return;
-    if (src.index === toIndex) return;
-    reorder(phase, src.index, toIndex);
+    if (!src || src.phase !== phaseId) return;
+    const to = src.index < toIndex ? toIndex - 1 : toIndex;
+    if (src.index === to) return;
+    reorder(phaseId, src.index, to);
   };
   if (notConfigured) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 79,
+    lineNumber: 97,
     columnNumber: 29
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 79,
+    lineNumber: 97,
     columnNumber: 57
   } }, "GitHub not configured. Open the ⚙ settings on the Issues Board tab."));
   if (error) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 80,
+    lineNumber: 98,
     columnNumber: 21
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 80,
+    lineNumber: 98,
     columnNumber: 49
   } }, error), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchPlan, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 80,
+    lineNumber: 98,
     columnNumber: 94
   } }, "Retry"));
   if (loading && !data) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 81,
+    lineNumber: 99,
     columnNumber: 32
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-spinner", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 81,
+    lineNumber: 99,
     columnNumber: 60
   } }), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 81,
+    lineNumber: 99,
     columnNumber: 91
   } }, "Loading plan…"));
   if (!data) return null;
   if (data.phases.length === 0) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 83,
+    lineNumber: 101,
     columnNumber: 40
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 83,
+    lineNumber: 101,
     columnNumber: 68
   } }, "No issues yet."));
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-plan", __self: void 0, __source: {
     fileName: _jsxFileName$2,
-    lineNumber: 86,
+    lineNumber: 104,
     columnNumber: 5
   } }, data.phases.map((phase) => {
     const pct = phase.total > 0 ? Math.round(phase.closed / phase.total * 100) : 0;
     return /* @__PURE__ */ React.createElement("section", { key: phaseKey(phase), className: "cgi-plan-phase", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 90,
+      lineNumber: 108,
       columnNumber: 11
     } }, /* @__PURE__ */ React.createElement("header", { className: "cgi-plan-phase-head", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 91,
+      lineNumber: 109,
       columnNumber: 13
     } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-title", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 92,
+      lineNumber: 110,
       columnNumber: 15
     } }, phase.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-count", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 93,
+      lineNumber: 111,
       columnNumber: 15
     } }, phase.closed, "/", phase.total), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 94,
+      lineNumber: 112,
       columnNumber: 15
     } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress-bar", style: {
       width: `${pct}%`
     }, __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 94,
+      lineNumber: 112,
       columnNumber: 51
     } }))), /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-list", __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 96,
+      lineNumber: 114,
       columnNumber: 13
-    } }, phase.issues.map((issue, idx) => /* @__PURE__ */ React.createElement(PlanCard, { key: issue.number, issue, index: idx, count: phase.issues.length, onOpen: onOpenIssue, onMoveUp: () => reorder(phase, idx, idx - 1), onMoveDown: () => reorder(phase, idx, idx + 1), onDragStart: () => {
+    } }, phase.issues.map((issue, idx) => /* @__PURE__ */ React.createElement(PlanCard, { key: issue.number, issue, index: idx, count: phase.issues.length, onOpen: onOpenIssue, onMoveUp: () => reorder(phaseKey(phase), idx, idx - 1), onMoveDown: () => reorder(phaseKey(phase), idx, idx + 1), onDragStart: () => {
       dragFrom.current = {
         phase: phaseKey(phase),
         index: idx
       };
-    }, onDragOver: (e) => e.preventDefault(), onDrop: () => handleDrop(phase, idx), __self: void 0, __source: {
+    }, onDragOver: (e) => e.preventDefault(), onDrop: () => handleDrop(phaseKey(phase), idx), __self: void 0, __source: {
       fileName: _jsxFileName$2,
-      lineNumber: 98,
+      lineNumber: 116,
       columnNumber: 17
     } }))));
   }));
