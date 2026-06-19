@@ -119,3 +119,37 @@ Or for comment:
 ```
 
 Keep responses short. List multiple issues as a compact table. No markdown prose.
+
+## Plan tab — phases & ordering
+
+The Plan tab groups issues by **GitHub Milestone** (= phase) and adds a per-issue
+**order** that GitHub does not store. Order lives in a plain file the agent edits directly.
+
+### Order store: `.GitHubBoard/plan.json`
+
+```json
+{
+  "<issue#>": { "order": <int>, "phase": "<milestone title>" }
+}
+```
+- Lower `order` = higher in the phase list. `phase` is the milestone title (optional, informational).
+- Issues with no entry sort after ordered ones, by issue number.
+- The plugin backend is NOT required to edit this — read/write the file directly.
+
+### Set a task's order
+Edit `.GitHubBoard/plan.json`: assign consecutive `order` values (0, 1, 2, …) to the issues
+in the phase, in the desired top-to-bottom sequence. Create the file if missing.
+
+### Set a task's phase (milestone)
+```bash
+gh issue edit <ISSUE#> --milestone "FAZA L"   # milestone must already exist
+```
+To create a milestone first:
+```bash
+gh api repos/$OWNER/$REPO/milestones -f title="FAZA L"
+```
+
+### Conventions
+- **Milestone = phase** (e.g. "FAZA L"). One milestone per phase.
+- **Priority/bug = labels** (`bug`, `P0`..`P5`) — same as the board.
+- **Done = closed**, status = labels — unchanged from the board mapping above.
