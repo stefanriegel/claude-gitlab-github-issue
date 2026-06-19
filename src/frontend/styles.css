@@ -892,3 +892,46 @@
   --cgi-accent-hover: #1d4ed8;
   --cgi-scrollbar: rgba(0,0,0,0.15);
 }
+
+/* Tab switcher */
+.cgi-tabs { display: flex; gap: 4px; margin-left: 12px; }
+.cgi-tab {
+  background: transparent; border: none; color: var(--cgi-text);
+  opacity: 0.55; padding: 6px 12px; font-size: 13px; cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.cgi-tab:hover { opacity: 0.85; }
+.cgi-tab.active { opacity: 1; border-bottom-color: var(--cgi-accent, #0ea5e9); font-weight: 600; }
+
+/* Plan view */
+.cgi-plan { padding: 12px 16px; overflow-y: auto; }
+.cgi-plan-phase { margin-bottom: 20px; }
+.cgi-plan-phase-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.cgi-plan-phase-title { font-weight: 600; font-size: 14px; }
+.cgi-plan-phase-count { font-size: 12px; opacity: 0.55; }
+.cgi-plan-progress { flex: 1; height: 6px; background: var(--cgi-border); border-radius: 3px; overflow: hidden; }
+.cgi-plan-progress-bar { display: block; height: 100%; background: #10b981; }
+.cgi-plan-list { display: flex; flex-direction: column; gap: 6px; }
+.cgi-plan-card {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+  background: var(--cgi-surface); border: 1px solid var(--cgi-border);
+  border-radius: 6px; cursor: default;
+}
+.cgi-plan-card.done { opacity: 0.5; }
+.cgi-plan-card.done .cgi-plan-title { text-decoration: line-through; }
+.cgi-plan-drag { cursor: grab; opacity: 0.4; user-select: none; }
+.cgi-plan-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.cgi-plan-card-main {
+  flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0;
+  background: none; border: none; color: var(--cgi-text); cursor: pointer; text-align: left;
+}
+.cgi-plan-num { opacity: 0.5; font-size: 12px; flex: none; }
+.cgi-plan-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cgi-plan-bug { font-size: 10px; background: #ef4444; color: #fff; padding: 1px 5px; border-radius: 4px; flex: none; }
+.cgi-plan-reorder { display: flex; flex-direction: column; flex: none; }
+.cgi-plan-arrow {
+  background: none; border: none; color: var(--cgi-text); opacity: 0.5;
+  cursor: pointer; font-size: 9px; line-height: 1; padding: 1px 4px;
+}
+.cgi-plan-arrow:disabled { opacity: 0.15; cursor: default; }
+.cgi-plan-arrow:hover:not(:disabled) { opacity: 1; }

@@ -10,9 +10,11 @@ import { NewIssueModal } from './NewIssueModal';
 import { SubscriptionPriorityModal } from './SubscriptionPriorityModal';
 import { ConfigBanner } from './ConfigBanner';
 import { SettingsModal } from './SettingsModal';
+import { PlanView } from './PlanView';
 
 const POLL_INTERVAL_MS = 30_000;
 const STORAGE_KEY = 'cgi-collapsed-columns';
+const TAB_KEY = 'cgi-active-tab';
 const SORT_LABELS: Record<SortOption, string> = {
   number: 'Number',
   updated: 'Updated',
@@ -53,6 +55,13 @@ export const App: React.FC = () => {
   const [selectedIssue, setSelectedIssue] = useState<GithubIssue | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showNewIssue, setShowNewIssue] = useState(false);
+  const [activeTab, setActiveTab] = useState<'board' | 'plan'>(() => {
+    try { return (localStorage.getItem(TAB_KEY) as 'board' | 'plan') || 'board'; } catch { return 'board'; }
+  });
+  const switchTab = (tab: 'board' | 'plan') => {
+    setActiveTab(tab);
+    try { localStorage.setItem(TAB_KEY, tab); } catch {}
+  };
 
   // Filter/sort state
   const [searchText, setSearchText] = useState('');
@@ -274,6 +283,16 @@ export const App: React.FC = () => {
             </span>
           )}
         </div>
+        <div className="cgi-tabs">
+          <button
+            className={`cgi-tab${activeTab === 'board' ? ' active' : ''}`}
+            onClick={() => switchTab('board')}
+          >Issues Board</button>
+          <button
+            className={`cgi-tab${activeTab === 'plan' ? ' active' : ''}`}
+            onClick={() => switchTab('plan')}
+          >Plan</button>
+        </div>
         <div className="cgi-toolbar-actions">
           {project && !notConfigured && (
             <button
@@ -311,8 +330,8 @@ export const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter bar — only shown when data is loaded */}
-      {data && (
+      {/* Filter bar — only shown when data is loaded and on board tab */}
+      {activeTab === 'board' && data && (
         <div className="cgi-filterbar" style={{ background: 'var(--cgi-surface)', borderBottom: '1px solid var(--cgi-border)' }}>
           {/* Search */}
           <div className="cgi-search-wrap">
@@ -382,7 +401,16 @@ export const App: React.FC = () => {
       )}
 
       {/* Main content */}
-      {!project ? (
+      {activeTab === 'plan' ? (
+        project ? (
+          <PlanView
+            projectPath={projectPath}
+            onOpenIssue={setSelectedIssue}
+          />
+        ) : (
+          <div className="cgi-center"><div style={{ opacity: 0.5 }}>No project open.</div></div>
+        )
+      ) : !project ? (
         <div className="cgi-center">
           <div style={{ opacity: 0.5 }}>No project open.</div>
           <div style={{ fontSize: 12, opacity: 0.4 }}>Open a project to view its GitHub Issues.</div>
