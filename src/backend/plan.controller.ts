@@ -24,10 +24,11 @@ async function requireConfig(projectPath: string) {
 /** GET /plan — merge issues + milestones + order store into phase-grouped data. */
 export async function buildPlan(projectPath: string): Promise<PlanData> {
   const config = await requireConfig(projectPath);
-  const [issues, milestones, store] = await Promise.all([
+  const [issues, milestones, store, phaseOrder] = await Promise.all([
     listIssues(config.token, config.owner, config.repo, 'all'),
     listMilestones(config.token, config.owner, config.repo, 'all'),
     planService.readPlan(projectPath),
+    planService.readPhaseOrder(projectPath),
   ]);
 
   // Group issues by milestone number (or NO_PHASE).
@@ -65,6 +66,16 @@ export async function buildPlan(projectPath: string): Promise<PlanData> {
     });
   }
 
+  // Apply manual phase order (list of milestone titles). Stable sort: phases not
+  // in the list keep their GitHub milestone order after the explicitly-ranked ones.
+  if (phaseOrder.length > 0) {
+    const rank = (title: string): number => {
+      const i = phaseOrder.indexOf(title);
+      return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+    };
+    phases.sort((a, b) => rank(a.title) - rank(b.title));
+  }
+
   // "No phase" section at the bottom, only if non-empty.
   const noPhase = sortGroup(groups.get(NO_PHASE) ?? []);
   if (noPhase.length > 0) {
@@ -88,6 +99,15 @@ export async function saveOrder(
 ): Promise<void> {
   await requireConfig(projectPath);
   await planService.setOrder(projectPath, phase, issueNumbers);
+}
+
+/** PUT /plan/phase-order — persist the manual ordering of whole phases. */
+export async function savePhaseOrder(
+  projectPath: string,
+  titles: string[]
+): Promise<void> {
+  await requireConfig(projectPath);
+  await planService.setPhaseOrder(projectPath, titles);
 }
 
 /** PUT /plan/phase — assign an issue to a milestone (or clear it). */

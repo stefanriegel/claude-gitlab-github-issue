@@ -17,10 +17,12 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notConfigured, setNotConfigured] = useState(false);
-  const dragFrom = useRef<{ phase: string; index: number } | null>(null);
+  // Card drag source: phase + visible-index + issue number (number needed for cross-phase move).
+  const dragFrom = useRef<{ phase: string; index: number; number: number } | null>(null);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dataRef = useRef<PlanData | null>(null);
   const [showBootstrap, setShowBootstrap] = useState(false);
+  const [dropPhase, setDropPhase] = useState<string | null>(null); // phase highlighted as cross-phase drop target
   const [hideDone, setHideDone] = useState<boolean>(() => {
     try { return localStorage.getItem('cgi-plan-hide-done') !== 'false'; } catch { return true; }
   });
@@ -29,6 +31,22 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
     hideDoneRef.current = hideDone;
     try { localStorage.setItem('cgi-plan-hide-done', String(hideDone)); } catch {}
   }, [hideDone]);
+
+  // Collapsed phases — persisted set of phase keys.
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem('cgi-plan-collapsed');
+      return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+    } catch { return new Set(); }
+  });
+  const toggleCollapse = useCallback((key: string) => {
+    setCollapsed(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      try { localStorage.setItem('cgi-plan-collapsed', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }, []);
 
   const fetchPlan = useCallback(async () => {
     if (!projectPath) return;
@@ -99,21 +117,65 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
     });
   };
 
-  // Native drag drop onto a target card. Insert-before semantics; corrects the
-  // downward off-by-one (removing the source above the target shifts indices).
+  // Cross-phase move: assign the issue to the target milestone (or clear it for "No phase").
+  const assignToPhase = useCallback((issueNumber: number, milestoneNumber: number | null) => {
+    void (async () => {
+      try {
+        await api.rpc('PUT', `/plan/phase?path=${encodeURIComponent(projectPath)}`, {
+          issue: issueNumber, milestone: milestoneNumber,
+        });
+      } finally {
+        void fetchPlan();
+      }
+    })();
+  }, [api, projectPath, fetchPlan]);
+
+  // Native drag drop onto a target card. Same phase → reorder; different phase → reassign milestone.
   const handleDrop = (phaseId: string, toIndex: number) => {
     const src = dragFrom.current;
     dragFrom.current = null;
-    if (!src || src.phase !== phaseId) return;
-    const to = src.index < toIndex ? toIndex - 1 : toIndex;
-    if (src.index === to) return;
-    reorder(phaseId, src.index, to);
+    setDropPhase(null);
+    if (!src) return;
+    if (src.phase === phaseId) {
+      const to = src.index < toIndex ? toIndex - 1 : toIndex;
+      if (src.index === to) return;
+      reorder(phaseId, src.index, to);
+      return;
+    }
+    // Cross-phase: phaseId encodes the milestone (or sentinel for "No phase").
+    const milestone = phaseId === '__no_phase__' ? null : Number(phaseId);
+    assignToPhase(src.number, milestone);
+  };
+
+  // Persist a new phase ordering (titles, top-first). "No phase" is always pinned last server-side.
+  const reorderPhases = (fromMovableIdx: number, dir: -1 | 1) => {
+    const current = dataRef.current;
+    if (!current) return;
+    const movable = current.phases.filter(p => p.milestoneNumber !== null);
+    const noPhase = current.phases.filter(p => p.milestoneNumber === null);
+    const to = fromMovableIdx + dir;
+    if (to < 0 || to >= movable.length) return;
+    const next = movable.slice();
+    const [moved] = next.splice(fromMovableIdx, 1);
+    next.splice(to, 0, moved);
+    setData({ phases: [...next, ...noPhase] });
+    const titles = next.map(p => p.title);
+    void (async () => {
+      try {
+        await api.rpc('PUT', `/plan/phase-order?path=${encodeURIComponent(projectPath)}`, { order: titles });
+      } catch {
+        void fetchPlan();
+      }
+    })();
   };
 
   if (notConfigured) return <div className="cgi-center"><div style={{ opacity: 0.5 }}>GitHub not configured. Open the ⚙ settings on the Issues Board tab.</div></div>;
   if (error) return <div className="cgi-center"><div className="cgi-error-text">{error}</div><button className="cgi-btn" onClick={fetchPlan}>Retry</button></div>;
   if (loading && !data) return <div className="cgi-center"><div className="cgi-spinner" /><div>Loading plan…</div></div>;
   if (!data) return null;
+
+  // Index of each milestone phase among the movable (non-"No phase") phases, for the ▲▼ phase arrows.
+  const movableCount = data.phases.filter(p => p.milestoneNumber !== null).length;
 
   return (
     <div className="cgi-plan">
@@ -128,34 +190,69 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
       {data.phases.length === 0 ? (
         <div className="cgi-center"><div style={{ opacity: 0.5 }}>No issues yet.</div></div>
       ) : (
-        data.phases.map(phase => {
+        data.phases.map((phase, phaseIdx) => {
+          const key = phaseKey(phase);
           const pct = phase.total > 0 ? Math.round((phase.closed / phase.total) * 100) : 0;
           const visibleIssues = hideDone ? phase.issues.filter(i => i.state !== 'closed') : phase.issues;
           // Hide a phase whose issues are all done when "Hide done" is on, unless it has none at all.
           if (hideDone && phase.total > 0 && visibleIssues.length === 0) return null;
+          const isCollapsed = collapsed.has(key);
+          const isMovable = phase.milestoneNumber !== null;
+          // Position among movable phases (data.phases keeps milestone phases before "No phase").
+          const movableIdx = isMovable ? phaseIdx : -1;
+          const isDropTarget = dropPhase === key;
           return (
-            <section key={phaseKey(phase)} className="cgi-plan-phase">
+            <section
+              key={key}
+              className={`cgi-plan-phase${isDropTarget ? ' drop-target' : ''}`}
+              onDragOver={(e) => {
+                if (!dragFrom.current || dragFrom.current.phase === key) return;
+                e.preventDefault();
+                if (dropPhase !== key) setDropPhase(key);
+              }}
+              onDragLeave={(e) => {
+                // Only clear when leaving the section entirely.
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) setDropPhase(prev => prev === key ? null : prev);
+              }}
+              onDrop={() => handleDrop(key, visibleIssues.length)}
+            >
               <header className="cgi-plan-phase-head">
-                <span className="cgi-plan-phase-title">{phase.title}</span>
+                <button
+                  className="cgi-plan-collapse"
+                  onClick={() => toggleCollapse(key)}
+                  title={isCollapsed ? 'Rozwiń fazę' : 'Zwiń fazę'}
+                >{isCollapsed ? '▸' : '▾'}</button>
+                <span className="cgi-plan-phase-title" onClick={() => toggleCollapse(key)}>{phase.title}</span>
                 <span className="cgi-plan-phase-count">{phase.closed}/{phase.total}</span>
                 <span className="cgi-plan-progress"><span className="cgi-plan-progress-bar" style={{ width: `${pct}%` }} /></span>
+                {isMovable && (
+                  <span className="cgi-plan-phase-reorder">
+                    <button className="cgi-plan-arrow" disabled={movableIdx === 0} onClick={() => reorderPhases(movableIdx, -1)} title="Faza wyżej">▲</button>
+                    <button className="cgi-plan-arrow" disabled={movableIdx === movableCount - 1} onClick={() => reorderPhases(movableIdx, 1)} title="Faza niżej">▼</button>
+                  </span>
+                )}
               </header>
-              <div className="cgi-plan-list">
-                {visibleIssues.map((issue, idx) => (
-                  <PlanCard
-                    key={issue.number}
-                    issue={issue}
-                    index={idx}
-                    count={visibleIssues.length}
-                    onOpen={onOpenIssue}
-                    onMoveUp={() => reorder(phaseKey(phase), idx, idx - 1)}
-                    onMoveDown={() => reorder(phaseKey(phase), idx, idx + 1)}
-                    onDragStart={() => { dragFrom.current = { phase: phaseKey(phase), index: idx }; }}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => handleDrop(phaseKey(phase), idx)}
-                  />
-                ))}
-              </div>
+              {!isCollapsed && (
+                <div className="cgi-plan-list">
+                  {visibleIssues.map((issue, idx) => (
+                    <PlanCard
+                      key={issue.number}
+                      issue={issue}
+                      index={idx}
+                      count={visibleIssues.length}
+                      onOpen={onOpenIssue}
+                      onMoveUp={() => reorder(key, idx, idx - 1)}
+                      onMoveDown={() => reorder(key, idx, idx + 1)}
+                      onDragStart={() => { dragFrom.current = { phase: key, index: idx, number: issue.number }; }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={() => handleDrop(key, idx)}
+                    />
+                  ))}
+                  {visibleIssues.length === 0 && (
+                    <div className="cgi-plan-empty">Przeciągnij tu ticket, by przypisać do tej fazy</div>
+                  )}
+                </div>
+              )}
             </section>
           );
         })

@@ -238,6 +238,21 @@ async function handlePutPlanPhase(req: http.IncomingMessage, res: http.ServerRes
   }
 }
 
+async function handlePutPlanPhaseOrder(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  const query = parseQuery(req.url ?? '');
+  const projectPath = query['path'] ?? '';
+  if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw) as { order?: string[] };
+    if (!Array.isArray(body.order)) { sendJson(res, 400, { error: 'order array required' }); return; }
+    await planController.savePhaseOrder(projectPath, body.order);
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: (e as Error).message ?? 'Internal error' });
+  }
+}
+
 async function handlePostPlanBootstrap(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   const query = parseQuery(req.url ?? '');
   const projectPath = query['path'] ?? '';
@@ -297,6 +312,12 @@ const server = http.createServer(async (req, res) => {
     // PUT /plan/order
     if (method === 'PUT' && pathname === '/plan/order') {
       await handlePutPlanOrder(req, res);
+      return;
+    }
+
+    // PUT /plan/phase-order
+    if (method === 'PUT' && pathname === '/plan/phase-order') {
+      await handlePutPlanPhaseOrder(req, res);
       return;
     }
 

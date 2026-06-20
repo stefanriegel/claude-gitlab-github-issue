@@ -419,7 +419,8 @@ async function prioritizeIssues(issues, anthropicKey) {
 var import_path2 = __toESM(require("path"));
 var import_fs2 = require("fs");
 var PLAN_FILE = ".GitHubBoard/plan.json";
-async function readPlan(projectPath) {
+var PHASE_ORDER_KEY = "__phaseOrder__";
+async function readRaw(projectPath) {
   if (!projectPath) return {};
   const filePath = import_path2.default.join(projectPath, PLAN_FILE);
   try {
@@ -431,22 +432,43 @@ async function readPlan(projectPath) {
     return {};
   }
 }
-async function writePlan(projectPath, store) {
+async function writeRaw(projectPath, obj) {
   if (!projectPath) throw new Error("projectPath required");
   const dir = import_path2.default.join(projectPath, ".GitHubBoard");
   await import_fs2.promises.mkdir(dir, { recursive: true });
   const filePath = import_path2.default.join(projectPath, PLAN_FILE);
-  await import_fs2.promises.writeFile(filePath, JSON.stringify(store, null, 2), "utf8");
+  await import_fs2.promises.writeFile(filePath, JSON.stringify(obj, null, 2), "utf8");
+}
+async function readPlan(projectPath) {
+  const raw = await readRaw(projectPath);
+  const store = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (k === PHASE_ORDER_KEY) continue;
+    if (v && typeof v === "object" && typeof v.order === "number") {
+      store[k] = v;
+    }
+  }
+  return store;
+}
+async function readPhaseOrder(projectPath) {
+  const raw = await readRaw(projectPath);
+  const v = raw[PHASE_ORDER_KEY];
+  return Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
+}
+async function setPhaseOrder(projectPath, titles) {
+  const raw = await readRaw(projectPath);
+  raw[PHASE_ORDER_KEY] = titles;
+  await writeRaw(projectPath, raw);
 }
 async function setOrder(projectPath, phase, issueNumbers) {
-  const store = await readPlan(projectPath);
+  const raw = await readRaw(projectPath);
   issueNumbers.forEach((num, idx) => {
     const key = String(num);
-    const existing = store[key] ?? { order: idx };
-    store[key] = { order: idx, phase: phase ?? existing.phase };
+    const existing = raw[key];
+    raw[key] = { order: idx, phase: phase ?? existing?.phase };
   });
-  await writePlan(projectPath, store);
-  return store;
+  await writeRaw(projectPath, raw);
+  return readPlan(projectPath);
 }
 
 // src/backend/plan.controller.ts
@@ -462,10 +484,11 @@ async function requireConfig(projectPath) {
 }
 async function buildPlan(projectPath) {
   const config = await requireConfig(projectPath);
-  const [issues, milestones, store] = await Promise.all([
+  const [issues, milestones, store, phaseOrder] = await Promise.all([
     listIssues(config.token, config.owner, config.repo, "all"),
     listMilestones(config.token, config.owner, config.repo, "all"),
-    readPlan(projectPath)
+    readPlan(projectPath),
+    readPhaseOrder(projectPath)
   ]);
   const groups = /* @__PURE__ */ new Map();
   for (const issue of issues) {
@@ -495,6 +518,13 @@ async function buildPlan(projectPath) {
       issues: arr
     });
   }
+  if (phaseOrder.length > 0) {
+    const rank = (title) => {
+      const i = phaseOrder.indexOf(title);
+      return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+    };
+    phases.sort((a, b) => rank(a.title) - rank(b.title));
+  }
   const noPhase = sortGroup(groups.get(NO_PHASE) ?? []);
   if (noPhase.length > 0) {
     phases.push({
@@ -510,6 +540,10 @@ async function buildPlan(projectPath) {
 async function saveOrder(projectPath, phase, issueNumbers) {
   await requireConfig(projectPath);
   await setOrder(projectPath, phase, issueNumbers);
+}
+async function savePhaseOrder(projectPath, titles) {
+  await requireConfig(projectPath);
+  await setPhaseOrder(projectPath, titles);
 }
 async function assignPhase(projectPath, issueNumber, milestoneNumber) {
   const config = await requireConfig(projectPath);
@@ -743,6 +777,26 @@ async function handlePutPlanPhase(req, res) {
     sendJson(res, 500, { error: e.message ?? "Internal error" });
   }
 }
+async function handlePutPlanPhaseOrder(req, res) {
+  const query = parseQuery(req.url ?? "");
+  const projectPath = query["path"] ?? "";
+  if (!projectPath) {
+    sendJson(res, 400, { error: "path query parameter required" });
+    return;
+  }
+  try {
+    const raw = await readBody(req);
+    const body = JSON.parse(raw);
+    if (!Array.isArray(body.order)) {
+      sendJson(res, 400, { error: "order array required" });
+      return;
+    }
+    await savePhaseOrder(projectPath, body.order);
+    sendJson(res, 200, { ok: true });
+  } catch (e) {
+    sendJson(res, 500, { error: e.message ?? "Internal error" });
+  }
+}
 async function handlePostPlanBootstrap(req, res) {
   const query = parseQuery(req.url ?? "");
   const projectPath = query["path"] ?? "";
@@ -796,6 +850,10 @@ var server = import_http.default.createServer(async (req, res) => {
     }
     if (method === "PUT" && pathname === "/plan/order") {
       await handlePutPlanOrder(req, res);
+      return;
+    }
+    if (method === "PUT" && pathname === "/plan/phase-order") {
+      await handlePutPlanPhaseOrder(req, res);
       return;
     }
     if (method === "PUT" && pathname === "/plan/phase") {
