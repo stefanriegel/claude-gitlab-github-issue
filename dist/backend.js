@@ -578,16 +578,17 @@ function installSkill() {
     if (!homeDir) return;
     const skillDir = import_path3.default.join(homeDir, ".claude", "skills", "github-task");
     const skillFile = import_path3.default.join(skillDir, "SKILL.md");
-    if (!import_fs3.default.existsSync(skillFile)) {
-      import_fs3.default.mkdirSync(skillDir, { recursive: true });
-      const sourceSkill = import_path3.default.join(__dirname, "..", "skill", "SKILL.md");
-      if (import_fs3.default.existsSync(sourceSkill)) {
-        import_fs3.default.copyFileSync(sourceSkill, skillFile);
-        console.log("[claude-github-issue] Installed /github-task skill to", skillFile);
-      } else {
-        console.log("[claude-github-issue] Skill source not found at", sourceSkill, "\u2014 skipping auto-install");
-      }
+    const sourceSkill = import_path3.default.join(__dirname, "..", "skill", "SKILL.md");
+    if (!import_fs3.default.existsSync(sourceSkill)) {
+      console.log("[claude-github-issue] Skill source not found at", sourceSkill, "\u2014 skipping auto-install");
+      return;
     }
+    const source = import_fs3.default.readFileSync(sourceSkill, "utf8");
+    const current = import_fs3.default.existsSync(skillFile) ? import_fs3.default.readFileSync(skillFile, "utf8") : null;
+    if (current === source) return;
+    import_fs3.default.mkdirSync(skillDir, { recursive: true });
+    import_fs3.default.writeFileSync(skillFile, source, "utf8");
+    console.log("[claude-github-issue]", current === null ? "Installed" : "Updated", "/github-task skill at", skillFile);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.warn("[claude-github-issue] Could not install skill:", msg);

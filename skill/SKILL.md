@@ -1,6 +1,6 @@
 ---
 name: github-task
-description: Manage GitHub Issues as tasks — list, move between columns, update with comments. Reads GitHub config from .GitHubBoard/github-sync.json in the current project. Use when the user invokes /github-task or asks to "check tasks", "move issue to in-progress", "update task", "what needs testing", "mark done", "sprawdź taski", "przenieś task", "zaktualizuj task".
+description: Manage GitHub Issues as tasks — list, move between columns, update with comments, and order the Plan tab. Reads GitHub config from .GitHubBoard/github-sync.json in the current project. Use when the user invokes /github-task or asks to "check tasks", "move issue to in-progress", "update task", "what needs testing", "mark done", "sprawdź taski", "przenieś task", "zaktualizuj task", or to order/rank the Plan board: "ułóż plan", "ustaw kolejność w Plan", "uporządkuj plan wg pilności", "przelicz plan", "ustaw kolejność issues", "ułóż issues od najpilniejszych", "order the plan", "set plan order", "reorder phases".
 ---
 
 # github-task skill
@@ -177,16 +177,53 @@ The Plan tab groups issues by **GitHub Milestone** (= phase) and adds a per-issu
 
 ```json
 {
-  "<issue#>": { "order": <int>, "phase": "<milestone title>" }
+  "<issue#>": { "order": <int>, "phase": "<milestone title>" },
+  "__phaseOrder__": ["<milestone title top-first>", "..."]
 }
 ```
-- Lower `order` = higher in the phase list. `phase` is the milestone title (optional, informational).
+- `order` — position WITHIN a phase. Lower = higher in the list. `phase` = milestone title (informational).
 - Issues with no entry sort after ordered ones, by issue number.
-- The plugin backend is NOT required to edit this — read/write the file directly.
+- `__phaseOrder__` — reserved key holding the manual order of the PHASES (milestone titles, top-first). Phases not listed keep their GitHub milestone order, after the ranked ones. This is how you move a whole milestone up/down the Plan tab.
+- The plugin backend reads this file fresh on every load — just read/write it directly, no API call. Effect shows after the user hits Refresh in the Plan tab.
 
-### Set a task's order
+### Set a task's order (within a phase)
 Edit `.GitHubBoard/plan.json`: assign consecutive `order` values (0, 1, 2, …) to the issues
 in the phase, in the desired top-to-bottom sequence. Create the file if missing.
+
+### Order a whole phase list "by urgency" (the common request)
+When the user asks to "ułóż plan wg pilności" / "order the plan", regenerate the store
+deterministically — group every issue by its milestone, sort each group, write `order` 0..n.
+A good default ranking (matches the board's Priority sort):
+
+```python
+import json, subprocess
+R = "OWNER/REPO"   # from github-sync.json
+issues = json.loads(subprocess.check_output(
+    ["gh","issue","list","--repo",R,"--state","all","--limit","400",
+     "--json","number,title,labels,milestone,state"]))
+PR = {"priority:high":0, "priority:medium":1, "priority:low":2}
+def rank(i):
+    labs = [l["name"] for l in i["labels"]]
+    base = 100 if i["state"] == "closed" else 0          # closed/done sink to bottom
+    p = min([PR[l] for l in labs if l in PR], default=3)  # then by priority label
+    return (base, p, i["number"])                         # tiebreak: issue number
+groups = {}
+for i in issues:
+    t = (i["milestone"] or {}).get("title")
+    if t: groups.setdefault(t, []).append(i)
+store = {}
+for title, arr in groups.items():
+    arr.sort(key=rank)
+    for idx, i in enumerate(arr):
+        store[str(i["number"])] = {"order": idx, "phase": title}
+old = json.load(open(".GitHubBoard/plan.json"))          # preserve manual phase order
+if old.get("__phaseOrder__"): store["__phaseOrder__"] = old["__phaseOrder__"]
+json.dump(store, open(".GitHubBoard/plan.json","w"), indent=2, ensure_ascii=False)
+```
+
+Always back up `plan.json` → `plan.json.bak` before regenerating. To honor a custom
+per-issue sequence the user dictates, override `rank` (or just write `order` by hand).
+To reorder phases, set `__phaseOrder__` to the milestone titles in the wanted order.
 
 ### Set a task's phase (milestone)
 ```bash

@@ -14,17 +14,21 @@ function installSkill(): void {
     if (!homeDir) return;
     const skillDir = path.join(homeDir, '.claude', 'skills', 'github-task');
     const skillFile = path.join(skillDir, 'SKILL.md');
-    if (!fs.existsSync(skillFile)) {
-      fs.mkdirSync(skillDir, { recursive: true });
-      // __dirname in CJS points to dist/ directory
-      const sourceSkill = path.join(__dirname, '..', 'skill', 'SKILL.md');
-      if (fs.existsSync(sourceSkill)) {
-        fs.copyFileSync(sourceSkill, skillFile);
-        console.log('[claude-github-issue] Installed /github-task skill to', skillFile);
-      } else {
-        console.log('[claude-github-issue] Skill source not found at', sourceSkill, '— skipping auto-install');
-      }
+    // __dirname in CJS points to dist/ directory
+    const sourceSkill = path.join(__dirname, '..', 'skill', 'SKILL.md');
+    if (!fs.existsSync(sourceSkill)) {
+      console.log('[claude-github-issue] Skill source not found at', sourceSkill, '— skipping auto-install');
+      return;
     }
+    const source = fs.readFileSync(sourceSkill, 'utf8');
+    // Refresh when missing OR stale (content differs). Previously this only ran
+    // when the file was missing ("first mount only"), so an old installed skill
+    // would shadow a newer plugin after an upgrade. Content compare fixes that.
+    const current = fs.existsSync(skillFile) ? fs.readFileSync(skillFile, 'utf8') : null;
+    if (current === source) return;
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.writeFileSync(skillFile, source, 'utf8');
+    console.log('[claude-github-issue]', current === null ? 'Installed' : 'Updated', '/github-task skill at', skillFile);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.warn('[claude-github-issue] Could not install skill:', msg);
