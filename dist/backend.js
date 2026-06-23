@@ -231,6 +231,27 @@ async function fetchIssues(projectPath) {
   cacheSet(cacheKey, result, ISSUES_TTL);
   return result;
 }
+async function getCachedRepoIssues(config) {
+  const cacheKey = `issues:${config.owner}/${config.repo}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached.issues;
+  const raw = await listIssues(config.token, config.owner, config.repo, "all");
+  const issues = categorizeIssues(raw);
+  cacheSet(cacheKey, { issues, columns: buildColumns(), owner: config.owner, repo: config.repo }, ISSUES_TTL);
+  return issues;
+}
+async function getCachedMilestones(config) {
+  const cacheKey = `milestones:${config.owner}/${config.repo}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+  const milestones = await listMilestones(config.token, config.owner, config.repo, "all");
+  cacheSet(cacheKey, milestones, ISSUES_TTL);
+  return milestones;
+}
+function invalidateRepo(config) {
+  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  cacheDeletePrefix(`milestones:${config.owner}/${config.repo}`);
+}
 async function fetchComments(projectPath, issueNumber) {
   const config = await readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) return [];
@@ -485,8 +506,8 @@ async function requireConfig(projectPath) {
 async function buildPlan(projectPath) {
   const config = await requireConfig(projectPath);
   const [issues, milestones, store, phaseOrder] = await Promise.all([
-    listIssues(config.token, config.owner, config.repo, "all"),
-    listMilestones(config.token, config.owner, config.repo, "all"),
+    getCachedRepoIssues(config),
+    getCachedMilestones(config),
     readPlan(projectPath),
     readPhaseOrder(projectPath)
   ]);
@@ -548,6 +569,7 @@ async function savePhaseOrder(projectPath, titles) {
 async function assignPhase(projectPath, issueNumber, milestoneNumber) {
   const config = await requireConfig(projectPath);
   await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, milestoneNumber);
+  invalidateRepo(config);
 }
 async function bootstrap(projectPath, phases) {
   const config = await requireConfig(projectPath);
@@ -568,6 +590,7 @@ async function bootstrap(projectPath, phases) {
       assigned++;
     }
   }
+  if (created.length || assigned) invalidateRepo(config);
   return { created, assigned };
 }
 

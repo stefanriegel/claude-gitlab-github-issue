@@ -208,10 +208,7 @@ export const App: React.FC = () => {
     if (!project?.path || !data) return;
     const issue = data.issues.find(i => i.number === issueNumber);
     if (!issue) return;
-    const patch = columnChangePatch(
-      issue.state === 'closed' ? 'done' : (issue.labels.find(l => ['in-progress','review','blocked'].includes(l.name))?.name ?? 'todo'),
-      newColumnId
-    );
+    const patch = columnChangePatch(issue, newColumnId);
     if (!patch) return;
     try {
       const res = await api.rpc('PATCH', `/issues/${issueNumber}?path=${encodeURIComponent(project.path)}`, patch);

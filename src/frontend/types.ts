@@ -118,17 +118,18 @@ export interface PlanData {
   phases: PlanPhase[];
 }
 
-export function columnChangePatch(fromId: string, toId: string): {
-  state?: string;
-  addLabels?: string[];
-  removeLabels?: string[];
+// Compute the FINAL label set client-side (we already hold the issue's labels) and
+// send it as an explicit `labels` array. This lets the backend PATCH in a single
+// GitHub call — no extra getIssue round-trip to read current labels first.
+export function columnChangePatch(issue: GithubIssue, toId: string): {
+  state: string;
+  labels: string[];
 } | null {
   const toCol = COLUMNS.find(c => c.id === toId);
   if (!toCol) return null;
 
-  return {
-    state: toCol.state,
-    addLabels: toCol.labels,
-    removeLabels: STATUS_LABELS.filter(l => !toCol.labels.includes(l)),
-  };
+  const remove = new Set(STATUS_LABELS.filter(l => !toCol.labels.includes(l)));
+  const current = issue.labels.map(l => l.name);
+  const labels = [...new Set([...current.filter(n => !remove.has(n)), ...toCol.labels])];
+  return { state: toCol.state, labels };
 }

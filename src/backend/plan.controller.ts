@@ -1,7 +1,7 @@
 import * as configService from './config.service';
 import * as planService from './plan.service';
+import * as issuesService from './issues.service';
 import {
-  listIssues,
   listMilestones,
   setIssueMilestone,
   createMilestone,
@@ -24,9 +24,11 @@ async function requireConfig(projectPath: string) {
 /** GET /plan — merge issues + milestones + order store into phase-grouped data. */
 export async function buildPlan(projectPath: string): Promise<PlanData> {
   const config = await requireConfig(projectPath);
+  // Reuse the board's cached issues + a cached milestone list so the Plan tab loads
+  // instantly when the board was already fetched (and across its 30s polling).
   const [issues, milestones, store, phaseOrder] = await Promise.all([
-    listIssues(config.token, config.owner, config.repo, 'all'),
-    listMilestones(config.token, config.owner, config.repo, 'all'),
+    issuesService.getCachedRepoIssues(config),
+    issuesService.getCachedMilestones(config),
     planService.readPlan(projectPath),
     planService.readPhaseOrder(projectPath),
   ]);
@@ -118,6 +120,7 @@ export async function assignPhase(
 ): Promise<void> {
   const config = await requireConfig(projectPath);
   await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, milestoneNumber);
+  issuesService.invalidateRepo(config); // issue.milestone changed → drop stale caches
 }
 
 /** POST /plan/bootstrap — create missing milestones and assign issues to them. */
@@ -144,5 +147,6 @@ export async function bootstrap(
       assigned++;
     }
   }
+  if (created.length || assigned) issuesService.invalidateRepo(config);
   return { created, assigned };
 }

@@ -72,6 +72,42 @@ export async function fetchIssues(projectPath: string): Promise<{
   return result;
 }
 
+/**
+ * Cached repo issues keyed by owner/repo — the SAME cache the board uses. The Plan
+ * tab reuses this so switching tabs (or polling) doesn't re-paginate GitHub each time.
+ */
+export async function getCachedRepoIssues(
+  config: { token: string; owner: string; repo: string }
+): Promise<IssueWithColumn[]> {
+  const cacheKey = `issues:${config.owner}/${config.repo}`;
+  const cached = cacheGet(cacheKey) as { issues: IssueWithColumn[] } | null;
+  if (cached) return cached.issues;
+
+  const raw = await github.listIssues(config.token, config.owner, config.repo, 'all');
+  const issues = categorizeIssues(raw);
+  cacheSet(cacheKey, { issues, columns: buildColumns(), owner: config.owner, repo: config.repo }, ISSUES_TTL);
+  return issues;
+}
+
+/** Cached milestone list (Plan polls every 30s; milestones rarely change). */
+export async function getCachedMilestones(
+  config: { token: string; owner: string; repo: string }
+): Promise<github.GithubMilestone[]> {
+  const cacheKey = `milestones:${config.owner}/${config.repo}`;
+  const cached = cacheGet(cacheKey) as github.GithubMilestone[] | null;
+  if (cached) return cached;
+
+  const milestones = await github.listMilestones(config.token, config.owner, config.repo, 'all');
+  cacheSet(cacheKey, milestones, ISSUES_TTL);
+  return milestones;
+}
+
+/** Drop both repo-scoped caches — call after any write that changes issues/milestones. */
+export function invalidateRepo(config: { owner: string; repo: string }): void {
+  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  cacheDeletePrefix(`milestones:${config.owner}/${config.repo}`);
+}
+
 export async function fetchComments(projectPath: string, issueNumber: string | number) {
   const config = await configService.readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) return [];

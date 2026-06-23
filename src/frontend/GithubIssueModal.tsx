@@ -127,7 +127,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, columns 
     setMovingTo(colId);
     setError(null);
     try {
-      const patch = columnChangePatch(currentColumnId, colId);
+      const patch = columnChangePatch(currentIssue, colId);
       if (!patch) return;
       const res = await api.rpc('PATCH', `/issues/${currentIssue.number}?path=${encodeURIComponent(projectPath)}`, patch);
       const data = res as { ok: boolean; issue: GithubIssue };
