@@ -7064,7 +7064,7 @@ const PRIORITY_COLORS$1 = {
   medium: "#f59e0b",
   low: "#6b7280"
 };
-function hexToRgb(hex) {
+function hexToRgb$1(hex) {
   const m2 = /^#?([0-9a-f]{6})$/i.exec(hex);
   if (!m2 || !m2[1]) return null;
   const n2 = parseInt(m2[1], 16);
@@ -7075,7 +7075,7 @@ function hexToRgb(hex) {
   };
 }
 function labelTextColor(hex) {
-  const rgb = hexToRgb(hex);
+  const rgb = hexToRgb$1(hex);
   if (!rgb) return "#000000";
   const lum = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
   return lum > 140 ? "#000000" : "#ffffff";
@@ -9118,6 +9118,20 @@ const PRIORITY_COLORS = {
   medium: "#f59e0b",
   low: "#6b7280"
 };
+function hexToRgb(hex) {
+  const m2 = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m2 || !m2[1]) return null;
+  const n2 = parseInt(m2[1], 16);
+  return {
+    r: n2 >> 16 & 255,
+    g: n2 >> 8 & 255,
+    b: n2 & 255
+  };
+}
+function primaryLabel(labels) {
+  const nonStatus = labels.filter((l2) => !STATUS_LABELS.includes(l2.name.toLowerCase()));
+  return nonStatus.find((l2) => l2.name.toLowerCase() === "bug") ?? nonStatus[0] ?? null;
+}
 const PlanCard = ({
   issue,
   index,
@@ -9133,51 +9147,57 @@ const PlanCard = ({
   const isBug = issue.labels.some((l2) => l2.name.toLowerCase() === "bug");
   const done = issue.state === "closed";
   const inReview = !done && issue.labels.some((l2) => l2.name.toLowerCase() === "review");
-  return /* @__PURE__ */ React.createElement("div", { className: `cgi-plan-card${done ? " done" : ""}${inReview ? " in-review" : ""}`, draggable: true, onDragStart, onDragOver, onDrop, __self: void 0, __source: {
+  const tinted = !done && !inReview ? primaryLabel(issue.labels) : null;
+  const rgb = tinted ? hexToRgb(tinted.color) : null;
+  const tintStyle = rgb ? {
+    background: `rgba(${rgb.r},${rgb.g},${rgb.b},0.12)`,
+    borderColor: `rgba(${rgb.r},${rgb.g},${rgb.b},0.5)`
+  } : void 0;
+  return /* @__PURE__ */ React.createElement("div", { className: `cgi-plan-card${done ? " done" : ""}${inReview ? " in-review" : ""}`, style: tintStyle, draggable: true, onDragStart, onDragOver, onDrop, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 33,
+    lineNumber: 58,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-drag", title: "Drag to reorder", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 40,
+    lineNumber: 66,
     columnNumber: 7
   } }, "⠿"), priority && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-dot", style: {
     background: PRIORITY_COLORS[priority]
   }, __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 42,
+    lineNumber: 68,
     columnNumber: 9
   } }), /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-card-main", onClick: () => onOpen(issue), __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 44,
+    lineNumber: 70,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-num", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 45,
+    lineNumber: 71,
     columnNumber: 9
   } }, "#", issue.number), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-title", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 46,
+    lineNumber: 72,
     columnNumber: 9
   } }, issue.title), inReview && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-review", title: "Zrobione — czeka na weryfikację/zamknięcie", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 47,
+    lineNumber: 73,
     columnNumber: 22
   } }, "✓ w review"), isBug && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-bug", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 48,
+    lineNumber: 74,
     columnNumber: 19
   } }, "bug")), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-reorder", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 50,
+    lineNumber: 76,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-arrow", disabled: index === 0, onClick: onMoveUp, title: "Move up", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 51,
+    lineNumber: 77,
     columnNumber: 9
   } }, "▲"), /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-arrow", disabled: index === count - 1, onClick: onMoveDown, title: "Move down", __self: void 0, __source: {
     fileName: _jsxFileName$4,
-    lineNumber: 52,
+    lineNumber: 78,
     columnNumber: 9
   } }, "▼")));
 };
