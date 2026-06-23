@@ -64,6 +64,37 @@ export const COLUMNS: ColumnDef[] = [
   { id: 'done',        title: 'Done',        state: 'closed', labels: [],              accentColor: '#10b981', bgColor: 'rgba(16,185,129,0.08)' },
 ];
 
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m || !m[1]) return null;
+  const n = parseInt(m[1], 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+// Recolor the status columns from their defining label's real GitHub color, so the
+// board matches the Plan-tab label tints and the label chips (single color source).
+// Columns with no defining label (To Do, Done) keep their built-in defaults.
+export function resolveColumns(issues: GithubIssue[]): ColumnDef[] {
+  const labelColors = new Map<string, string>();
+  for (const issue of issues) {
+    for (const l of issue.labels) {
+      const key = l.name.toLowerCase();
+      if (!labelColors.has(key) && /^[0-9a-f]{6}$/i.test(l.color)) labelColors.set(key, l.color);
+    }
+  }
+  return COLUMNS.map(col => {
+    const key = col.labels[0]?.toLowerCase();
+    const hex = key ? labelColors.get(key) : undefined;
+    if (!hex) return col;
+    const rgb = hexToRgb(hex);
+    return {
+      ...col,
+      accentColor: `#${hex}`,
+      bgColor: rgb ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)` : col.bgColor,
+    };
+  });
+}
+
 export function issueToColumnId(issue: GithubIssue): string {
   if (issue.state === 'closed') return 'done';
   const labelNames = issue.labels.map(l => l.name);

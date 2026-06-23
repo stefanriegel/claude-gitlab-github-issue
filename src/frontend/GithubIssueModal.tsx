@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { GithubIssue, GithubComment } from './types';
+import type { GithubIssue, GithubComment, ColumnDef } from './types';
 import { COLUMNS, issueToColumnId, columnChangePatch } from './types';
 import { usePluginAPI } from './PluginContext';
 import { extractImages, stripImages } from './imageUtils';
@@ -31,6 +31,7 @@ function loadSize() {
 interface Props {
   issue: GithubIssue;
   projectPath: string;
+  columns?: ColumnDef[];
   onClose: () => void;
   onIssueUpdated: (updated: GithubIssue) => void;
 }
@@ -45,7 +46,7 @@ function formatDate(isoString: string): string {
   }
 }
 
-export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose, onIssueUpdated }) => {
+export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, columns = COLUMNS, onClose, onIssueUpdated }) => {
   const api = usePluginAPI();
   const [comments, setComments] = useState<GithubComment[]>([]);
   const [loadingComments, setLoadingComments] = useState(true);
@@ -238,13 +239,18 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, onClose,
           <div>
             <div className="cgi-modal-section-label">Move to column</div>
             <div className="cgi-column-selector">
-              {COLUMNS.map(col => {
+              {columns.map(col => {
                 const isActive = col.id === issueToColumnId(currentIssue);
+                // Active = filled with the column's GitHub color; inactive = colored
+                // outline + text in the same color so every pill matches the board.
+                const style = isActive
+                  ? { background: col.accentColor, borderColor: col.accentColor, color: '#fff' }
+                  : { borderColor: `${col.accentColor}80`, color: col.accentColor };
                 return (
                   <button
                     key={col.id}
                     className={`cgi-column-btn${isActive ? ' cgi-column-btn-active' : ''}`}
-                    style={isActive ? { background: col.accentColor, borderColor: col.accentColor } : {}}
+                    style={style}
                     onClick={() => handleMoveToColumn(col.id)}
                     disabled={isActive || movingTo !== null}
                   >

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GithubIssue } from './types';
-import { COLUMNS, issueToColumnId } from './types';
+import { resolveColumns, issueToColumnId } from './types';
 import type { IssuePriority } from './priorityUtils';
 import { GithubKanbanColumn } from './GithubKanbanColumn';
 
@@ -43,20 +43,23 @@ export const GithubBoard: React.FC<Props> = ({
 }) => {
   const isMobile = useIsMobile();
 
+  // Column colors derived from the issues' real GitHub label colors.
+  const columns = React.useMemo(() => resolveColumns(issues), [issues]);
+
   const issuesByColumn = React.useMemo(() => {
     const map = new Map<string, GithubIssue[]>();
-    for (const col of COLUMNS) map.set(col.id, []);
+    for (const col of columns) map.set(col.id, []);
     for (const issue of issues) {
       const colId = issueToColumnId(issue);
       const arr = map.get(colId);
       if (arr) arr.push(issue);
     }
     return map;
-  }, [issues]);
+  }, [issues, columns]);
 
   // On mobile collapsed columns are pulled out of the grid entirely.
-  const gridColumns = isMobile ? COLUMNS.filter(c => !collapsedColumns.has(c.id)) : COLUMNS;
-  const collapsedChips = isMobile ? COLUMNS.filter(c => collapsedColumns.has(c.id)) : [];
+  const gridColumns = isMobile ? columns.filter(c => !collapsedColumns.has(c.id)) : columns;
+  const collapsedChips = isMobile ? columns.filter(c => collapsedColumns.has(c.id)) : [];
 
   const gridTemplate = gridColumns.map(col =>
     collapsedColumns.has(col.id) ? '52px' : 'minmax(0, 1fr)'

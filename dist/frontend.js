@@ -6963,6 +6963,33 @@ const COLUMNS = [
   { id: "blocked", title: "Blocked", state: "open", labels: ["blocked"], accentColor: "#ef4444", bgColor: "rgba(239,68,68,0.08)" },
   { id: "done", title: "Done", state: "closed", labels: [], accentColor: "#10b981", bgColor: "rgba(16,185,129,0.08)" }
 ];
+function hexToRgb$2(hex) {
+  const m2 = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m2 || !m2[1]) return null;
+  const n2 = parseInt(m2[1], 16);
+  return { r: n2 >> 16 & 255, g: n2 >> 8 & 255, b: n2 & 255 };
+}
+function resolveColumns(issues) {
+  const labelColors = /* @__PURE__ */ new Map();
+  for (const issue of issues) {
+    for (const l2 of issue.labels) {
+      const key = l2.name.toLowerCase();
+      if (!labelColors.has(key) && /^[0-9a-f]{6}$/i.test(l2.color)) labelColors.set(key, l2.color);
+    }
+  }
+  return COLUMNS.map((col) => {
+    var _a;
+    const key = (_a = col.labels[0]) == null ? void 0 : _a.toLowerCase();
+    const hex = key ? labelColors.get(key) : void 0;
+    if (!hex) return col;
+    const rgb = hexToRgb$2(hex);
+    return {
+      ...col,
+      accentColor: `#${hex}`,
+      bgColor: rgb ? `rgba(${rgb.r},${rgb.g},${rgb.b},0.08)` : col.bgColor
+    };
+  });
+}
 function issueToColumnId(issue) {
   if (issue.state === "closed") return "done";
   const labelNames = issue.labels.map((l2) => l2.name);
@@ -7302,26 +7329,27 @@ const GithubBoard = ({
   onOpenIssue
 }) => {
   const isMobile = useIsMobile();
+  const columns = React.useMemo(() => resolveColumns(issues), [issues]);
   const issuesByColumn = React.useMemo(() => {
     const map = /* @__PURE__ */ new Map();
-    for (const col of COLUMNS) map.set(col.id, []);
+    for (const col of columns) map.set(col.id, []);
     for (const issue of issues) {
       const colId = issueToColumnId(issue);
       const arr = map.get(colId);
       if (arr) arr.push(issue);
     }
     return map;
-  }, [issues]);
-  const gridColumns = isMobile ? COLUMNS.filter((c) => !collapsedColumns.has(c.id)) : COLUMNS;
-  const collapsedChips = isMobile ? COLUMNS.filter((c) => collapsedColumns.has(c.id)) : [];
+  }, [issues, columns]);
+  const gridColumns = isMobile ? columns.filter((c) => !collapsedColumns.has(c.id)) : columns;
+  const collapsedChips = isMobile ? columns.filter((c) => collapsedColumns.has(c.id)) : [];
   const gridTemplate = gridColumns.map((col) => collapsedColumns.has(col.id) ? "52px" : "minmax(0, 1fr)").join(" ");
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-board-wrap", __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 66,
+    lineNumber: 69,
     columnNumber: 5
   } }, collapsedChips.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-collapsed-bar", __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 68,
+    lineNumber: 71,
     columnNumber: 9
   } }, collapsedChips.map((col) => /* @__PURE__ */ React.createElement("button", { key: col.id, className: "cgi-collapsed-chip", style: {
     color: col.accentColor,
@@ -7329,27 +7357,27 @@ const GithubBoard = ({
     background: col.bgColor
   }, onClick: () => onToggleColumn(col.id), title: `Expand ${col.title}`, __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 70,
+    lineNumber: 73,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("span", { className: "cgi-collapsed-chip-dot", style: {
     background: col.accentColor
   }, __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 77,
+    lineNumber: 80,
     columnNumber: 15
   } }), col.title, /* @__PURE__ */ React.createElement("span", { className: "cgi-collapsed-chip-count", __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 79,
+    lineNumber: 82,
     columnNumber: 15
   } }, (issuesByColumn.get(col.id) ?? []).length)))), /* @__PURE__ */ React.createElement("div", { className: "cgi-board", style: {
     gridTemplateColumns: gridTemplate
   }, __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 84,
+    lineNumber: 87,
     columnNumber: 7
   } }, gridColumns.map((col) => /* @__PURE__ */ React.createElement(GithubKanbanColumn, { key: col.id, column: col, issues: issuesByColumn.get(col.id) ?? [], priorityMap, collapsed: collapsedColumns.has(col.id), onToggle: () => onToggleColumn(col.id), onOpenIssue, onMoveIssue, __self: void 0, __source: {
     fileName: _jsxFileName$c,
-    lineNumber: 86,
+    lineNumber: 89,
     columnNumber: 11
   } }))));
 };
@@ -7711,6 +7739,7 @@ function formatDate(isoString) {
 const GithubIssueModal = ({
   issue,
   projectPath,
+  columns = COLUMNS,
   onClose,
   onIssueUpdated
 }) => {
@@ -7816,38 +7845,38 @@ const GithubIssueModal = ({
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, lightbox && /* @__PURE__ */ React.createElement(ImageLightbox, { src: lightbox.src, alt: lightbox.alt, onClose: () => setLightbox(null), __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 164,
+    lineNumber: 165,
     columnNumber: 18
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-overlay", onClick: (e) => {
     if (e.target === e.currentTarget) onClose();
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 165,
+    lineNumber: 166,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal", style: {
     width: modalSize.width,
     maxHeight: modalSize.height
   }, onClick: (e) => e.stopPropagation(), __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 166,
+    lineNumber: 167,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-header", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 168,
+    lineNumber: 169,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     flex: 1
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 169,
+    lineNumber: 170,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-title", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 170,
+    lineNumber: 171,
     columnNumber: 13
   } }, currentIssue.title), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-subtitle", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 171,
+    lineNumber: 172,
     columnNumber: 13
   } }, "#", currentIssue.number, " · opened by ", currentIssue.user.login, " on ", formatDate(currentIssue.created_at), currentIssue.state === "closed" && /* @__PURE__ */ React.createElement("span", { style: {
     marginLeft: 8,
@@ -7855,42 +7884,42 @@ const GithubIssueModal = ({
     fontWeight: 600
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 173,
+    lineNumber: 174,
     columnNumber: 51
   } }, "● Closed"))), /* @__PURE__ */ React.createElement("a", { href: currentIssue.html_url, target: "_blank", rel: "noopener noreferrer", className: "cgi-btn", title: "Open on GitHub", style: {
     textDecoration: "none",
     flexShrink: 0
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 176,
+    lineNumber: 177,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 184,
+    lineNumber: 185,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 185,
+    lineNumber: 186,
     columnNumber: 15
   } })), "GitHub"), /* @__PURE__ */ React.createElement("button", { className: "cgi-modal-close", onClick: onClose, title: "Close", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 189,
+    lineNumber: 190,
     columnNumber: 11
   } }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-body", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 192,
+    lineNumber: 193,
     columnNumber: 9
   } }, currentIssue.labels.length > 0 && /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 195,
+    lineNumber: 196,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 196,
+    lineNumber: 197,
     columnNumber: 15
   } }, "Labels"), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 197,
+    lineNumber: 198,
     columnNumber: 15
   } }, currentIssue.labels.map((l2) => /* @__PURE__ */ React.createElement("span", { key: l2.id, className: "cgi-label-chip", style: {
     background: `#${l2.color}`,
@@ -7899,131 +7928,136 @@ const GithubIssueModal = ({
     padding: "2px 8px"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 199,
+    lineNumber: 200,
     columnNumber: 19
   } }, l2.name)))), currentIssue.body && (() => {
     const imgs = extractImages(currentIssue.body);
     const text = stripImages(currentIssue.body);
     return /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 221,
+      lineNumber: 222,
       columnNumber: 15
     } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 222,
+      lineNumber: 223,
       columnNumber: 17
     } }, "Description"), imgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 224,
+      lineNumber: 225,
       columnNumber: 19
     } }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({
       src: img.url,
       alt: img.alt
     }), title: "Click to enlarge", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 226,
+      lineNumber: 227,
       columnNumber: 23
     } }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 227,
+      lineNumber: 228,
       columnNumber: 25
     } })))), text && /* @__PURE__ */ React.createElement(Markdown, { text, className: "cgi-issue-body", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 232,
+      lineNumber: 233,
       columnNumber: 26
     } }));
   })(), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 238,
+    lineNumber: 239,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 239,
+    lineNumber: 240,
     columnNumber: 13
   } }, "Move to column"), /* @__PURE__ */ React.createElement("div", { className: "cgi-column-selector", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 240,
+    lineNumber: 241,
     columnNumber: 13
-  } }, COLUMNS.map((col) => {
+  } }, columns.map((col) => {
     const isActive = col.id === issueToColumnId(currentIssue);
-    return /* @__PURE__ */ React.createElement("button", { key: col.id, className: `cgi-column-btn${isActive ? " cgi-column-btn-active" : ""}`, style: isActive ? {
+    const style = isActive ? {
       background: col.accentColor,
-      borderColor: col.accentColor
-    } : {}, onClick: () => handleMoveToColumn(col.id), disabled: isActive || movingTo !== null, __self: void 0, __source: {
+      borderColor: col.accentColor,
+      color: "#fff"
+    } : {
+      borderColor: `${col.accentColor}80`,
+      color: col.accentColor
+    };
+    return /* @__PURE__ */ React.createElement("button", { key: col.id, className: `cgi-column-btn${isActive ? " cgi-column-btn-active" : ""}`, style, onClick: () => handleMoveToColumn(col.id), disabled: isActive || movingTo !== null, __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 244,
+      lineNumber: 250,
       columnNumber: 19
     } }, movingTo === col.id ? "..." : col.title);
   }))), error && /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 259,
+    lineNumber: 265,
     columnNumber: 21
   } }, error), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 262,
+    lineNumber: 268,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 263,
+    lineNumber: 269,
     columnNumber: 13
   } }, "Comments ", !loadingComments && `(${comments.length})`), loadingComments ? /* @__PURE__ */ React.createElement("div", { style: {
     color: "var(--cgi-text-muted)",
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 267,
+    lineNumber: 273,
     columnNumber: 15
   } }, "Loading comments...") : comments.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-comments-list", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 269,
+    lineNumber: 275,
     columnNumber: 15
   } }, comments.map((c) => {
     const cImgs = extractImages(c.body);
     const cText = stripImages(c.body);
     return /* @__PURE__ */ React.createElement("div", { key: c.id, className: "cgi-comment", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 274,
+      lineNumber: 280,
       columnNumber: 21
     } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-header", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 275,
+      lineNumber: 281,
       columnNumber: 23
     } }, /* @__PURE__ */ React.createElement("img", { src: c.user.avatar_url, alt: c.user.login, className: "cgi-avatar", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 276,
+      lineNumber: 282,
       columnNumber: 25
     } }), /* @__PURE__ */ React.createElement("span", { className: "cgi-comment-author", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 277,
+      lineNumber: 283,
       columnNumber: 25
     } }, c.user.login), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 278,
+      lineNumber: 284,
       columnNumber: 25
     } }, "·"), /* @__PURE__ */ React.createElement("span", { __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 279,
+      lineNumber: 285,
       columnNumber: 25
     } }, formatDate(c.created_at))), cImgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", style: {
       marginBottom: cText ? 8 : 0
     }, __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 282,
+      lineNumber: 288,
       columnNumber: 25
     } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({
       src: img.url,
       alt: img.alt
     }), title: "Click to enlarge", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 284,
+      lineNumber: 290,
       columnNumber: 29
     } }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 285,
+      lineNumber: 291,
       columnNumber: 31
     } })))), cText && /* @__PURE__ */ React.createElement(Markdown, { text: cText, className: "cgi-comment-body", __self: void 0, __source: {
       fileName: _jsxFileName$9,
-      lineNumber: 290,
+      lineNumber: 296,
       columnNumber: 33
     } }));
   })) : /* @__PURE__ */ React.createElement("div", { style: {
@@ -8031,46 +8065,46 @@ const GithubIssueModal = ({
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 296,
+    lineNumber: 302,
     columnNumber: 15
   } }, "No comments yet.")), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 301,
+    lineNumber: 307,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label", __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 302,
+    lineNumber: 308,
     columnNumber: 13
   } }, "Add comment"), /* @__PURE__ */ React.createElement("form", { className: "cgi-comment-form", onSubmit: handleSubmitComment, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 303,
+    lineNumber: 309,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("textarea", { className: "cgi-textarea", placeholder: "Write a comment...", value: commentText, onChange: (e) => setCommentText(e.target.value), disabled: submittingComment, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 304,
+    lineNumber: 310,
     columnNumber: 15
   } }), /* @__PURE__ */ React.createElement("div", { style: {
     display: "flex",
     justifyContent: "flex-end"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 311,
+    lineNumber: 317,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("button", { type: "submit", className: "cgi-btn cgi-btn-primary", disabled: !commentText.trim() || submittingComment, __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 312,
+    lineNumber: 318,
     columnNumber: 17
   } }, submittingComment ? "Posting..." : "Post comment"))))), /* @__PURE__ */ React.createElement("div", { className: "cgi-resize-e", onMouseDown: (e) => startResize(e, "e"), __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 325,
+    lineNumber: 331,
     columnNumber: 9
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-resize-s", onMouseDown: (e) => startResize(e, "s"), __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 326,
+    lineNumber: 332,
     columnNumber: 9
   } }), /* @__PURE__ */ React.createElement("div", { className: "cgi-resize-se", onMouseDown: (e) => startResize(e, "se"), __self: void 0, __source: {
     fileName: _jsxFileName$9,
-    lineNumber: 327,
+    lineNumber: 333,
     columnNumber: 9
   } }))));
 };
@@ -9874,6 +9908,7 @@ const App = () => {
     }
     return sortIssues(issues, sortBy, sortDir, priorityMap);
   }, [data, searchText, activePriority, sortBy, sortDir, priorityMap]);
+  const resolvedColumns = reactExports.useMemo(() => data ? resolveColumns(data.issues) : COLUMNS, [data]);
   const totalCount = (data == null ? void 0 : data.issues.length) ?? 0;
   const filteredCount = processedIssues.length;
   const isFiltered = filteredCount !== totalCount;
@@ -9884,25 +9919,25 @@ const App = () => {
     color: "var(--cgi-text)"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 267,
+    lineNumber: 270,
     columnNumber: 5
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-toolbar", style: {
     background: "var(--cgi-surface)"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 269,
+    lineNumber: 272,
     columnNumber: 7
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-toolbar-title", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 270,
+    lineNumber: 273,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 271,
+    lineNumber: 274,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 272,
+    lineNumber: 275,
     columnNumber: 13
   } })), "GitHub Issues Board", repoInfo.owner && repoInfo.repo && /* @__PURE__ */ React.createElement("span", { style: {
     fontWeight: 400,
@@ -9910,208 +9945,208 @@ const App = () => {
     fontSize: 12
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 276,
+    lineNumber: 279,
     columnNumber: 13
   } }, repoInfo.owner, "/", repoInfo.repo), data && /* @__PURE__ */ React.createElement("span", { style: {
     fontSize: 11,
     opacity: 0.45
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 281,
+    lineNumber: 284,
     columnNumber: 13
   } }, isFiltered ? `${filteredCount}/${totalCount}` : `${totalCount}`)), /* @__PURE__ */ React.createElement("div", { className: "cgi-tabs", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 286,
+    lineNumber: 289,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("button", { className: `cgi-tab${activeTab === "board" ? " active" : ""}`, onClick: () => switchTab("board"), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 287,
+    lineNumber: 290,
     columnNumber: 11
   } }, "Issues Board"), /* @__PURE__ */ React.createElement("button", { className: `cgi-tab${activeTab === "plan" ? " active" : ""}`, onClick: () => switchTab("plan"), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 291,
+    lineNumber: 294,
     columnNumber: 11
   } }, "Plan")), /* @__PURE__ */ React.createElement("div", { className: "cgi-toolbar-actions", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 296,
+    lineNumber: 299,
     columnNumber: 9
   } }, project && !notConfigured && /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-btn-new-issue", onClick: () => setShowNewIssue(true), title: "Create a new issue", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 298,
+    lineNumber: 301,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("svg", { width: "12", height: "12", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 303,
+    lineNumber: 306,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("path", { d: "M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 304,
+    lineNumber: 307,
     columnNumber: 17
   } })), "New Issue"), data && project && /* @__PURE__ */ React.createElement("button", { className: `cgi-btn cgi-btn-ai${aiPrioritizing ? " cgi-btn-ai-loading" : ""}`, onClick: handleAIPrioritize, disabled: aiPrioritizing, title: hasAnthropicKey ? "AI Prioritize — using Anthropic Claude API" : "AI Prioritize — using smart heuristics (add Anthropic API key in ⚙ settings for real AI)", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 310,
+    lineNumber: 313,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 316,
+    lineNumber: 319,
     columnNumber: 15
   } }, /* @__PURE__ */ React.createElement("path", { d: "M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 317,
+    lineNumber: 320,
     columnNumber: 17
   } })), aiPrioritizing ? "Analyzing…" : aiUsed ? "Re-prioritize" : "AI Prioritize"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues, disabled: loading, title: "Refresh issues", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 322,
+    lineNumber: 325,
     columnNumber: 11
   } }, loading ? "↻ Refreshing…" : "↻ Refresh"), project && /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: () => setShowSettings(true), title: "Settings", style: {
     padding: "4px 8px"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 326,
+    lineNumber: 329,
     columnNumber: 13
   } }, "⚙"))), activeTab === "board" && data && /* @__PURE__ */ React.createElement("div", { className: "cgi-filterbar", style: {
     background: "var(--cgi-surface)",
     borderBottom: "1px solid var(--cgi-border)"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 335,
+    lineNumber: 338,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-search-wrap", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 337,
+    lineNumber: 340,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("svg", { className: "cgi-search-icon", width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 338,
+    lineNumber: 341,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("path", { d: "M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 339,
+    lineNumber: 342,
     columnNumber: 15
   } })), /* @__PURE__ */ React.createElement("input", { type: "text", className: "cgi-search-input", placeholder: "Search issues…", value: searchText, onChange: (e) => setSearchText(e.target.value), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 341,
+    lineNumber: 344,
     columnNumber: 13
   } }), searchText && /* @__PURE__ */ React.createElement("button", { className: "cgi-search-clear", onClick: () => setSearchText(""), title: "Clear search", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 349,
+    lineNumber: 352,
     columnNumber: 15
   } }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-priority-pills", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 354,
+    lineNumber: 357,
     columnNumber: 11
   } }, ["all", "high", "medium", "low"].map((p2) => /* @__PURE__ */ React.createElement("button", { key: p2, className: `cgi-priority-pill${activePriority === p2 ? " active" : ""}`, onClick: () => setActivePriority(p2), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 356,
+    lineNumber: 359,
     columnNumber: 15
   } }, p2 !== "all" && /* @__PURE__ */ React.createElement("span", { className: "cgi-priority-pill-dot", style: {
     background: PRIORITY_PILL_COLORS[p2]
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 362,
+    lineNumber: 365,
     columnNumber: 19
   } }), p2 === "all" ? "All" : p2.charAt(0).toUpperCase() + p2.slice(1)))), /* @__PURE__ */ React.createElement("div", { className: "cgi-sort-controls", ref: sortMenuRef, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 370,
+    lineNumber: 373,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-sort-dir-btn", onClick: () => setSortDir((d) => d === "desc" ? "asc" : "desc"), title: sortDir === "desc" ? "Descending — click for ascending" : "Ascending — click for descending", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 371,
+    lineNumber: 374,
     columnNumber: 13
   } }, sortDir === "desc" ? "↓" : "↑"), /* @__PURE__ */ React.createElement("div", { style: {
     position: "relative"
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 378,
+    lineNumber: 381,
     columnNumber: 13
   } }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-sort-select-btn", onClick: () => setShowSortMenu((v2) => !v2), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 379,
+    lineNumber: 382,
     columnNumber: 15
   } }, "Sort: ", SORT_LABELS[sortBy], " ", /* @__PURE__ */ React.createElement("span", { style: {
     opacity: 0.5,
     marginLeft: 2
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 383,
+    lineNumber: 386,
     columnNumber: 45
   } }, "∨")), showSortMenu && /* @__PURE__ */ React.createElement("div", { className: "cgi-sort-menu", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 386,
+    lineNumber: 389,
     columnNumber: 17
   } }, SORT_OPTIONS.map((opt) => /* @__PURE__ */ React.createElement("button", { key: opt, className: `cgi-sort-menu-item${sortBy === opt ? " active" : ""}`, onClick: () => {
     setSortBy(opt);
     setShowSortMenu(false);
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 388,
+    lineNumber: 391,
     columnNumber: 21
   } }, SORT_LABELS[opt])))))), activeTab === "plan" ? project ? /* @__PURE__ */ React.createElement(PlanView, { projectPath, onOpenIssue: setSelectedIssue, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 406,
+    lineNumber: 409,
     columnNumber: 11
   } }) : /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 411,
+    lineNumber: 414,
     columnNumber: 11
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 411,
+    lineNumber: 414,
     columnNumber: 39
   } }, "No project open.")) : !project ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 414,
+    lineNumber: 417,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { style: {
     opacity: 0.5
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 415,
+    lineNumber: 418,
     columnNumber: 11
   } }, "No project open."), /* @__PURE__ */ React.createElement("div", { style: {
     fontSize: 12,
     opacity: 0.4
   }, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 416,
+    lineNumber: 419,
     columnNumber: 11
   } }, "Open a project to view its GitHub Issues.")) : notConfigured ? /* @__PURE__ */ React.createElement(ConfigBanner, { onOpenSettings: () => setShowSettings(true), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 419,
+    lineNumber: 422,
     columnNumber: 9
   } }) : loading && !data ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 421,
+    lineNumber: 424,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-spinner", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 422,
+    lineNumber: 425,
     columnNumber: 11
   } }), /* @__PURE__ */ React.createElement("div", { __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 423,
+    lineNumber: 426,
     columnNumber: 11
   } }, "Loading issues…")) : error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 426,
+    lineNumber: 429,
     columnNumber: 9
   } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text", __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 427,
+    lineNumber: 430,
     columnNumber: 11
   } }, error), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 428,
+    lineNumber: 431,
     columnNumber: 11
   } }, "Retry")) : data ? /* @__PURE__ */ React.createElement(GithubBoard, { issues: processedIssues, priorityMap, collapsedColumns, onToggleColumn: handleToggleColumn, onMoveIssue: handleMoveIssue, onOpenIssue: setSelectedIssue, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 431,
+    lineNumber: 434,
     columnNumber: 9
-  } }) : null, selectedIssue && project && /* @__PURE__ */ React.createElement(GithubIssueModal, { issue: selectedIssue, projectPath, onClose: () => setSelectedIssue(null), onIssueUpdated: handleIssueUpdated, __self: void 0, __source: {
+  } }) : null, selectedIssue && project && /* @__PURE__ */ React.createElement(GithubIssueModal, { issue: selectedIssue, projectPath, columns: resolvedColumns, onClose: () => setSelectedIssue(null), onIssueUpdated: handleIssueUpdated, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 442,
+    lineNumber: 445,
     columnNumber: 9
   } }), showSettings && project && /* @__PURE__ */ React.createElement(SettingsModal, { projectPath, onClose: () => setShowSettings(false), onSaved: () => {
     setNotConfigured(false);
@@ -10122,15 +10157,15 @@ const App = () => {
     setShowSubscriptionModal(true);
   } : void 0, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 451,
+    lineNumber: 455,
     columnNumber: 9
   } }), showSubscriptionModal && data && /* @__PURE__ */ React.createElement(SubscriptionPriorityModal, { issues: data.issues, onApply: handleSubscriptionPriorities, onClose: () => setShowSubscriptionModal(false), __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 467,
+    lineNumber: 471,
     columnNumber: 9
   } }), showNewIssue && project && /* @__PURE__ */ React.createElement(NewIssueModal, { projectPath, onClose: () => setShowNewIssue(false), onCreated: handleIssueCreated, __self: void 0, __source: {
     fileName: _jsxFileName$1,
-    lineNumber: 475,
+    lineNumber: 479,
     columnNumber: 9
   } }));
 };

@@ -1,6 +1,6 @@
 {
   "name": "claude-github-issue",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "GitHub Issues Kanban board plugin for claudecodeui",
   "author": "szmidtpiotr",
   "license": "MIT",

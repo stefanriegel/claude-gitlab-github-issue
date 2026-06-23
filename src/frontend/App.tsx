@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { IssuesData, GithubIssue } from './types';
-import { columnChangePatch } from './types';
+import { columnChangePatch, resolveColumns, COLUMNS } from './types';
 import { usePluginAPI } from './PluginContext';
 import type { IssuePriority, PriorityLevel, SortOption } from './priorityUtils';
 import { detectPriorityFromLabels, getEffectivePriority, sortIssues } from './priorityUtils';
@@ -257,6 +257,9 @@ export const App: React.FC = () => {
     return sortIssues(issues, sortBy, sortDir, priorityMap);
   }, [data, searchText, activePriority, sortBy, sortDir, priorityMap]);
 
+  // Status-column colors from real GitHub label colors (shared by board + modal pills).
+  const resolvedColumns = useMemo(() => data ? resolveColumns(data.issues) : COLUMNS, [data]);
+
   const totalCount = data?.issues.length ?? 0;
   const filteredCount = processedIssues.length;
   const isFiltered = filteredCount !== totalCount;
@@ -442,6 +445,7 @@ export const App: React.FC = () => {
         <GithubIssueModal
           issue={selectedIssue}
           projectPath={projectPath}
+          columns={resolvedColumns}
           onClose={() => setSelectedIssue(null)}
           onIssueUpdated={handleIssueUpdated}
         />
