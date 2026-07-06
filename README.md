@@ -1,6 +1,6 @@
 # claude-github-issue
 
-A [claudecodeui](https://github.com/siteboon/claudecodeui) plugin that adds a **GitHub Issues Kanban board** tab to your workspace. Manage issues visually, filter and sort them, create new ones, and prioritize with AI — all without leaving your editor.
+A [claudecodeui](https://github.com/siteboon/claudecodeui) plugin that adds a **GitHub or GitLab Issues Kanban board** tab to your workspace. Manage issues visually, filter and sort them, create new ones, and prioritize with AI — all without leaving your editor.
 
 Also auto-installs the `/github-task` skill so Claude can manage issues directly from chat.
 
@@ -52,8 +52,9 @@ Also auto-installs the `/github-task` skill so Claude can manage issues directly
 - **Claude.ai subscription mode** — available in ⚙ Settings → "Use claude.ai →": generates a ready-to-paste prompt, paste Claude's JSON response back to apply priorities
 
 ### Settings (⚙ per project)
-- GitHub Personal Access Token
+- GitHub or GitLab Personal Access Token
 - Repository owner and name
+- GitLab base URL for self-hosted instances
 - Optional Anthropic API key (enables real AI prioritization)
 - Link to `/github-task` skill documentation
 - Config stored in `.GitHubBoard/github-sync.json` in the project root (not committed if added to `.gitignore`)
@@ -80,7 +81,7 @@ On first plugin load, installs `/github-task` skill to `~/.claude/skills/github-
    ```
 4. Click **Install**
 
-The plugin appears as a new **GitHub Issues** tab. No global configuration needed — each project configures its own GitHub connection.
+The plugin appears as a new **Issues Board** tab. No global configuration needed — each project configures its own GitHub or GitLab connection.
 
 ---
 
@@ -90,9 +91,21 @@ Click the **⚙** button in the board toolbar to open settings, or create `.GitH
 
 <img width="895" height="1192" alt="image" src="https://github.com/user-attachments/assets/655fd817-23c5-4b00-bc93-edfd896d0434" />
 
+```json
+{ "provider": "github", "token": "ghp_...", "owner": "owner", "repo": "repo", "enabled": true }
+```
 
-**Generate a token:** GitHub → Settings → Developer settings → Personal access tokens → Generate new (classic)
-Required scope: `repo`
+```json
+{ "provider": "gitlab", "baseUrl": "https://gitlab.com", "token": "glpat-...", "owner": "group/subgroup", "repo": "project", "enabled": true }
+```
+
+```json
+{ "provider": "gitlab", "baseUrl": "https://gitlab.example.com", "token": "glpat-...", "owner": "group/subgroup", "repo": "project", "enabled": true }
+```
+
+Required token scopes:
+- GitHub: `repo`
+- GitLab: `api`
 
 To enable real AI prioritization, also add:
 ```json

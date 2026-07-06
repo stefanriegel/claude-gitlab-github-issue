@@ -2,7 +2,7 @@
 
 ## What this project is
 
-A **claudecodeui plugin** that adds a GitHub Issues Kanban board tab to the UI. Users install it from Settings → Plugins by pasting the GitHub repo URL.
+A **claudecodeui plugin** that adds a GitHub or GitLab Issues Kanban board tab to the UI. Users install it from Settings → Plugins by pasting the GitHub repo URL.
 
 Plugin contract (claudecodeui plugin system):
 - `manifest.json` — declares `entry` (frontend JS) and `server` (backend Node.js)
@@ -43,7 +43,7 @@ src/
   backend/
     server.ts          HTTP server — routes: /config, /issues, /ai-prioritize
     config.service.ts  Read/write .GitHubBoard/github-sync.json in project root
-    github.service.ts  GitHub API calls (list issues, patch issue, post comment)
+    github.service.ts  GitHub or GitLab issue API calls (list issues, patch issue, post comment)
     issues.service.ts  Create issue
     ai.service.ts      Heuristic + Anthropic API prioritization
     cache.ts           Simple in-memory cache for API responses
@@ -59,9 +59,22 @@ tsconfig.json
 Stored per-project at `<projectRoot>/.GitHubBoard/github-sync.json`:
 ```json
 {
+  "provider": "github",
   "token": "ghp_...",
   "owner": "username",
   "repo": "repo-name",
+  "enabled": true,
+  "anthropicKey": "sk-ant-..."
+}
+```
+
+```json
+{
+  "provider": "gitlab",
+  "baseUrl": "https://gitlab.com",
+  "token": "glpat-...",
+  "owner": "group/subgroup",
+  "repo": "project",
   "enabled": true,
   "anthropicKey": "sk-ant-..."
 }
