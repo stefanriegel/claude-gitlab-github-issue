@@ -45,3 +45,17 @@ Completed docs, skill, manifest, and CLAUDE updates for GitLab provider support.
 
 ## Commit
 - `de5f334` `fix: correct github-task setup and api targets`
+
+## Task 5 Re-review
+
+### Outcome
+Updated `skill/SKILL.md` to restore the provider status mapping, review/testing behavior, and direct `plan.json` ordering guidance. Updated `README.md` to remove GitHub-only wording from the modal comment and issue-move description.
+
+### Verification
+- Pending: `npm run build`
+- Pending: `git diff --check`
+- Pending: `git status --short`
+
+### Notes
+- Kept `TOKEN_FILE` as a path and `GITHUB_API=https://api.github.com` in the skill setup.
+- Kept GitLab commands on `$BASE_URL/api/v4`.

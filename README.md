@@ -35,7 +35,7 @@ Also auto-installs the `/github-task` skill so Claude can manage issues directly
 - Labels, assignees, timestamps
 - **Move to column** — instantly reassigns labels (and closes/reopens as needed)
 - **Comments** — full history with user avatars, images, and timestamps
-- **Add comment** — post directly to GitHub from the modal
+- **Add comment** — post directly to the configured provider from the modal
 - Open on GitHub link
 
 ### New Issue
@@ -126,7 +126,7 @@ To enable real AI prioritization, also add:
 | Blocked     | Has label `blocked`              |
 | Done        | Issue is closed                  |
 
-Moving an issue via the UI updates labels and state via the GitHub API immediately.
+Moving an issue via the UI updates labels and state via the configured provider API immediately.
 
 ### Priority Detection (from labels)
 
