@@ -28,6 +28,88 @@ var import_path3 = __toESM(require("path"));
 var import_fs3 = __toESM(require("fs"));
 var import_url = require("url");
 
+// src/backend/config.service.ts
+var import_path = __toESM(require("path"));
+var import_fs = require("fs");
+var SYNC_FILE = ".GitHubBoard/github-sync.json";
+var TASKMASTER_SYNC_FILE = ".taskmaster/github-sync.json";
+function normalizeProvider(value) {
+  return value === "gitlab" ? "gitlab" : "github";
+}
+function normalizeBaseUrl(provider, value) {
+  if (provider !== "gitlab") return void 0;
+  const raw = typeof value === "string" && value.trim() ? value.trim() : "https://gitlab.com";
+  return raw.replace(/\/+$/, "");
+}
+async function readConfigFile(filePath) {
+  try {
+    const content = await import_fs.promises.readFile(filePath, "utf8");
+    const parsed = JSON.parse(content);
+    if (!parsed.token || !parsed.owner || !parsed.repo) return null;
+    const provider = normalizeProvider(parsed.provider);
+    return {
+      provider,
+      baseUrl: normalizeBaseUrl(provider, parsed.baseUrl),
+      token: parsed.token,
+      owner: parsed.owner,
+      repo: parsed.repo,
+      enabled: parsed.enabled !== false,
+      anthropicKey: parsed.anthropicKey
+    };
+  } catch {
+    return null;
+  }
+}
+async function readConfig(projectPath) {
+  if (!projectPath) return null;
+  return await readConfigFile(import_path.default.join(projectPath, SYNC_FILE)) ?? await readConfigFile(import_path.default.join(projectPath, TASKMASTER_SYNC_FILE));
+}
+async function writeConfig(projectPath, config) {
+  if (!projectPath) throw new Error("projectPath required");
+  const dir = import_path.default.join(projectPath, ".GitHubBoard");
+  await import_fs.promises.mkdir(dir, { recursive: true });
+  const filePath = import_path.default.join(projectPath, SYNC_FILE);
+  await import_fs.promises.writeFile(filePath, JSON.stringify(config, null, 2), "utf8");
+}
+
+// src/backend/cache.ts
+var Cache = class {
+  store = /* @__PURE__ */ new Map();
+  get(key) {
+    const entry = this.store.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expiresAt) {
+      this.store.delete(key);
+      return null;
+    }
+    return entry.value;
+  }
+  set(key, value, ttlMs) {
+    this.store.set(key, { value, expiresAt: Date.now() + ttlMs });
+  }
+  delete(key) {
+    this.store.delete(key);
+  }
+  deletePrefix(prefix) {
+    for (const key of this.store.keys()) {
+      if (key.startsWith(prefix)) this.store.delete(key);
+    }
+  }
+  clear() {
+    this.store.clear();
+  }
+};
+var globalCache = new Cache();
+function cacheGet(key) {
+  return globalCache.get(key);
+}
+function cacheSet(key, value, ttlMs) {
+  globalCache.set(key, value, ttlMs);
+}
+function cacheDeletePrefix(prefix) {
+  globalCache.deletePrefix(prefix);
+}
+
 // src/backend/github.service.ts
 var GITHUB_API = "https://api.github.com";
 function makeHeaders(token) {
@@ -118,86 +200,154 @@ async function createMilestone(token, owner, repo, title) {
   );
 }
 
-// src/backend/config.service.ts
-var import_path = __toESM(require("path"));
-var import_fs = require("fs");
-var SYNC_FILE = ".GitHubBoard/github-sync.json";
-var TASKMASTER_SYNC_FILE = ".taskmaster/github-sync.json";
-function normalizeProvider(value) {
-  return value === "gitlab" ? "gitlab" : "github";
+// src/backend/gitlab.service.ts
+function projectId(owner, repo) {
+  return encodeURIComponent(`${owner}/${repo}`);
 }
-function normalizeBaseUrl(provider, value) {
-  if (provider !== "gitlab") return void 0;
-  const raw = typeof value === "string" && value.trim() ? value.trim() : "https://gitlab.com";
-  return raw.replace(/\/+$/, "");
+function apiBase(baseUrl) {
+  return `${baseUrl.replace(/\/+$/, "")}/api/v4`;
 }
-async function readConfigFile(filePath) {
-  try {
-    const content = await import_fs.promises.readFile(filePath, "utf8");
-    const parsed = JSON.parse(content);
-    if (!parsed.token || !parsed.owner || !parsed.repo) return null;
-    const provider = normalizeProvider(parsed.provider);
-    return {
-      provider,
-      baseUrl: normalizeBaseUrl(provider, parsed.baseUrl),
-      token: parsed.token,
-      owner: parsed.owner,
-      repo: parsed.repo,
-      enabled: parsed.enabled !== false,
-      anthropicKey: parsed.anthropicKey
-    };
-  } catch {
-    return null;
+function headers(token) {
+  return {
+    "PRIVATE-TOKEN": token,
+    "Content-Type": "application/json"
+  };
+}
+function mapGitlabIssue(issue) {
+  return {
+    id: issue.id,
+    number: issue.iid,
+    title: issue.title,
+    body: issue.description,
+    state: issue.state === "closed" ? "closed" : "open",
+    labels: issue.labels.map((name, index) => ({ id: index, name, color: "64748b" })),
+    assignees: (issue.assignees ?? []).map((u) => ({ login: u.username, avatar_url: u.avatar_url ?? "" })),
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+    html_url: issue.web_url,
+    user: { login: issue.author.username, avatar_url: issue.author.avatar_url ?? "" },
+    comments: issue.user_notes_count ?? 0,
+    milestone: issue.milestone ? { number: issue.milestone.iid ?? issue.milestone.id, title: issue.milestone.title } : null
+  };
+}
+function mapGitlabComment(note) {
+  return {
+    id: note.id,
+    body: note.body,
+    user: { login: note.author.username, avatar_url: note.author.avatar_url ?? "" },
+    created_at: note.created_at
+  };
+}
+function mapGitlabMilestone(m) {
+  return {
+    number: m.iid ?? m.id,
+    title: m.title,
+    state: m.state === "closed" ? "closed" : "open",
+    open_issues: 0,
+    closed_issues: 0
+  };
+}
+async function gitlabFetch(baseUrl, token, method, path4, body) {
+  const opts = { method, headers: headers(token) };
+  if (body !== void 0) opts.body = JSON.stringify(body);
+  const res = await fetch(`${apiBase(baseUrl)}${path4}`, opts);
+  if (res.status === 204) return null;
+  const json = await res.json();
+  if (!res.ok) {
+    const msg = json?.message ?? JSON.stringify(json);
+    throw new Error(`GitLab ${method} ${path4} -> ${res.status}: ${Array.isArray(msg) ? msg.join(", ") : msg}`);
   }
+  return json;
 }
-async function readConfig(projectPath) {
-  if (!projectPath) return null;
-  return await readConfigFile(import_path.default.join(projectPath, SYNC_FILE)) ?? await readConfigFile(import_path.default.join(projectPath, TASKMASTER_SYNC_FILE));
+async function listIssues2(baseUrl, token, owner, repo, state = "all") {
+  const all = [];
+  let page = 1;
+  const stateParam = state === "all" ? "all" : state === "open" ? "opened" : "closed";
+  while (true) {
+    const batch = await gitlabFetch(baseUrl, token, "GET", `/projects/${projectId(owner, repo)}/issues?state=${stateParam}&per_page=100&page=${page}`);
+    all.push(...batch.map(mapGitlabIssue));
+    if (batch.length < 100) break;
+    page++;
+    if (page > 20) break;
+  }
+  return all;
 }
-async function writeConfig(projectPath, config) {
-  if (!projectPath) throw new Error("projectPath required");
-  const dir = import_path.default.join(projectPath, ".GitHubBoard");
-  await import_fs.promises.mkdir(dir, { recursive: true });
-  const filePath = import_path.default.join(projectPath, SYNC_FILE);
-  await import_fs.promises.writeFile(filePath, JSON.stringify(config, null, 2), "utf8");
+async function listIssueComments2(baseUrl, token, owner, repo, issueNumber) {
+  const notes = await gitlabFetch(baseUrl, token, "GET", `/projects/${projectId(owner, repo)}/issues/${issueNumber}/notes?per_page=100`);
+  return notes.filter((n) => !n.system).map(mapGitlabComment);
+}
+async function getIssue2(baseUrl, token, owner, repo, number) {
+  return mapGitlabIssue(await gitlabFetch(baseUrl, token, "GET", `/projects/${projectId(owner, repo)}/issues/${number}`));
+}
+async function patchIssue2(baseUrl, token, owner, repo, number, patch) {
+  const body = { ...patch };
+  if (body.state === "closed") {
+    delete body.state;
+    body.state_event = "close";
+  }
+  if (body.state === "open") {
+    delete body.state;
+    body.state_event = "reopen";
+  }
+  return mapGitlabIssue(await gitlabFetch(baseUrl, token, "PUT", `/projects/${projectId(owner, repo)}/issues/${number}`, body));
+}
+async function createIssue2(baseUrl, token, owner, repo, title, body, labels) {
+  const payload = { title };
+  if (body?.trim()) payload.description = body.trim();
+  if (labels?.length) payload.labels = labels.join(",");
+  return mapGitlabIssue(await gitlabFetch(baseUrl, token, "POST", `/projects/${projectId(owner, repo)}/issues`, payload));
+}
+async function createComment2(baseUrl, token, owner, repo, issueNumber, body) {
+  return mapGitlabComment(await gitlabFetch(baseUrl, token, "POST", `/projects/${projectId(owner, repo)}/issues/${issueNumber}/notes`, { body }));
+}
+async function listMilestones2(baseUrl, token, owner, repo, state = "all") {
+  const stateParam = state === "all" ? "" : `state=${state === "open" ? "active" : "closed"}&`;
+  const milestones = await gitlabFetch(baseUrl, token, "GET", `/projects/${projectId(owner, repo)}/milestones?${stateParam}per_page=100`);
+  return milestones.map(mapGitlabMilestone);
+}
+async function setIssueMilestone2(baseUrl, token, owner, repo, issueNumber, milestoneNumber) {
+  return patchIssue2(baseUrl, token, owner, repo, issueNumber, { milestone_id: milestoneNumber });
+}
+async function createMilestone2(baseUrl, token, owner, repo, title) {
+  return mapGitlabMilestone(await gitlabFetch(baseUrl, token, "POST", `/projects/${projectId(owner, repo)}/milestones`, { title }));
 }
 
-// src/backend/cache.ts
-var Cache = class {
-  store = /* @__PURE__ */ new Map();
-  get(key) {
-    const entry = this.store.get(key);
-    if (!entry) return null;
-    if (Date.now() > entry.expiresAt) {
-      this.store.delete(key);
-      return null;
-    }
-    return entry.value;
-  }
-  set(key, value, ttlMs) {
-    this.store.set(key, { value, expiresAt: Date.now() + ttlMs });
-  }
-  delete(key) {
-    this.store.delete(key);
-  }
-  deletePrefix(prefix) {
-    for (const key of this.store.keys()) {
-      if (key.startsWith(prefix)) this.store.delete(key);
-    }
-  }
-  clear() {
-    this.store.clear();
-  }
-};
-var globalCache = new Cache();
-function cacheGet(key) {
-  return globalCache.get(key);
+// src/backend/issue-provider.ts
+function gitlabBase(config) {
+  return config.baseUrl ?? "https://gitlab.com";
 }
-function cacheSet(key, value, ttlMs) {
-  globalCache.set(key, value, ttlMs);
+function providerCacheKey(config) {
+  if (config.provider === "gitlab") {
+    return `gitlab:${gitlabBase(config)}:${config.owner}/${config.repo}`;
+  }
+  return `github:api.github.com:${config.owner}/${config.repo}`;
 }
-function cacheDeletePrefix(prefix) {
-  globalCache.deletePrefix(prefix);
+async function listProviderIssues(config, state = "all") {
+  return config.provider === "gitlab" ? listIssues2(gitlabBase(config), config.token, config.owner, config.repo, state) : listIssues(config.token, config.owner, config.repo, state);
+}
+async function listProviderComments(config, issueNumber) {
+  return config.provider === "gitlab" ? listIssueComments2(gitlabBase(config), config.token, config.owner, config.repo, issueNumber) : listIssueComments(config.token, config.owner, config.repo, issueNumber);
+}
+async function getProviderIssue(config, issueNumber) {
+  return config.provider === "gitlab" ? getIssue2(gitlabBase(config), config.token, config.owner, config.repo, issueNumber) : getIssue(config.token, config.owner, config.repo, issueNumber);
+}
+async function patchProviderIssue(config, issueNumber, patch) {
+  return config.provider === "gitlab" ? patchIssue2(gitlabBase(config), config.token, config.owner, config.repo, issueNumber, patch) : patchIssue(config.token, config.owner, config.repo, issueNumber, patch);
+}
+async function createProviderIssue(config, title, body, labels) {
+  return config.provider === "gitlab" ? createIssue2(gitlabBase(config), config.token, config.owner, config.repo, title, body, labels) : createIssue(config.token, config.owner, config.repo, title, body, labels);
+}
+async function createProviderComment(config, issueNumber, body) {
+  return config.provider === "gitlab" ? createComment2(gitlabBase(config), config.token, config.owner, config.repo, issueNumber, body) : createComment(config.token, config.owner, config.repo, issueNumber, body);
+}
+async function listProviderMilestones(config, state = "all") {
+  return config.provider === "gitlab" ? listMilestones2(gitlabBase(config), config.token, config.owner, config.repo, state) : listMilestones(config.token, config.owner, config.repo, state);
+}
+async function setProviderIssueMilestone(config, issueNumber, milestoneNumber) {
+  return config.provider === "gitlab" ? setIssueMilestone2(gitlabBase(config), config.token, config.owner, config.repo, issueNumber, milestoneNumber) : setIssueMilestone(config.token, config.owner, config.repo, issueNumber, milestoneNumber);
+}
+async function createProviderMilestone(config, title) {
+  return config.provider === "gitlab" ? createMilestone2(gitlabBase(config), config.token, config.owner, config.repo, title) : createMilestone(config.token, config.owner, config.repo, title);
 }
 
 // src/backend/issues.service.ts
@@ -229,62 +379,62 @@ function categorizeIssues(issues) {
 async function fetchIssues(projectPath) {
   const config = await readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) {
-    const err = new Error("GitHub not configured for this project");
+    const err = new Error("Issue provider not configured for this project");
     err.notConfigured = true;
     throw err;
   }
-  const cacheKey = `issues:${config.owner}/${config.repo}`;
+  const cacheKey = `issues:${providerCacheKey(config)}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
-  const raw = await listIssues(config.token, config.owner, config.repo, "all");
+  const raw = await listProviderIssues(config, "all");
   const issues = categorizeIssues(raw);
   const result = { issues, columns: buildColumns(), owner: config.owner, repo: config.repo };
   cacheSet(cacheKey, result, ISSUES_TTL);
   return result;
 }
 async function getCachedRepoIssues(config) {
-  const cacheKey = `issues:${config.owner}/${config.repo}`;
+  const cacheKey = `issues:${providerCacheKey(config)}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached.issues;
-  const raw = await listIssues(config.token, config.owner, config.repo, "all");
+  const raw = await listProviderIssues(config, "all");
   const issues = categorizeIssues(raw);
   cacheSet(cacheKey, { issues, columns: buildColumns(), owner: config.owner, repo: config.repo }, ISSUES_TTL);
   return issues;
 }
 async function getCachedMilestones(config) {
-  const cacheKey = `milestones:${config.owner}/${config.repo}`;
+  const cacheKey = `milestones:${providerCacheKey(config)}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
-  const milestones = await listMilestones(config.token, config.owner, config.repo, "all");
+  const milestones = await listProviderMilestones(config, "all");
   cacheSet(cacheKey, milestones, ISSUES_TTL);
   return milestones;
 }
 function invalidateRepo(config) {
-  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
-  cacheDeletePrefix(`milestones:${config.owner}/${config.repo}`);
+  cacheDeletePrefix(`issues:${providerCacheKey(config)}`);
+  cacheDeletePrefix(`milestones:${providerCacheKey(config)}`);
 }
 async function fetchComments(projectPath, issueNumber) {
   const config = await readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) return [];
-  const cacheKey = `comments:${config.owner}/${config.repo}:${issueNumber}`;
+  const cacheKey = `comments:${providerCacheKey(config)}:${issueNumber}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
-  const comments = await listIssueComments(config.token, config.owner, config.repo, issueNumber);
+  const comments = await listProviderComments(config, issueNumber);
   cacheSet(cacheKey, comments, COMMENTS_TTL);
   return comments;
 }
 async function addComment(projectPath, issueNumber, body) {
   const config = await readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) throw new Error("Not configured");
-  const comment = await createComment(config.token, config.owner, config.repo, issueNumber, body);
-  cacheDeletePrefix(`comments:${config.owner}/${config.repo}:${issueNumber}`);
+  const comment = await createProviderComment(config, issueNumber, body);
+  cacheDeletePrefix(`comments:${providerCacheKey(config)}:${issueNumber}`);
   return comment;
 }
-async function createIssue2(projectPath, title, body, labels) {
+async function createIssue3(projectPath, title, body, labels) {
   const config = await readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) throw new Error("Not configured");
-  const issue = await createIssue(config.token, config.owner, config.repo, title, body, labels);
-  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  const issue = await createProviderIssue(config, title, body, labels);
+  cacheDeletePrefix(`issues:${providerCacheKey(config)}`);
   return issue;
 }
 async function updateIssue(projectPath, issueNumber, { state, addLabels, removeLabels, labels, title }) {
@@ -296,13 +446,13 @@ async function updateIssue(projectPath, issueNumber, { state, addLabels, removeL
   if (labels !== void 0) {
     patch.labels = labels;
   } else if (addLabels?.length || removeLabels?.length) {
-    const current = await getIssue(config.token, config.owner, config.repo, issueNumber);
+    const current = await getProviderIssue(config, issueNumber);
     const currentLabels = (current.labels || []).map((l) => l.name);
     const filtered = currentLabels.filter((l) => !(removeLabels ?? []).includes(l));
     patch.labels = [.../* @__PURE__ */ new Set([...filtered, ...addLabels ?? []])];
   }
-  const updated = await patchIssue(config.token, config.owner, config.repo, issueNumber, patch);
-  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  const updated = await patchProviderIssue(config, issueNumber, patch);
+  cacheDeletePrefix(`issues:${providerCacheKey(config)}`);
   return updated;
 }
 
@@ -508,7 +658,7 @@ var NO_PHASE = "__no_phase__";
 async function requireConfig(projectPath) {
   const config = await readConfig(projectPath);
   if (!config) {
-    const err = new Error("GitHub not configured");
+    const err = new Error("Issue provider not configured");
     err.notConfigured = true;
     throw err;
   }
@@ -579,25 +729,25 @@ async function savePhaseOrder(projectPath, titles) {
 }
 async function assignPhase(projectPath, issueNumber, milestoneNumber) {
   const config = await requireConfig(projectPath);
-  await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, milestoneNumber);
+  await setProviderIssueMilestone(config, issueNumber, milestoneNumber);
   invalidateRepo(config);
 }
 async function bootstrap(projectPath, phases) {
   const config = await requireConfig(projectPath);
-  const existing = await listMilestones(config.token, config.owner, config.repo, "all");
+  const existing = await listProviderMilestones(config, "all");
   const byTitle = new Map(existing.map((m) => [m.title, m.number]));
   const created = [];
   let assigned = 0;
   for (const phase of phases) {
     let num = byTitle.get(phase.title);
     if (num === void 0) {
-      const m = await createMilestone(config.token, config.owner, config.repo, phase.title);
+      const m = await createProviderMilestone(config, phase.title);
       num = m.number;
       byTitle.set(phase.title, num);
       created.push(phase.title);
     }
     for (const issueNumber of phase.issues) {
-      await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, num);
+      await setProviderIssueMilestone(config, issueNumber, num);
       assigned++;
     }
   }
@@ -915,7 +1065,7 @@ var server = import_http.default.createServer(async (req, res) => {
           sendJson(res, 400, { error: "title is required" });
           return;
         }
-        const issue = await createIssue2(projectPath, body.title.trim(), body.body, body.labels);
+        const issue = await createIssue3(projectPath, body.title.trim(), body.body, body.labels);
         sendJson(res, 201, { ok: true, issue });
       } catch (e) {
         sendJson(res, 500, { error: e.message ?? "Internal error" });

@@ -2,10 +2,10 @@ import * as configService from './config.service';
 import * as planService from './plan.service';
 import * as issuesService from './issues.service';
 import {
-  listMilestones,
-  setIssueMilestone,
-  createMilestone,
-} from './github.service';
+  listProviderMilestones,
+  setProviderIssueMilestone,
+  createProviderMilestone,
+} from './issue-provider';
 import type { GithubIssue } from '../../src/frontend/types';
 import type { PlanData, PlanPhase } from '../../src/frontend/types';
 
@@ -14,7 +14,7 @@ const NO_PHASE = '__no_phase__';
 async function requireConfig(projectPath: string) {
   const config = await configService.readConfig(projectPath);
   if (!config) {
-    const err = new Error('GitHub not configured') as Error & { notConfigured?: boolean };
+    const err = new Error('Issue provider not configured') as Error & { notConfigured?: boolean };
     err.notConfigured = true;
     throw err;
   }
@@ -119,7 +119,7 @@ export async function assignPhase(
   milestoneNumber: number | null
 ): Promise<void> {
   const config = await requireConfig(projectPath);
-  await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, milestoneNumber);
+  await setProviderIssueMilestone(config, issueNumber, milestoneNumber);
   issuesService.invalidateRepo(config); // issue.milestone changed → drop stale caches
 }
 
@@ -129,7 +129,7 @@ export async function bootstrap(
   phases: Array<{ title: string; issues: number[] }>
 ): Promise<{ created: string[]; assigned: number }> {
   const config = await requireConfig(projectPath);
-  const existing = await listMilestones(config.token, config.owner, config.repo, 'all');
+  const existing = await listProviderMilestones(config, 'all');
   const byTitle = new Map(existing.map(m => [m.title, m.number] as const));
   const created: string[] = [];
   let assigned = 0;
@@ -137,13 +137,13 @@ export async function bootstrap(
   for (const phase of phases) {
     let num = byTitle.get(phase.title);
     if (num === undefined) {
-      const m = await createMilestone(config.token, config.owner, config.repo, phase.title);
+      const m = await createProviderMilestone(config, phase.title);
       num = m.number;
       byTitle.set(phase.title, num);
       created.push(phase.title);
     }
     for (const issueNumber of phase.issues) {
-      await setIssueMilestone(config.token, config.owner, config.repo, issueNumber, num);
+      await setProviderIssueMilestone(config, issueNumber, num);
       assigned++;
     }
   }

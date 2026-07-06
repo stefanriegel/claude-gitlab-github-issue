@@ -1,7 +1,17 @@
 import type { GithubIssue, GithubColumn } from '../../src/frontend/types';
-import * as github from './github.service';
 import * as configService from './config.service';
 import { cacheGet, cacheSet, cacheDeletePrefix } from './cache';
+import {
+  providerCacheKey,
+  listProviderIssues,
+  listProviderComments,
+  getProviderIssue,
+  patchProviderIssue,
+  createProviderIssue,
+  createProviderComment,
+  listProviderMilestones,
+} from './issue-provider';
+import type { GithubMilestone } from './github.service';
 
 const ISSUES_TTL = 60_000;    // 60s
 const COMMENTS_TTL = 30_000;  // 30s
@@ -56,16 +66,16 @@ export async function fetchIssues(projectPath: string): Promise<{
 }> {
   const config = await configService.readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) {
-    const err = new Error('GitHub not configured for this project') as Error & { notConfigured: boolean };
+    const err = new Error('Issue provider not configured for this project') as Error & { notConfigured: boolean };
     err.notConfigured = true;
     throw err;
   }
 
-  const cacheKey = `issues:${config.owner}/${config.repo}`;
+  const cacheKey = `issues:${providerCacheKey(config)}`;
   const cached = cacheGet(cacheKey) as { issues: IssueWithColumn[]; columns: GithubColumn[]; owner: string; repo: string } | null;
   if (cached) return cached;
 
-  const raw = await github.listIssues(config.token, config.owner, config.repo, 'all');
+  const raw = await listProviderIssues(config, 'all');
   const issues = categorizeIssues(raw);
   const result = { issues, columns: buildColumns(), owner: config.owner, repo: config.repo };
   cacheSet(cacheKey, result, ISSUES_TTL);
@@ -77,13 +87,13 @@ export async function fetchIssues(projectPath: string): Promise<{
  * tab reuses this so switching tabs (or polling) doesn't re-paginate GitHub each time.
  */
 export async function getCachedRepoIssues(
-  config: { token: string; owner: string; repo: string }
+  config: configService.GithubConfig
 ): Promise<IssueWithColumn[]> {
-  const cacheKey = `issues:${config.owner}/${config.repo}`;
+  const cacheKey = `issues:${providerCacheKey(config)}`;
   const cached = cacheGet(cacheKey) as { issues: IssueWithColumn[] } | null;
   if (cached) return cached.issues;
 
-  const raw = await github.listIssues(config.token, config.owner, config.repo, 'all');
+  const raw = await listProviderIssues(config, 'all');
   const issues = categorizeIssues(raw);
   cacheSet(cacheKey, { issues, columns: buildColumns(), owner: config.owner, repo: config.repo }, ISSUES_TTL);
   return issues;
@@ -91,32 +101,32 @@ export async function getCachedRepoIssues(
 
 /** Cached milestone list (Plan polls every 30s; milestones rarely change). */
 export async function getCachedMilestones(
-  config: { token: string; owner: string; repo: string }
-): Promise<github.GithubMilestone[]> {
-  const cacheKey = `milestones:${config.owner}/${config.repo}`;
-  const cached = cacheGet(cacheKey) as github.GithubMilestone[] | null;
+  config: configService.GithubConfig
+): Promise<GithubMilestone[]> {
+  const cacheKey = `milestones:${providerCacheKey(config)}`;
+  const cached = cacheGet(cacheKey) as GithubMilestone[] | null;
   if (cached) return cached;
 
-  const milestones = await github.listMilestones(config.token, config.owner, config.repo, 'all');
+  const milestones = await listProviderMilestones(config, 'all');
   cacheSet(cacheKey, milestones, ISSUES_TTL);
   return milestones;
 }
 
 /** Drop both repo-scoped caches — call after any write that changes issues/milestones. */
-export function invalidateRepo(config: { owner: string; repo: string }): void {
-  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
-  cacheDeletePrefix(`milestones:${config.owner}/${config.repo}`);
+export function invalidateRepo(config: configService.GithubConfig): void {
+  cacheDeletePrefix(`issues:${providerCacheKey(config)}`);
+  cacheDeletePrefix(`milestones:${providerCacheKey(config)}`);
 }
 
 export async function fetchComments(projectPath: string, issueNumber: string | number) {
   const config = await configService.readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) return [];
 
-  const cacheKey = `comments:${config.owner}/${config.repo}:${issueNumber}`;
+  const cacheKey = `comments:${providerCacheKey(config)}:${issueNumber}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
-  const comments = await github.listIssueComments(config.token, config.owner, config.repo, issueNumber);
+  const comments = await listProviderComments(config, issueNumber);
   cacheSet(cacheKey, comments, COMMENTS_TTL);
   return comments;
 }
@@ -125,8 +135,8 @@ export async function addComment(projectPath: string, issueNumber: string | numb
   const config = await configService.readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) throw new Error('Not configured');
 
-  const comment = await github.createComment(config.token, config.owner, config.repo, issueNumber, body);
-  cacheDeletePrefix(`comments:${config.owner}/${config.repo}:${issueNumber}`);
+  const comment = await createProviderComment(config, issueNumber, body);
+  cacheDeletePrefix(`comments:${providerCacheKey(config)}:${issueNumber}`);
   return comment;
 }
 
@@ -138,8 +148,8 @@ export async function createIssue(
 ): Promise<GithubIssue> {
   const config = await configService.readConfig(projectPath);
   if (!config?.token || !config?.owner || !config?.repo) throw new Error('Not configured');
-  const issue = await github.createIssue(config.token, config.owner, config.repo, title, body, labels);
-  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  const issue = await createProviderIssue(config, title, body, labels);
+  cacheDeletePrefix(`issues:${providerCacheKey(config)}`);
   return issue;
 }
 
@@ -164,13 +174,13 @@ export async function updateIssue(
   if (labels !== undefined) {
     patch.labels = labels;
   } else if (addLabels?.length || removeLabels?.length) {
-    const current = await github.getIssue(config.token, config.owner, config.repo, issueNumber);
+    const current = await getProviderIssue(config, issueNumber);
     const currentLabels = (current.labels || []).map(l => l.name);
     const filtered = currentLabels.filter(l => !(removeLabels ?? []).includes(l));
     patch.labels = [...new Set([...filtered, ...(addLabels ?? [])])];
   }
 
-  const updated = await github.patchIssue(config.token, config.owner, config.repo, issueNumber, patch);
-  cacheDeletePrefix(`issues:${config.owner}/${config.repo}`);
+  const updated = await patchProviderIssue(config, issueNumber, patch);
+  cacheDeletePrefix(`issues:${providerCacheKey(config)}`);
   return updated;
 }
