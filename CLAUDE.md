@@ -43,7 +43,8 @@ src/
   backend/
     server.ts          HTTP server — routes: /config, /issues, /ai-prioritize
     config.service.ts  Read/write .GitHubBoard/github-sync.json in project root
-    github.service.ts  GitHub or GitLab issue API calls (list issues, patch issue, post comment)
+    github.service.ts  GitHub issue API calls (list issues, patch issue, post comment)
+    gitlab.service.ts  GitLab issue API calls (list issues, patch issue, post comment)
     issues.service.ts  Create issue
     ai.service.ts      Heuristic + Anthropic API prioritization
     cache.ts           Simple in-memory cache for API responses

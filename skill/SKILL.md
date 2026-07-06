@@ -85,7 +85,7 @@ curl -s -X POST --header "PRIVATE-TOKEN: $TOKEN" --data-urlencode "body=$COMMENT
 
 ## Plan tab -- phases & ordering
 
-The Plan tab groups issues by GitHub milestone (phase). Order is stored in `.GitHubBoard/plan.json`, and agents edit that file directly.
+The Plan tab groups issues by provider milestone (phase). Order is stored in `.GitHubBoard/plan.json`, and agents edit that file directly.
 
 ```json
 {

@@ -36,7 +36,7 @@ Also auto-installs the `/github-task` skill so Claude can manage issues directly
 - **Move to column** — instantly reassigns labels (and closes/reopens as needed)
 - **Comments** — full history with user avatars, images, and timestamps
 - **Add comment** — post directly to the configured provider from the modal
-- Open on GitHub link
+- Open issue link
 
 ### New Issue
 - **+ New Issue** button in the toolbar
