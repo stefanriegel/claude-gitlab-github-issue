@@ -9,6 +9,8 @@ interface Props {
 }
 
 interface ConfigState {
+  provider: 'github' | 'gitlab';
+  baseUrl: string;
   token: string;
   owner: string;
   repo: string;
@@ -17,7 +19,14 @@ interface ConfigState {
 
 export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, onManualPrioritize }) => {
   const api = usePluginAPI();
-  const [form, setForm] = useState<ConfigState>({ token: '', owner: '', repo: '', anthropicKey: '' });
+  const [form, setForm] = useState<ConfigState>({
+    provider: 'github',
+    baseUrl: 'https://gitlab.com',
+    token: '',
+    owner: '',
+    repo: '',
+    anthropicKey: '',
+  });
   const [showAnthropicKey, setShowAnthropicKey] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,10 +40,12 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
     api.rpc('GET', `/config?path=${encodeURIComponent(projectPath)}`)
       .then(res => {
         if (cancelled) return;
-        const d = res as { configured?: boolean; owner?: string; repo?: string; hasToken?: boolean; hasAnthropicKey?: boolean };
+        const d = res as { configured?: boolean; provider?: 'github' | 'gitlab'; baseUrl?: string; owner?: string; repo?: string; hasToken?: boolean; hasAnthropicKey?: boolean };
         if (d.configured) {
           setForm(f => ({
             ...f,
+            provider: d.provider ?? 'github',
+            baseUrl: d.baseUrl ?? 'https://gitlab.com',
             owner: d.owner ?? '',
             repo: d.repo ?? '',
             // secrets not returned — leave blank, user must re-enter to change
@@ -53,12 +64,14 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
       return;
     }
     if (!form.token.trim()) {
-      setError('GitHub token is required. You can find it at github.com → Settings → Developer settings → Personal access tokens.');
+      setError(`${form.provider === 'gitlab' ? 'GitLab' : 'GitHub'} token is required.`);
       return;
     }
     setSaving(true);
     try {
       await api.rpc('PUT', `/config?path=${encodeURIComponent(projectPath)}`, {
+        provider: form.provider,
+        baseUrl: form.provider === 'gitlab' ? form.baseUrl.trim() || 'https://gitlab.com' : undefined,
         token: form.token.trim(),
         owner: form.owner.trim(),
         repo: form.repo.trim(),
@@ -120,15 +133,41 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
           <div style={{ textAlign: 'center', padding: '20px 0', opacity: 0.5 }}>Loading current settings…</div>
         ) : (
           <>
+            <div>
+              <label style={labelStyle}>Provider</label>
+              <select
+                value={form.provider}
+                onChange={e => setForm(f => ({ ...f, provider: e.target.value as 'github' | 'gitlab' }))}
+                style={inputStyle}
+              >
+                <option value="github">GitHub</option>
+                <option value="gitlab">GitLab</option>
+              </select>
+            </div>
+
+            {form.provider === 'gitlab' && (
+              <div>
+                <label style={labelStyle}>GitLab Base URL</label>
+                <input
+                  type="url"
+                  value={form.baseUrl}
+                  onChange={e => setForm(f => ({ ...f, baseUrl: e.target.value }))}
+                  placeholder="https://gitlab.com"
+                  style={inputStyle}
+                  autoComplete="off"
+                />
+              </div>
+            )}
+
             {/* Token */}
             <div>
-              <label style={labelStyle}>GitHub Personal Access Token</label>
+              <label style={labelStyle}>{form.provider === 'gitlab' ? 'GitLab Access Token' : 'GitHub Personal Access Token'}</label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showToken ? 'text' : 'password'}
                   value={form.token}
                   onChange={e => setForm(f => ({ ...f, token: e.target.value }))}
-                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                  placeholder={form.provider === 'gitlab' ? 'glpat-xxxxxxxxxxxxxxxxxxxx' : 'ghp_xxxxxxxxxxxxxxxxxxxx'}
                   style={{ ...inputStyle, paddingRight: 38 }}
                   autoComplete="off"
                 />
@@ -141,18 +180,18 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
                 </button>
               </div>
               <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4 }}>
-                Generate at github.com → Settings → Developer settings → Personal access tokens. Requires <code>repo</code> scope.
+                Generate a personal access token in your provider settings.
               </div>
             </div>
 
             {/* Owner */}
             <div>
-              <label style={labelStyle}>Repository Owner (username or org)</label>
+              <label style={labelStyle}>{form.provider === 'gitlab' ? 'Group / Subgroup' : 'Repository Owner (username or org)'}</label>
               <input
                 type="text"
                 value={form.owner}
                 onChange={e => setForm(f => ({ ...f, owner: e.target.value }))}
-                placeholder="your-github-username"
+                placeholder={form.provider === 'gitlab' ? 'group/subgroup' : 'your-github-username'}
                 style={inputStyle}
                 autoComplete="off"
               />
@@ -165,7 +204,7 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
                 type="text"
                 value={form.repo}
                 onChange={e => setForm(f => ({ ...f, repo: e.target.value }))}
-                placeholder="your-repository-name"
+                placeholder={form.provider === 'gitlab' ? 'project-name' : 'your-repository-name'}
                 style={inputStyle}
                 autoComplete="off"
               />

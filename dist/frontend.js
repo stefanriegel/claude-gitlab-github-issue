@@ -7961,7 +7961,14 @@ const ConfigBanner = ({ onOpenSettings }) => /* @__PURE__ */ React.createElement
 ), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, opacity: 0.45, marginTop: 8 } }, "You'll need a GitHub personal access token with ", /* @__PURE__ */ React.createElement("code", { style: { background: "rgba(0,0,0,0.1)", padding: "1px 4px", borderRadius: 3 } }, "repo"), " scope.", /* @__PURE__ */ React.createElement("br", null), "Settings are saved to ", /* @__PURE__ */ React.createElement("code", { style: { background: "rgba(0,0,0,0.1)", padding: "1px 4px", borderRadius: 3 } }, ".GitHubBoard/github-sync.json"), " in your project."), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 11, opacity: 0.45 } }, "The ", /* @__PURE__ */ React.createElement("strong", null, "/github-task"), " CLI skill is automatically installed when this plugin loads."));
 const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) => {
   const api = usePluginAPI();
-  const [form, setForm] = reactExports.useState({ token: "", owner: "", repo: "", anthropicKey: "" });
+  const [form, setForm] = reactExports.useState({
+    provider: "github",
+    baseUrl: "https://gitlab.com",
+    token: "",
+    owner: "",
+    repo: "",
+    anthropicKey: ""
+  });
   const [showAnthropicKey, setShowAnthropicKey] = reactExports.useState(false);
   const [loading, setLoading] = reactExports.useState(true);
   const [saving, setSaving] = reactExports.useState(false);
@@ -7977,6 +7984,8 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
       if (d.configured) {
         setForm((f) => ({
           ...f,
+          provider: d.provider ?? "github",
+          baseUrl: d.baseUrl ?? "https://gitlab.com",
           owner: d.owner ?? "",
           repo: d.repo ?? ""
           // secrets not returned — leave blank, user must re-enter to change
@@ -7997,12 +8006,14 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
       return;
     }
     if (!form.token.trim()) {
-      setError("GitHub token is required. You can find it at github.com → Settings → Developer settings → Personal access tokens.");
+      setError(`${form.provider === "gitlab" ? "GitLab" : "GitHub"} token is required.`);
       return;
     }
     setSaving(true);
     try {
       await api.rpc("PUT", `/config?path=${encodeURIComponent(projectPath)}`, {
+        provider: form.provider,
+        baseUrl: form.provider === "gitlab" ? form.baseUrl.trim() || "https://gitlab.com" : void 0,
         token: form.token.trim(),
         owner: form.owner.trim(),
         repo: form.repo.trim(),
@@ -8048,13 +8059,32 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
         if (e.target === e.currentTarget) onClose();
       }
     },
-    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-surface)", borderRadius: 10, padding: 24, width: 420, maxWidth: "90vw", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", gap: 18 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })), "GitHub Issues Board — Settings"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 18, lineHeight: 1, padding: "2px 6px" } }, "×")), loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "20px 0", opacity: 0.5 } }, "Loading current settings…") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, "GitHub Personal Access Token"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-surface)", borderRadius: 10, padding: 24, width: 420, maxWidth: "90vw", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", gap: 18 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })), "GitHub Issues Board — Settings"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 18, lineHeight: 1, padding: "2px 6px" } }, "×")), loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "20px 0", opacity: 0.5 } }, "Loading current settings…") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, "Provider"), /* @__PURE__ */ React.createElement(
+      "select",
+      {
+        value: form.provider,
+        onChange: (e) => setForm((f) => ({ ...f, provider: e.target.value })),
+        style: inputStyle
+      },
+      /* @__PURE__ */ React.createElement("option", { value: "github" }, "GitHub"),
+      /* @__PURE__ */ React.createElement("option", { value: "gitlab" }, "GitLab")
+    )), form.provider === "gitlab" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, "GitLab Base URL"), /* @__PURE__ */ React.createElement(
+      "input",
+      {
+        type: "url",
+        value: form.baseUrl,
+        onChange: (e) => setForm((f) => ({ ...f, baseUrl: e.target.value })),
+        placeholder: "https://gitlab.com",
+        style: inputStyle,
+        autoComplete: "off"
+      }
+    )), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, form.provider === "gitlab" ? "GitLab Access Token" : "GitHub Personal Access Token"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(
       "input",
       {
         type: showToken ? "text" : "password",
         value: form.token,
         onChange: (e) => setForm((f) => ({ ...f, token: e.target.value })),
-        placeholder: "ghp_xxxxxxxxxxxxxxxxxxxx",
+        placeholder: form.provider === "gitlab" ? "glpat-xxxxxxxxxxxxxxxxxxxx" : "ghp_xxxxxxxxxxxxxxxxxxxx",
         style: { ...inputStyle, paddingRight: 38 },
         autoComplete: "off"
       }
@@ -8066,13 +8096,13 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
         title: showToken ? "Hide token" : "Show token"
       },
       showToken ? "hide" : "show"
-    )), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, opacity: 0.5, marginTop: 4 } }, "Generate at github.com → Settings → Developer settings → Personal access tokens. Requires ", /* @__PURE__ */ React.createElement("code", null, "repo"), " scope.")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, "Repository Owner (username or org)"), /* @__PURE__ */ React.createElement(
+    )), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, opacity: 0.5, marginTop: 4 } }, "Generate a personal access token in your provider settings.")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, form.provider === "gitlab" ? "Group / Subgroup" : "Repository Owner (username or org)"), /* @__PURE__ */ React.createElement(
       "input",
       {
         type: "text",
         value: form.owner,
         onChange: (e) => setForm((f) => ({ ...f, owner: e.target.value })),
-        placeholder: "your-github-username",
+        placeholder: form.provider === "gitlab" ? "group/subgroup" : "your-github-username",
         style: inputStyle,
         autoComplete: "off"
       }
@@ -8082,7 +8112,7 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
         type: "text",
         value: form.repo,
         onChange: (e) => setForm((f) => ({ ...f, repo: e.target.value })),
-        placeholder: "your-repository-name",
+        placeholder: form.provider === "gitlab" ? "project-name" : "your-repository-name",
         style: inputStyle,
         autoComplete: "off"
       }
@@ -8558,7 +8588,7 @@ const App = () => {
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Failed to load issues";
-      if (msg.includes("not configured") || msg.includes("GitHub not configured")) {
+      if (msg.includes("not configured") || msg.includes("Issue provider not configured")) {
         setNotConfigured(true);
         setData(null);
       } else {

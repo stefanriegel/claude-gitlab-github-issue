@@ -104,7 +104,7 @@ export const App: React.FC = () => {
       }
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Failed to load issues';
-      if (msg.includes('not configured') || msg.includes('GitHub not configured')) {
+      if (msg.includes('not configured') || msg.includes('Issue provider not configured')) {
         setNotConfigured(true);
         setData(null);
       } else {
