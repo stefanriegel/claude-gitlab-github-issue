@@ -227,7 +227,7 @@ function mapGitlabIssue(issue) {
     html_url: issue.web_url,
     user: { login: issue.author.username, avatar_url: issue.author.avatar_url ?? "" },
     comments: issue.user_notes_count ?? 0,
-    milestone: issue.milestone ? { number: issue.milestone.iid ?? issue.milestone.id, title: issue.milestone.title } : null
+    milestone: issue.milestone ? { number: issue.milestone.id, title: issue.milestone.title } : null
   };
 }
 function mapGitlabComment(note) {
@@ -240,12 +240,25 @@ function mapGitlabComment(note) {
 }
 function mapGitlabMilestone(m) {
   return {
-    number: m.iid ?? m.id,
+    number: m.id,
     title: m.title,
     state: m.state === "closed" ? "closed" : "open",
     open_issues: 0,
     closed_issues: 0
   };
+}
+function normalizeGitlabIssuePatch(patch) {
+  const normalized = { ...patch };
+  if (Array.isArray(normalized.labels)) normalized.labels = normalized.labels.join(",");
+  if (normalized.state === "closed") {
+    delete normalized.state;
+    normalized.state_event = "close";
+  }
+  if (normalized.state === "open") {
+    delete normalized.state;
+    normalized.state_event = "reopen";
+  }
+  return normalized;
 }
 async function gitlabFetch(baseUrl, token, method, path4, body) {
   const opts = { method, headers: headers(token) };
@@ -280,16 +293,13 @@ async function getIssue2(baseUrl, token, owner, repo, number) {
   return mapGitlabIssue(await gitlabFetch(baseUrl, token, "GET", `/projects/${projectId(owner, repo)}/issues/${number}`));
 }
 async function patchIssue2(baseUrl, token, owner, repo, number, patch) {
-  const body = { ...patch };
-  if (body.state === "closed") {
-    delete body.state;
-    body.state_event = "close";
-  }
-  if (body.state === "open") {
-    delete body.state;
-    body.state_event = "reopen";
-  }
-  return mapGitlabIssue(await gitlabFetch(baseUrl, token, "PUT", `/projects/${projectId(owner, repo)}/issues/${number}`, body));
+  return mapGitlabIssue(await gitlabFetch(
+    baseUrl,
+    token,
+    "PUT",
+    `/projects/${projectId(owner, repo)}/issues/${number}`,
+    normalizeGitlabIssuePatch(patch)
+  ));
 }
 async function createIssue2(baseUrl, token, owner, repo, title, body, labels) {
   const payload = { title };

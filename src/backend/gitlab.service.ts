@@ -2,6 +2,7 @@ import type { GithubIssue, GithubComment } from '../../src/frontend/types';
 import type { GithubMilestone } from './github.service';
 
 type GitLabState = 'opened' | 'closed';
+type GitLabMilestoneState = 'active' | 'closed';
 
 interface GitLabUser {
   username: string;
@@ -12,7 +13,7 @@ interface GitLabMilestoneRaw {
   id: number;
   iid?: number;
   title: string;
-  state: GitLabState;
+  state: GitLabMilestoneState;
   due_date?: string | null;
 }
 
@@ -69,7 +70,7 @@ export function mapGitlabIssue(issue: GitLabIssueRaw): GithubIssue {
     html_url: issue.web_url,
     user: { login: issue.author.username, avatar_url: issue.author.avatar_url ?? '' },
     comments: issue.user_notes_count ?? 0,
-    milestone: issue.milestone ? { number: issue.milestone.iid ?? issue.milestone.id, title: issue.milestone.title } : null,
+    milestone: issue.milestone ? { number: issue.milestone.id, title: issue.milestone.title } : null,
   };
 }
 
@@ -84,12 +85,26 @@ export function mapGitlabComment(note: GitLabNoteRaw): GithubComment {
 
 export function mapGitlabMilestone(m: GitLabMilestoneRaw): GithubMilestone {
   return {
-    number: m.iid ?? m.id,
+    number: m.id,
     title: m.title,
     state: m.state === 'closed' ? 'closed' : 'open',
     open_issues: 0,
     closed_issues: 0,
   };
+}
+
+export function normalizeGitlabIssuePatch(patch: Record<string, unknown>): Record<string, unknown> {
+  const normalized = { ...patch };
+  if (Array.isArray(normalized.labels)) normalized.labels = normalized.labels.join(',');
+  if (normalized.state === 'closed') {
+    delete normalized.state;
+    normalized.state_event = 'close';
+  }
+  if (normalized.state === 'open') {
+    delete normalized.state;
+    normalized.state_event = 'reopen';
+  }
+  return normalized;
 }
 
 async function gitlabFetch(baseUrl: string, token: string, method: string, path: string, body?: unknown): Promise<unknown> {
@@ -129,10 +144,13 @@ export async function getIssue(baseUrl: string, token: string, owner: string, re
 }
 
 export async function patchIssue(baseUrl: string, token: string, owner: string, repo: string, number: number | string, patch: Record<string, unknown>): Promise<GithubIssue> {
-  const body = { ...patch };
-  if (body.state === 'closed') { delete body.state; body.state_event = 'close'; }
-  if (body.state === 'open') { delete body.state; body.state_event = 'reopen'; }
-  return mapGitlabIssue(await gitlabFetch(baseUrl, token, 'PUT', `/projects/${projectId(owner, repo)}/issues/${number}`, body) as GitLabIssueRaw);
+  return mapGitlabIssue(await gitlabFetch(
+    baseUrl,
+    token,
+    'PUT',
+    `/projects/${projectId(owner, repo)}/issues/${number}`,
+    normalizeGitlabIssuePatch(patch),
+  ) as GitLabIssueRaw);
 }
 
 export async function createIssue(baseUrl: string, token: string, owner: string, repo: string, title: string, body?: string, labels?: string[]): Promise<GithubIssue> {

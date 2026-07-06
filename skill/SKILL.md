@@ -96,7 +96,7 @@ The Plan tab groups issues by GitHub milestone (phase). Order is stored in `.Git
 
 - `order` sets issue order within a phase. Lower is higher.
 - Issues with no entry sort after ordered ones, by issue number.
-- `__phaseOrder__` sets the manual order of phases. Phases not listed keep their GitHub milestone order after the ranked ones.
+- `__phaseOrder__` sets the manual order of phases. Phases not listed keep their provider milestone order after the ranked ones.
 - Create or edit `.GitHubBoard/plan.json` directly; the backend reads it fresh on every load, and the user sees changes after Refresh.
 - To reorder a phase, assign consecutive `order` values from 0 upward.
 - To reorder phases, rewrite `__phaseOrder__`.

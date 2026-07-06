@@ -4,6 +4,7 @@ node_modules/
 
 # Per-project config with secrets (token, anthropicKey) — never commit
 .GitHubBoard/
+.superpowers/
 # Throwaway screenshots dropped during dev
 temp-img/
 .worktrees/
