@@ -32,3 +32,16 @@ Completed docs, skill, manifest, and CLAUDE updates for GitLab provider support.
 
 ## Commit
 - `4e92e3f` `docs: fix GitLab skill setup and commands`
+
+## Follow-up
+- Replaced the top-level setup block in `skill/SKILL.md` so `TOKEN_FILE` is a path, not JSON contents.
+- Added `GITHUB_API` and switched GitHub list/comment commands to use it instead of `BASE_URL`.
+- Kept `/github-task` intact and made the GitLab move section explicit about `PUT`, `labels`, `state_event=close`, and `state_event=reopen`.
+
+## Verification
+- `npm run build`
+- `git diff --check`
+- `git status --short`
+
+## Commit
+- `de5f334` `fix: correct github-task setup and api targets`
