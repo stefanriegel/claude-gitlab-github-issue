@@ -92,13 +92,13 @@ export const SubscriptionPriorityModal: React.FC<Props> = ({ issues, onApply, on
             </svg>
             AI Prioritize — Claude Subscription
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.5, fontSize: 20, lineHeight: 1, padding: '2px 4px' }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.5, fontSize: 20, lineHeight: 1, padding: '2px 4px' }}>×</button>
         </div>
 
         {/* Steps */}
         <div style={{ display: 'flex', gap: 0, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--cgi-border)' }}>
           {(['prompt', 'paste'] as const).map((s, i) => (
-            <button
+            <button type="button"
               key={s}
               onClick={() => setStep(s)}
               style={{
@@ -134,11 +134,11 @@ export const SubscriptionPriorityModal: React.FC<Props> = ({ issues, onApply, on
               />
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={onClose} className="cgi-btn" style={{ opacity: 0.7 }}>Cancel</button>
-              <button onClick={handleCopy} className="cgi-btn" style={{ background: copied ? '#22c55e' : 'var(--cgi-accent)', color: '#fff', border: 'none', fontWeight: 600, minWidth: 120 }}>
+              <button type="button" onClick={onClose} className="cgi-btn" style={{ opacity: 0.7 }}>Cancel</button>
+              <button type="button" onClick={handleCopy} className="cgi-btn" style={{ background: copied ? '#22c55e' : 'var(--cgi-accent)', color: '#fff', border: 'none', fontWeight: 600, minWidth: 120 }}>
                 {copied ? '✓ Copied!' : '⎘ Copy Prompt'}
               </button>
-              <button onClick={() => setStep('paste')} className="cgi-btn" style={{ fontWeight: 600 }}>
+              <button type="button" onClick={() => setStep('paste')} className="cgi-btn" style={{ fontWeight: 600 }}>
                 Next →
               </button>
             </div>
@@ -167,10 +167,10 @@ export const SubscriptionPriorityModal: React.FC<Props> = ({ issues, onApply, on
               </div>
             )}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'space-between' }}>
-              <button onClick={() => setStep('prompt')} className="cgi-btn" style={{ opacity: 0.7 }}>← Back</button>
+              <button type="button" onClick={() => setStep('prompt')} className="cgi-btn" style={{ opacity: 0.7 }}>← Back</button>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={onClose} className="cgi-btn" style={{ opacity: 0.7 }}>Cancel</button>
-                <button
+                <button type="button" onClick={onClose} className="cgi-btn" style={{ opacity: 0.7 }}>Cancel</button>
+                <button type="button"
                   onClick={handleApply}
                   disabled={!pasteText.trim()}
                   className="cgi-btn"

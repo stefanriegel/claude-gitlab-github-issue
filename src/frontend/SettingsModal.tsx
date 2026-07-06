@@ -126,7 +126,7 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
             </svg>
             Issues Board — Settings
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.5, fontSize: 18, lineHeight: 1, padding: '2px 6px' }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.5, fontSize: 18, lineHeight: 1, padding: '2px 6px' }}>×</button>
         </div>
 
         {loading ? (
@@ -171,7 +171,7 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
                   style={{ ...inputStyle, paddingRight: 38 }}
                   autoComplete="off"
                 />
-                <button
+                <button type="button"
                   onClick={() => setShowToken(v => !v)}
                   style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.45, fontSize: 12 }}
                   title={showToken ? 'Hide token' : 'Show token'}
@@ -222,7 +222,7 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
                   style={{ ...inputStyle, paddingRight: 38 }}
                   autoComplete="off"
                 />
-                <button
+                <button type="button"
                   onClick={() => setShowAnthropicKey(v => !v)}
                   style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.45, fontSize: 12 }}
                   title={showAnthropicKey ? 'Hide key' : 'Show key'}
@@ -233,7 +233,7 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
               <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                 <span>Without a key, AI Prioritize uses smart heuristics. With a key, it uses Claude Haiku for deeper AI analysis.</span>
                 {onManualPrioritize && (
-                  <button
+                  <button type="button"
                     onClick={onManualPrioritize}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-accent)', fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 4, whiteSpace: 'nowrap', flexShrink: 0 }}
                     title="Use Claude.ai subscription: generate a prompt, paste back the response"
@@ -272,8 +272,8 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
 
             {/* Buttons */}
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={onClose} className="cgi-btn" style={{ opacity: 0.7 }}>Cancel</button>
-              <button
+              <button type="button" onClick={onClose} className="cgi-btn" style={{ opacity: 0.7 }}>Cancel</button>
+              <button type="button"
                 onClick={handleSave}
                 disabled={saving || success}
                 className="cgi-btn"

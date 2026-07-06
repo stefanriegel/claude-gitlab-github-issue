@@ -67,15 +67,15 @@ export const PlanCard: React.FC<PlanCardProps> = ({
       {priority && (
         <span className="cgi-plan-dot" style={{ background: PRIORITY_COLORS[priority] }} />
       )}
-      <button className="cgi-plan-card-main" onClick={() => onOpen(issue)}>
+      <button type="button" className="cgi-plan-card-main" onClick={() => onOpen(issue)}>
         <span className="cgi-plan-num">#{issue.number}</span>
         <span className="cgi-plan-title">{issue.title}</span>
         {inReview && <span className="cgi-plan-review" title="Zrobione — czeka na weryfikację/zamknięcie">✓ w review</span>}
         {isBug && <span className="cgi-plan-bug">bug</span>}
       </button>
       <span className="cgi-plan-reorder">
-        <button className="cgi-plan-arrow" disabled={index === 0} onClick={onMoveUp} title="Move up">▲</button>
-        <button className="cgi-plan-arrow" disabled={index === count - 1} onClick={onMoveDown} title="Move down">▼</button>
+        <button type="button" className="cgi-plan-arrow" disabled={index === 0} onClick={onMoveUp} title="Move up">▲</button>
+        <button type="button" className="cgi-plan-arrow" disabled={index === count - 1} onClick={onMoveDown} title="Move down">▼</button>
       </span>
     </div>
   );

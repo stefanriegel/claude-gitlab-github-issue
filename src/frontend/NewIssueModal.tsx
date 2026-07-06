@@ -70,7 +70,7 @@ export const NewIssueModal: React.FC<Props> = ({ projectPath, onClose, onCreated
             </svg>
             New Issue
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.5, fontSize: 20, lineHeight: 1, padding: '2px 4px' }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--cgi-text)', opacity: 0.5, fontSize: 20, lineHeight: 1, padding: '2px 4px' }}>×</button>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

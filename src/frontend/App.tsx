@@ -284,18 +284,18 @@ export const App: React.FC = () => {
           )}
         </div>
         <div className="cgi-tabs">
-          <button
+          <button type="button"
             className={`cgi-tab${activeTab === 'board' ? ' active' : ''}`}
             onClick={() => switchTab('board')}
           >Issues Board</button>
-          <button
+          <button type="button"
             className={`cgi-tab${activeTab === 'plan' ? ' active' : ''}`}
             onClick={() => switchTab('plan')}
           >Plan</button>
         </div>
         <div className="cgi-toolbar-actions">
           {project && !notConfigured && (
-            <button
+            <button type="button"
               className="cgi-btn cgi-btn-new-issue"
               onClick={() => setShowNewIssue(true)}
               title="Create a new issue"
@@ -307,7 +307,7 @@ export const App: React.FC = () => {
             </button>
           )}
           {data && project && (
-            <button
+            <button type="button"
               className={`cgi-btn cgi-btn-ai${aiPrioritizing ? ' cgi-btn-ai-loading' : ''}`}
               onClick={handleAIPrioritize}
               disabled={aiPrioritizing}
@@ -319,11 +319,11 @@ export const App: React.FC = () => {
               {aiPrioritizing ? 'Analyzing…' : aiUsed ? 'Re-prioritize' : 'AI Prioritize'}
             </button>
           )}
-          <button className="cgi-btn" onClick={fetchIssues} disabled={loading} title="Refresh issues">
+          <button type="button" className="cgi-btn" onClick={fetchIssues} disabled={loading} title="Refresh issues">
             {loading ? '↻ Refreshing…' : '↻ Refresh'}
           </button>
           {project && (
-            <button className="cgi-btn" onClick={() => setShowSettings(true)} title="Settings" style={{ padding: '4px 8px' }}>
+            <button type="button" className="cgi-btn" onClick={() => setShowSettings(true)} title="Settings" style={{ padding: '4px 8px' }}>
               ⚙
             </button>
           )}
@@ -346,14 +346,14 @@ export const App: React.FC = () => {
               onChange={e => setSearchText(e.target.value)}
             />
             {searchText && (
-              <button className="cgi-search-clear" onClick={() => setSearchText('')} title="Clear search">✕</button>
+              <button type="button" className="cgi-search-clear" onClick={() => setSearchText('')} title="Clear search">✕</button>
             )}
           </div>
 
           {/* Priority pills */}
           <div className="cgi-priority-pills">
             {(['all', 'high', 'medium', 'low'] as const).map(p => (
-              <button
+              <button type="button"
                 key={p}
                 className={`cgi-priority-pill${activePriority === p ? ' active' : ''}`}
                 onClick={() => setActivePriority(p)}
@@ -368,7 +368,7 @@ export const App: React.FC = () => {
 
           {/* Sort controls */}
           <div className="cgi-sort-controls" ref={sortMenuRef}>
-            <button
+            <button type="button"
               className="cgi-btn cgi-sort-dir-btn"
               onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
               title={sortDir === 'desc' ? 'Descending — click for ascending' : 'Ascending — click for descending'}
@@ -376,7 +376,7 @@ export const App: React.FC = () => {
               {sortDir === 'desc' ? '↓' : '↑'}
             </button>
             <div style={{ position: 'relative' }}>
-              <button
+              <button type="button"
                 className="cgi-btn cgi-sort-select-btn"
                 onClick={() => setShowSortMenu(v => !v)}
               >
@@ -385,7 +385,7 @@ export const App: React.FC = () => {
               {showSortMenu && (
                 <div className="cgi-sort-menu">
                   {SORT_OPTIONS.map(opt => (
-                    <button
+                    <button type="button"
                       key={opt}
                       className={`cgi-sort-menu-item${sortBy === opt ? ' active' : ''}`}
                       onClick={() => { setSortBy(opt); setShowSortMenu(false); }}
@@ -425,7 +425,7 @@ export const App: React.FC = () => {
       ) : error ? (
         <div className="cgi-center">
           <div className="cgi-error-text">{error}</div>
-          <button className="cgi-btn" onClick={fetchIssues}>Retry</button>
+          <button type="button" className="cgi-btn" onClick={fetchIssues}>Retry</button>
         </div>
       ) : data ? (
         <GithubBoard

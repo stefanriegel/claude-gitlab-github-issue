@@ -18,7 +18,7 @@ export const ImageLightbox: React.FC<Props> = ({ src, alt, onClose }) => {
 
   return (
     <div className="cgi-lightbox-overlay" onClick={onClose}>
-      <button className="cgi-lightbox-close" onClick={onClose} title="Close (Esc)">✕</button>
+      <button type="button" className="cgi-lightbox-close" onClick={onClose} title="Close (Esc)">✕</button>
       {error ? (
         <div className="cgi-lightbox-error" onClick={e => e.stopPropagation()}>
           <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.5 }}>🖼</div>

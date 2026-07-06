@@ -66,8 +66,8 @@ export const PlanBootstrapModal: React.FC<PlanBootstrapModalProps> = ({ projectP
         />
         {error && <div className="cgi-error-text">{error}</div>}
         <div className="cgi-modal-actions">
-          <button className="cgi-btn" onClick={onClose} disabled={busy}>Cancel</button>
-          <button className="cgi-btn cgi-btn-new-issue" onClick={run} disabled={busy}>
+          <button type="button" className="cgi-btn" onClick={onClose} disabled={busy}>Cancel</button>
+          <button type="button" className="cgi-btn cgi-btn-new-issue" onClick={run} disabled={busy}>
             {busy ? 'Running…' : 'Run'}
           </button>
         </div>

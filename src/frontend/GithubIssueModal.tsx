@@ -187,7 +187,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, columns 
             </svg>
             Open issue
           </a>
-          <button className="cgi-modal-close" onClick={onClose} title="Close">✕</button>
+          <button type="button" className="cgi-modal-close" onClick={onClose} title="Close">✕</button>
         </div>
 
         <div className="cgi-modal-body">
@@ -224,7 +224,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, columns 
                 {imgs.length > 0 && (
                   <div className="cgi-img-grid">
                     {imgs.map((img, i) => (
-                      <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox({ src: img.url, alt: img.alt })} title="Click to enlarge">
+                      <button type="button" key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox({ src: img.url, alt: img.alt })} title="Click to enlarge">
                         <img src={img.url} alt={img.alt || 'image'} className="cgi-img-thumb" loading="lazy" />
                       </button>
                     ))}
@@ -247,7 +247,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, columns 
                   ? { background: col.accentColor, borderColor: col.accentColor, color: '#fff' }
                   : { borderColor: `${col.accentColor}80`, color: col.accentColor };
                 return (
-                  <button
+                  <button type="button"
                     key={col.id}
                     className={`cgi-column-btn${isActive ? ' cgi-column-btn-active' : ''}`}
                     style={style}
@@ -287,7 +287,7 @@ export const GithubIssueModal: React.FC<Props> = ({ issue, projectPath, columns 
                       {cImgs.length > 0 && (
                         <div className="cgi-img-grid" style={{ marginBottom: cText ? 8 : 0 }}>
                           {cImgs.map((img, i) => (
-                            <button key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox({ src: img.url, alt: img.alt })} title="Click to enlarge">
+                            <button type="button" key={i} className="cgi-img-thumb-btn" onClick={() => setLightbox({ src: img.url, alt: img.alt })} title="Click to enlarge">
                               <img src={img.url} alt={img.alt || 'image'} className="cgi-img-thumb" loading="lazy" />
                             </button>
                           ))}

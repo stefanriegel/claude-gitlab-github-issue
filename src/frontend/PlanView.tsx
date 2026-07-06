@@ -170,7 +170,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   };
 
   if (notConfigured) return <div className="cgi-center"><div style={{ opacity: 0.5 }}>Issue provider not configured. Open the ⚙ settings on the Issues Board tab.</div></div>;
-  if (error) return <div className="cgi-center"><div className="cgi-error-text">{error}</div><button className="cgi-btn" onClick={fetchPlan}>Retry</button></div>;
+  if (error) return <div className="cgi-center"><div className="cgi-error-text">{error}</div><button type="button" className="cgi-btn" onClick={fetchPlan}>Retry</button></div>;
   if (loading && !data) return <div className="cgi-center"><div className="cgi-spinner" /><div>Loading plan…</div></div>;
   if (!data) return null;
 
@@ -180,8 +180,8 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
   return (
     <div className="cgi-plan">
       <div className="cgi-plan-toolbar">
-        <button className="cgi-btn" onClick={() => setShowBootstrap(true)}>Bootstrap phases</button>
-        <button className="cgi-btn" onClick={fetchPlan} disabled={loading}>{loading ? '↻ Refreshing…' : '↻ Refresh'}</button>
+        <button type="button" className="cgi-btn" onClick={() => setShowBootstrap(true)}>Bootstrap phases</button>
+        <button type="button" className="cgi-btn" onClick={fetchPlan} disabled={loading}>{loading ? '↻ Refreshing…' : '↻ Refresh'}</button>
         <label className="cgi-plan-toggle">
           <input type="checkbox" checked={hideDone} onChange={e => setHideDone(e.target.checked)} />
           Hide done
@@ -217,7 +217,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
               onDrop={() => handleDrop(key, visibleIssues.length)}
             >
               <header className="cgi-plan-phase-head">
-                <button
+                <button type="button"
                   className="cgi-plan-collapse"
                   onClick={() => toggleCollapse(key)}
                   title={isCollapsed ? 'Rozwiń fazę' : 'Zwiń fazę'}
@@ -227,8 +227,8 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
                 <span className="cgi-plan-progress"><span className="cgi-plan-progress-bar" style={{ width: `${pct}%` }} /></span>
                 {isMovable && (
                   <span className="cgi-plan-phase-reorder">
-                    <button className="cgi-plan-arrow" disabled={movableIdx === 0} onClick={() => reorderPhases(movableIdx, -1)} title="Faza wyżej">▲</button>
-                    <button className="cgi-plan-arrow" disabled={movableIdx === movableCount - 1} onClick={() => reorderPhases(movableIdx, 1)} title="Faza niżej">▼</button>
+                    <button type="button" className="cgi-plan-arrow" disabled={movableIdx === 0} onClick={() => reorderPhases(movableIdx, -1)} title="Faza wyżej">▲</button>
+                    <button type="button" className="cgi-plan-arrow" disabled={movableIdx === movableCount - 1} onClick={() => reorderPhases(movableIdx, 1)} title="Faza niżej">▼</button>
                   </span>
                 )}
               </header>

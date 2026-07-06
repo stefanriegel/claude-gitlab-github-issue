@@ -15,7 +15,7 @@ export const ConfigBanner: React.FC<Props> = ({ onOpenSettings }) => (
     <p style={{ opacity: 0.65 }}>
       Connect this project to an issue provider to start managing issues as a kanban board.
     </p>
-    <button
+    <button type="button"
       className="cgi-btn"
       onClick={onOpenSettings}
       style={{ background: 'var(--cgi-accent)', color: '#fff', border: 'none', fontWeight: 600, padding: '9px 20px', fontSize: 13 }}

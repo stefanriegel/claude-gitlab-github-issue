@@ -7279,6 +7279,7 @@ const GithubBoard = ({
   return /* @__PURE__ */ React.createElement("div", { className: "cgi-board-wrap" }, collapsedChips.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-collapsed-bar" }, collapsedChips.map((col) => /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       key: col.id,
       className: "cgi-collapsed-chip",
       style: { color: col.accentColor, borderColor: `${col.accentColor}55`, background: col.bgColor },
@@ -7312,7 +7313,7 @@ const ImageLightbox = ({ src, alt, onClose }) => {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, src]);
-  return /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("button", { className: "cgi-lightbox-close", onClick: onClose, title: "Close (Esc)" }, "✕"), error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-error", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 32, marginBottom: 8, opacity: 0.5 } }, "🖼"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, opacity: 0.8 } }, "Image could not be loaded"), /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-overlay", onClick: onClose }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-lightbox-close", onClick: onClose, title: "Close (Esc)" }, "✕"), error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-lightbox-error", onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 32, marginBottom: 8, opacity: 0.5 } }, "🖼"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, opacity: 0.8 } }, "Image could not be loaded"), /* @__PURE__ */ React.createElement(
     "a",
     {
       href: src,
@@ -7648,7 +7649,7 @@ const GithubIssueModal = ({ issue, projectPath, columns = COLUMNS, onClose, onIs
     },
     /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })),
     "Open issue"
-  ), /* @__PURE__ */ React.createElement("button", { className: "cgi-modal-close", onClick: onClose, title: "Close" }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-body" }, currentIssue.labels.length > 0 && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Labels"), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels" }, currentIssue.labels.map((l2) => /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-modal-close", onClick: onClose, title: "Close" }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-body" }, currentIssue.labels.length > 0 && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Labels"), /* @__PURE__ */ React.createElement("div", { className: "cgi-card-labels" }, currentIssue.labels.map((l2) => /* @__PURE__ */ React.createElement(
     "span",
     {
       key: l2.id,
@@ -7664,13 +7665,14 @@ const GithubIssueModal = ({ issue, projectPath, columns = COLUMNS, onClose, onIs
   )))), currentIssue.body && (() => {
     const imgs = extractImages(currentIssue.body);
     const text = stripImages(currentIssue.body);
-    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Description"), imgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid" }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({ src: img.url, alt: img.alt }), title: "Click to enlarge" }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy" })))), text && /* @__PURE__ */ React.createElement(Markdown, { text, className: "cgi-issue-body" }));
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Description"), imgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid" }, imgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { type: "button", key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({ src: img.url, alt: img.alt }), title: "Click to enlarge" }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy" })))), text && /* @__PURE__ */ React.createElement(Markdown, { text, className: "cgi-issue-body" }));
   })(), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Move to column"), /* @__PURE__ */ React.createElement("div", { className: "cgi-column-selector" }, columns.map((col) => {
     const isActive = col.id === issueToColumnId(currentIssue);
     const style = isActive ? { background: col.accentColor, borderColor: col.accentColor, color: "#fff" } : { borderColor: `${col.accentColor}80`, color: col.accentColor };
     return /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         key: col.id,
         className: `cgi-column-btn${isActive ? " cgi-column-btn-active" : ""}`,
         style,
@@ -7682,7 +7684,7 @@ const GithubIssueModal = ({ issue, projectPath, columns = COLUMNS, onClose, onIs
   }))), error && /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Comments ", !loadingComments && `(${comments.length})`), loadingComments ? /* @__PURE__ */ React.createElement("div", { style: { color: "var(--cgi-text-muted)", fontSize: 12 } }, "Loading comments...") : comments.length > 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-comments-list" }, comments.map((c) => {
     const cImgs = extractImages(c.body);
     const cText = stripImages(c.body);
-    return /* @__PURE__ */ React.createElement("div", { key: c.id, className: "cgi-comment" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-header" }, /* @__PURE__ */ React.createElement("img", { src: c.user.avatar_url, alt: c.user.login, className: "cgi-avatar" }), /* @__PURE__ */ React.createElement("span", { className: "cgi-comment-author" }, c.user.login), /* @__PURE__ */ React.createElement("span", null, "·"), /* @__PURE__ */ React.createElement("span", null, formatDate(c.created_at))), cImgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", style: { marginBottom: cText ? 8 : 0 } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({ src: img.url, alt: img.alt }), title: "Click to enlarge" }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy" })))), cText && /* @__PURE__ */ React.createElement(Markdown, { text: cText, className: "cgi-comment-body" }));
+    return /* @__PURE__ */ React.createElement("div", { key: c.id, className: "cgi-comment" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-comment-header" }, /* @__PURE__ */ React.createElement("img", { src: c.user.avatar_url, alt: c.user.login, className: "cgi-avatar" }), /* @__PURE__ */ React.createElement("span", { className: "cgi-comment-author" }, c.user.login), /* @__PURE__ */ React.createElement("span", null, "·"), /* @__PURE__ */ React.createElement("span", null, formatDate(c.created_at))), cImgs.length > 0 && /* @__PURE__ */ React.createElement("div", { className: "cgi-img-grid", style: { marginBottom: cText ? 8 : 0 } }, cImgs.map((img, i) => /* @__PURE__ */ React.createElement("button", { type: "button", key: i, className: "cgi-img-thumb-btn", onClick: () => setLightbox({ src: img.url, alt: img.alt }), title: "Click to enlarge" }, /* @__PURE__ */ React.createElement("img", { src: img.url, alt: img.alt || "image", className: "cgi-img-thumb", loading: "lazy" })))), cText && /* @__PURE__ */ React.createElement(Markdown, { text: cText, className: "cgi-comment-body" }));
   })) : /* @__PURE__ */ React.createElement("div", { style: { color: "var(--cgi-text-muted)", fontSize: 12 } }, "No comments yet.")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-section-label" }, "Add comment"), /* @__PURE__ */ React.createElement("form", { className: "cgi-comment-form", onSubmit: handleSubmitComment }, /* @__PURE__ */ React.createElement(
     "textarea",
     {
@@ -7757,7 +7759,7 @@ const NewIssueModal = ({ projectPath, onClose, onCreated }) => {
         if (e.target === e.currentTarget) onClose();
       }
     },
-    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-modal-bg)", border: "1px solid var(--cgi-border)", borderRadius: 12, padding: 24, width: 500, maxWidth: "92vw", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", gap: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z" })), "New Issue"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 20, lineHeight: 1, padding: "2px 4px" } }, "×")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSubmit, style: { display: "flex", flexDirection: "column", gap: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: { display: "block", fontSize: 11, fontWeight: 600, opacity: 0.65, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" } }, "Title ", /* @__PURE__ */ React.createElement("span", { style: { color: "#ef4444" } }, "*")), /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-modal-bg)", border: "1px solid var(--cgi-border)", borderRadius: 12, padding: 24, width: 500, maxWidth: "92vw", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", gap: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z" })), "New Issue"), /* @__PURE__ */ React.createElement("button", { type: "button", onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 20, lineHeight: 1, padding: "2px 4px" } }, "×")), /* @__PURE__ */ React.createElement("form", { onSubmit: handleSubmit, style: { display: "flex", flexDirection: "column", gap: 14 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: { display: "block", fontSize: 11, fontWeight: 600, opacity: 0.65, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" } }, "Title ", /* @__PURE__ */ React.createElement("span", { style: { color: "#ef4444" } }, "*")), /* @__PURE__ */ React.createElement(
       "input",
       {
         ref: titleRef,
@@ -7864,9 +7866,10 @@ const SubscriptionPriorityModal = ({ issues, onApply, onClose }) => {
         if (e.target === e.currentTarget) onClose();
       }
     },
-    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-modal-bg)", border: "1px solid var(--cgi-border)", borderRadius: 12, padding: 24, width: 580, maxWidth: "96vw", maxHeight: "85vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" })), "AI Prioritize — Claude Subscription"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 20, lineHeight: 1, padding: "2px 4px" } }, "×")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 0, borderRadius: 8, overflow: "hidden", border: "1px solid var(--cgi-border)" } }, ["prompt", "paste"].map((s, i) => /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-modal-bg)", border: "1px solid var(--cgi-border)", borderRadius: 12, padding: 24, width: 580, maxWidth: "96vw", maxHeight: "85vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.45)", display: "flex", flexDirection: "column", gap: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" })), "AI Prioritize — Claude Subscription"), /* @__PURE__ */ React.createElement("button", { type: "button", onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 20, lineHeight: 1, padding: "2px 4px" } }, "×")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 0, borderRadius: 8, overflow: "hidden", border: "1px solid var(--cgi-border)" } }, ["prompt", "paste"].map((s, i) => /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         key: s,
         onClick: () => setStep(s),
         style: {
@@ -7910,7 +7913,7 @@ const SubscriptionPriorityModal = ({ issues, onApply, onClose }) => {
           return (_a = promptRef.current) == null ? void 0 : _a.select();
         }
       }
-    )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "cgi-btn", style: { opacity: 0.7 } }, "Cancel"), /* @__PURE__ */ React.createElement("button", { onClick: handleCopy, className: "cgi-btn", style: { background: copied ? "#22c55e" : "var(--cgi-accent)", color: "#fff", border: "none", fontWeight: 600, minWidth: 120 } }, copied ? "✓ Copied!" : "⎘ Copy Prompt"), /* @__PURE__ */ React.createElement("button", { onClick: () => setStep("paste"), className: "cgi-btn", style: { fontWeight: 600 } }, "Next →"))), step === "paste" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, opacity: 0.75, lineHeight: 1.5 } }, "Paste Claude's JSON response below. It should start with ", /* @__PURE__ */ React.createElement("code", { style: { background: "var(--cgi-code-bg)", padding: "1px 5px", borderRadius: 4 } }, `{"priorities":[`)), /* @__PURE__ */ React.createElement(
+    )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: onClose, className: "cgi-btn", style: { opacity: 0.7 } }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "button", onClick: handleCopy, className: "cgi-btn", style: { background: copied ? "#22c55e" : "var(--cgi-accent)", color: "#fff", border: "none", fontWeight: 600, minWidth: 120 } }, copied ? "✓ Copied!" : "⎘ Copy Prompt"), /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setStep("paste"), className: "cgi-btn", style: { fontWeight: 600 } }, "Next →"))), step === "paste" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, opacity: 0.75, lineHeight: 1.5 } }, "Paste Claude's JSON response below. It should start with ", /* @__PURE__ */ React.createElement("code", { style: { background: "var(--cgi-code-bg)", padding: "1px 5px", borderRadius: 4 } }, `{"priorities":[`)), /* @__PURE__ */ React.createElement(
       "textarea",
       {
         value: pasteText,
@@ -7938,9 +7941,10 @@ Expected format:
           outline: "none"
         }
       }
-    ), parseError && /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 6, padding: "8px 12px", fontSize: 12, color: "#ef4444" } }, parseError), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("button", { onClick: () => setStep("prompt"), className: "cgi-btn", style: { opacity: 0.7 } }, "← Back"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "cgi-btn", style: { opacity: 0.7 } }, "Cancel"), /* @__PURE__ */ React.createElement(
+    ), parseError && /* @__PURE__ */ React.createElement("div", { style: { background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 6, padding: "8px 12px", fontSize: 12, color: "#ef4444" } }, parseError), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: () => setStep("prompt"), className: "cgi-btn", style: { opacity: 0.7 } }, "← Back"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: onClose, className: "cgi-btn", style: { opacity: 0.7 } }, "Cancel"), /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         onClick: handleApply,
         disabled: !pasteText.trim(),
         className: "cgi-btn",
@@ -7953,6 +7957,7 @@ Expected format:
 const ConfigBanner = ({ onOpenSettings }) => /* @__PURE__ */ React.createElement("div", { className: "cgi-config-banner" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-config-banner-icon" }, /* @__PURE__ */ React.createElement("svg", { width: "32", height: "32", viewBox: "0 0 16 16", fill: "currentColor", style: { opacity: 0.4 } }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" }))), /* @__PURE__ */ React.createElement("h2", null, "Issues Board"), /* @__PURE__ */ React.createElement("p", { style: { opacity: 0.65 } }, "Connect this project to an issue provider to start managing issues as a kanban board."), /* @__PURE__ */ React.createElement(
   "button",
   {
+    type: "button",
     className: "cgi-btn",
     onClick: onOpenSettings,
     style: { background: "var(--cgi-accent)", color: "#fff", border: "none", fontWeight: 600, padding: "9px 20px", fontSize: 13 }
@@ -8059,7 +8064,7 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
         if (e.target === e.currentTarget) onClose();
       }
     },
-    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-surface)", borderRadius: 10, padding: 24, width: 420, maxWidth: "90vw", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", gap: 18 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })), "Issues Board — Settings"), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 18, lineHeight: 1, padding: "2px 6px" } }, "×")), loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "20px 0", opacity: 0.5 } }, "Loading current settings…") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, "Provider"), /* @__PURE__ */ React.createElement(
+    /* @__PURE__ */ React.createElement("div", { style: { background: "var(--cgi-surface)", borderRadius: 10, padding: 24, width: 420, maxWidth: "90vw", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", gap: 18 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, fontWeight: 600, fontSize: 15 } }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })), "Issues Board — Settings"), /* @__PURE__ */ React.createElement("button", { type: "button", onClick: onClose, style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.5, fontSize: 18, lineHeight: 1, padding: "2px 6px" } }, "×")), loading ? /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", padding: "20px 0", opacity: 0.5 } }, "Loading current settings…") : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", { style: labelStyle }, "Provider"), /* @__PURE__ */ React.createElement(
       "select",
       {
         value: form.provider,
@@ -8091,6 +8096,7 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
     ), /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         onClick: () => setShowToken((v2) => !v2),
         style: { position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.45, fontSize: 12 },
         title: showToken ? "Hide token" : "Show token"
@@ -8129,6 +8135,7 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
     ), /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         onClick: () => setShowAnthropicKey((v2) => !v2),
         style: { position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--cgi-text)", opacity: 0.45, fontSize: 12 },
         title: showAnthropicKey ? "Hide key" : "Show key"
@@ -8137,6 +8144,7 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
     )), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, opacity: 0.5, marginTop: 4, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 } }, /* @__PURE__ */ React.createElement("span", null, "Without a key, AI Prioritize uses smart heuristics. With a key, it uses Claude Haiku for deeper AI analysis."), onManualPrioritize && /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         onClick: onManualPrioritize,
         style: { background: "none", border: "none", cursor: "pointer", color: "var(--cgi-accent)", fontSize: 11, fontWeight: 600, padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap", flexShrink: 0 },
         title: "Use Claude.ai subscription: generate a prompt, paste back the response"
@@ -8153,9 +8161,10 @@ const SettingsModal = ({ projectPath, onClose, onSaved, onManualPrioritize }) =>
       },
       /* @__PURE__ */ React.createElement("svg", { width: "11", height: "11", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })),
       "View SKILL.md"
-    )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { onClick: onClose, className: "cgi-btn", style: { opacity: 0.7 } }, "Cancel"), /* @__PURE__ */ React.createElement(
+    )), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { type: "button", onClick: onClose, className: "cgi-btn", style: { opacity: 0.7 } }, "Cancel"), /* @__PURE__ */ React.createElement(
       "button",
       {
+        type: "button",
         onClick: handleSave,
         disabled: saving || success,
         className: "cgi-btn",
@@ -8210,8 +8219,8 @@ const PlanCard = ({
     },
     /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-drag", title: "Drag to reorder" }, "⠿"),
     priority && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-dot", style: { background: PRIORITY_COLORS[priority] } }),
-    /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-card-main", onClick: () => onOpen(issue) }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-num" }, "#", issue.number), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-title" }, issue.title), inReview && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-review", title: "Zrobione — czeka na weryfikację/zamknięcie" }, "✓ w review"), isBug && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-bug" }, "bug")),
-    /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-reorder" }, /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-arrow", disabled: index === 0, onClick: onMoveUp, title: "Move up" }, "▲"), /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-arrow", disabled: index === count - 1, onClick: onMoveDown, title: "Move down" }, "▼"))
+    /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-plan-card-main", onClick: () => onOpen(issue) }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-num" }, "#", issue.number), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-title" }, issue.title), inReview && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-review", title: "Zrobione — czeka na weryfikację/zamknięcie" }, "✓ w review"), isBug && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-bug" }, "bug")),
+    /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-reorder" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-plan-arrow", disabled: index === 0, onClick: onMoveUp, title: "Move up" }, "▲"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-plan-arrow", disabled: index === count - 1, onClick: onMoveDown, title: "Move down" }, "▼"))
   );
 };
 const PlanBootstrapModal = ({ projectPath, onClose, onDone }) => {
@@ -8258,7 +8267,7 @@ const PlanBootstrapModal = ({ projectPath, onClose, onDone }) => {
       placeholder: "FAZA A: 1, 2, 3\nFAZA L: 12, 14",
       rows: 8
     }
-  ), error && /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-actions" }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: onClose, disabled: busy }, "Cancel"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn cgi-btn-new-issue", onClick: run, disabled: busy }, busy ? "Running…" : "Run"))));
+  ), error && /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("div", { className: "cgi-modal-actions" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: onClose, disabled: busy }, "Cancel"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn cgi-btn-new-issue", onClick: run, disabled: busy }, busy ? "Running…" : "Run"))));
 };
 const POLL_INTERVAL_MS$1 = 3e4;
 const PlanView = ({ projectPath, onOpenIssue }) => {
@@ -8429,11 +8438,11 @@ const PlanView = ({ projectPath, onOpenIssue }) => {
     })();
   };
   if (notConfigured) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "Issue provider not configured. Open the ⚙ settings on the Issues Board tab."));
-  if (error) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchPlan }, "Retry"));
+  if (error) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: fetchPlan }, "Retry"));
   if (loading && !data) return /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-spinner" }), /* @__PURE__ */ React.createElement("div", null, "Loading plan…"));
   if (!data) return null;
   const movableCount = data.phases.filter((p2) => p2.milestoneNumber !== null).length;
-  return /* @__PURE__ */ React.createElement("div", { className: "cgi-plan" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-toolbar" }, /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: () => setShowBootstrap(true) }, "Bootstrap phases"), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchPlan, disabled: loading }, loading ? "↻ Refreshing…" : "↻ Refresh"), /* @__PURE__ */ React.createElement("label", { className: "cgi-plan-toggle" }, /* @__PURE__ */ React.createElement("input", { type: "checkbox", checked: hideDone, onChange: (e) => setHideDone(e.target.checked) }), "Hide done")), data.phases.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "No issues yet.")) : data.phases.map((phase, phaseIdx) => {
+  return /* @__PURE__ */ React.createElement("div", { className: "cgi-plan" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-toolbar" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: () => setShowBootstrap(true) }, "Bootstrap phases"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: fetchPlan, disabled: loading }, loading ? "↻ Refreshing…" : "↻ Refresh"), /* @__PURE__ */ React.createElement("label", { className: "cgi-plan-toggle" }, /* @__PURE__ */ React.createElement("input", { type: "checkbox", checked: hideDone, onChange: (e) => setHideDone(e.target.checked) }), "Hide done")), data.phases.length === 0 ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "No issues yet.")) : data.phases.map((phase, phaseIdx) => {
     const key = phaseKey(phase);
     const pct = phase.total > 0 ? Math.round(phase.closed / phase.total * 100) : 0;
     const visibleIssues = hideDone ? phase.issues.filter((i) => i.state !== "closed") : phase.issues;
@@ -8460,12 +8469,13 @@ const PlanView = ({ projectPath, onOpenIssue }) => {
       /* @__PURE__ */ React.createElement("header", { className: "cgi-plan-phase-head" }, /* @__PURE__ */ React.createElement(
         "button",
         {
+          type: "button",
           className: "cgi-plan-collapse",
           onClick: () => toggleCollapse(key),
           title: isCollapsed ? "Rozwiń fazę" : "Zwiń fazę"
         },
         isCollapsed ? "▸" : "▾"
-      ), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-title", onClick: () => toggleCollapse(key) }, phase.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-count" }, phase.closed, "/", phase.total), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress" }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress-bar", style: { width: `${pct}%` } })), isMovable && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-reorder" }, /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-arrow", disabled: movableIdx === 0, onClick: () => reorderPhases(movableIdx, -1), title: "Faza wyżej" }, "▲"), /* @__PURE__ */ React.createElement("button", { className: "cgi-plan-arrow", disabled: movableIdx === movableCount - 1, onClick: () => reorderPhases(movableIdx, 1), title: "Faza niżej" }, "▼"))),
+      ), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-title", onClick: () => toggleCollapse(key) }, phase.title), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-count" }, phase.closed, "/", phase.total), /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress" }, /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-progress-bar", style: { width: `${pct}%` } })), isMovable && /* @__PURE__ */ React.createElement("span", { className: "cgi-plan-phase-reorder" }, /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-plan-arrow", disabled: movableIdx === 0, onClick: () => reorderPhases(movableIdx, -1), title: "Faza wyżej" }, "▲"), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-plan-arrow", disabled: movableIdx === movableCount - 1, onClick: () => reorderPhases(movableIdx, 1), title: "Faza niżej" }, "▼"))),
       !isCollapsed && /* @__PURE__ */ React.createElement("div", { className: "cgi-plan-list" }, visibleIssues.map((issue, idx) => /* @__PURE__ */ React.createElement(
         PlanCard,
         {
@@ -8734,6 +8744,7 @@ const App = () => {
   return /* @__PURE__ */ React.createElement("div", { className: `cgi-root cgi-${theme}`, style: { background: "var(--cgi-bg)", color: "var(--cgi-text)" } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-toolbar", style: { background: "var(--cgi-surface)" } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-toolbar-title" }, /* @__PURE__ */ React.createElement("svg", { width: "16", height: "16", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z" })), "Issues Board", repoInfo.owner && repoInfo.repo && /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 400, opacity: 0.6, fontSize: 12 } }, repoInfo.owner, "/", repoInfo.repo), data && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, opacity: 0.45 } }, isFiltered ? `${filteredCount}/${totalCount}` : `${totalCount}`)), /* @__PURE__ */ React.createElement("div", { className: "cgi-tabs" }, /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       className: `cgi-tab${activeTab === "board" ? " active" : ""}`,
       onClick: () => switchTab("board")
     },
@@ -8741,6 +8752,7 @@ const App = () => {
   ), /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       className: `cgi-tab${activeTab === "plan" ? " active" : ""}`,
       onClick: () => switchTab("plan")
     },
@@ -8748,6 +8760,7 @@ const App = () => {
   )), /* @__PURE__ */ React.createElement("div", { className: "cgi-toolbar-actions" }, project && !notConfigured && /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       className: "cgi-btn cgi-btn-new-issue",
       onClick: () => setShowNewIssue(true),
       title: "Create a new issue"
@@ -8757,6 +8770,7 @@ const App = () => {
   ), data && project && /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       className: `cgi-btn cgi-btn-ai${aiPrioritizing ? " cgi-btn-ai-loading" : ""}`,
       onClick: handleAIPrioritize,
       disabled: aiPrioritizing,
@@ -8764,7 +8778,7 @@ const App = () => {
     },
     /* @__PURE__ */ React.createElement("svg", { width: "13", height: "13", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2" }, /* @__PURE__ */ React.createElement("path", { d: "M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" })),
     aiPrioritizing ? "Analyzing…" : aiUsed ? "Re-prioritize" : "AI Prioritize"
-  ), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues, disabled: loading, title: "Refresh issues" }, loading ? "↻ Refreshing…" : "↻ Refresh"), project && /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: () => setShowSettings(true), title: "Settings", style: { padding: "4px 8px" } }, "⚙"))), activeTab === "board" && data && /* @__PURE__ */ React.createElement("div", { className: "cgi-filterbar", style: { background: "var(--cgi-surface)", borderBottom: "1px solid var(--cgi-border)" } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-search-wrap" }, /* @__PURE__ */ React.createElement("svg", { className: "cgi-search-icon", width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z" })), /* @__PURE__ */ React.createElement(
+  ), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: fetchIssues, disabled: loading, title: "Refresh issues" }, loading ? "↻ Refreshing…" : "↻ Refresh"), project && /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: () => setShowSettings(true), title: "Settings", style: { padding: "4px 8px" } }, "⚙"))), activeTab === "board" && data && /* @__PURE__ */ React.createElement("div", { className: "cgi-filterbar", style: { background: "var(--cgi-surface)", borderBottom: "1px solid var(--cgi-border)" } }, /* @__PURE__ */ React.createElement("div", { className: "cgi-search-wrap" }, /* @__PURE__ */ React.createElement("svg", { className: "cgi-search-icon", width: "13", height: "13", viewBox: "0 0 16 16", fill: "currentColor" }, /* @__PURE__ */ React.createElement("path", { d: "M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z" })), /* @__PURE__ */ React.createElement(
     "input",
     {
       type: "text",
@@ -8773,9 +8787,10 @@ const App = () => {
       value: searchText,
       onChange: (e) => setSearchText(e.target.value)
     }
-  ), searchText && /* @__PURE__ */ React.createElement("button", { className: "cgi-search-clear", onClick: () => setSearchText(""), title: "Clear search" }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-priority-pills" }, ["all", "high", "medium", "low"].map((p2) => /* @__PURE__ */ React.createElement(
+  ), searchText && /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-search-clear", onClick: () => setSearchText(""), title: "Clear search" }, "✕")), /* @__PURE__ */ React.createElement("div", { className: "cgi-priority-pills" }, ["all", "high", "medium", "low"].map((p2) => /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       key: p2,
       className: `cgi-priority-pill${activePriority === p2 ? " active" : ""}`,
       onClick: () => setActivePriority(p2)
@@ -8785,6 +8800,7 @@ const App = () => {
   ))), /* @__PURE__ */ React.createElement("div", { className: "cgi-sort-controls", ref: sortMenuRef }, /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       className: "cgi-btn cgi-sort-dir-btn",
       onClick: () => setSortDir((d) => d === "desc" ? "asc" : "desc"),
       title: sortDir === "desc" ? "Descending — click for ascending" : "Ascending — click for descending"
@@ -8793,6 +8809,7 @@ const App = () => {
   ), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       className: "cgi-btn cgi-sort-select-btn",
       onClick: () => setShowSortMenu((v2) => !v2)
     },
@@ -8803,6 +8820,7 @@ const App = () => {
   ), showSortMenu && /* @__PURE__ */ React.createElement("div", { className: "cgi-sort-menu" }, SORT_OPTIONS.map((opt) => /* @__PURE__ */ React.createElement(
     "button",
     {
+      type: "button",
       key: opt,
       className: `cgi-sort-menu-item${sortBy === opt ? " active" : ""}`,
       onClick: () => {
@@ -8817,7 +8835,7 @@ const App = () => {
       projectPath,
       onOpenIssue: setSelectedIssue
     }
-  ) : /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "No project open.")) : !project ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "No project open."), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, opacity: 0.4 } }, "Open a project to view issues.")) : notConfigured ? /* @__PURE__ */ React.createElement(ConfigBanner, { onOpenSettings: () => setShowSettings(true) }) : loading && !data ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-spinner" }), /* @__PURE__ */ React.createElement("div", null, "Loading issues…")) : error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("button", { className: "cgi-btn", onClick: fetchIssues }, "Retry")) : data ? /* @__PURE__ */ React.createElement(
+  ) : /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "No project open.")) : !project ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { style: { opacity: 0.5 } }, "No project open."), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, opacity: 0.4 } }, "Open a project to view issues.")) : notConfigured ? /* @__PURE__ */ React.createElement(ConfigBanner, { onOpenSettings: () => setShowSettings(true) }) : loading && !data ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-spinner" }), /* @__PURE__ */ React.createElement("div", null, "Loading issues…")) : error ? /* @__PURE__ */ React.createElement("div", { className: "cgi-center" }, /* @__PURE__ */ React.createElement("div", { className: "cgi-error-text" }, error), /* @__PURE__ */ React.createElement("button", { type: "button", className: "cgi-btn", onClick: fetchIssues }, "Retry")) : data ? /* @__PURE__ */ React.createElement(
     GithubBoard,
     {
       issues: processedIssues,

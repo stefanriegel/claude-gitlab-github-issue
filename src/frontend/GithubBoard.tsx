@@ -70,7 +70,7 @@ export const GithubBoard: React.FC<Props> = ({
       {collapsedChips.length > 0 && (
         <div className="cgi-collapsed-bar">
           {collapsedChips.map(col => (
-            <button
+            <button type="button"
               key={col.id}
               className="cgi-collapsed-chip"
               style={{ color: col.accentColor, borderColor: `${col.accentColor}55`, background: col.bgColor }}
