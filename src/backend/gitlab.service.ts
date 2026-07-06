@@ -147,8 +147,8 @@ export async function createComment(baseUrl: string, token: string, owner: strin
 }
 
 export async function listMilestones(baseUrl: string, token: string, owner: string, repo: string, state: 'open' | 'closed' | 'all' = 'all'): Promise<GithubMilestone[]> {
-  const stateParam = state === 'all' ? 'all' : state === 'open' ? 'active' : 'closed';
-  const milestones = await gitlabFetch(baseUrl, token, 'GET', `/projects/${projectId(owner, repo)}/milestones?state=${stateParam}&per_page=100`) as GitLabMilestoneRaw[];
+  const stateParam = state === 'all' ? '' : `state=${state === 'open' ? 'active' : 'closed'}&`;
+  const milestones = await gitlabFetch(baseUrl, token, 'GET', `/projects/${projectId(owner, repo)}/milestones?${stateParam}per_page=100`) as GitLabMilestoneRaw[];
   return milestones.map(mapGitlabMilestone);
 }
 
