@@ -185,6 +185,8 @@ async function handleGetConfig(
     } else {
       sendJson(res, 200, {
         configured: true,
+        provider: config.provider,
+        baseUrl: config.baseUrl,
         enabled: config.enabled,
         owner: config.owner,
         repo: config.repo,
@@ -382,13 +384,24 @@ const server = http.createServer(async (req, res) => {
       if (!projectPath) { sendJson(res, 400, { error: 'path query parameter required' }); return; }
       try {
         const raw = await readBody(req);
-        const body = JSON.parse(raw) as { token?: string; owner?: string; repo?: string; enabled?: boolean; anthropicKey?: string };
+        const body = JSON.parse(raw) as {
+          token?: string;
+          owner?: string;
+          repo?: string;
+          enabled?: boolean;
+          anthropicKey?: string;
+          provider?: configService.IssueProvider;
+          baseUrl?: string;
+        };
         if (!body.token?.trim() || !body.owner?.trim() || !body.repo?.trim()) {
           sendJson(res, 400, { error: 'token, owner, and repo are required' });
           return;
         }
         const existing = await configService.readConfig(projectPath);
+        const provider = body.provider === 'gitlab' ? 'gitlab' : 'github';
         const config: configService.GithubConfig = {
+          provider,
+          baseUrl: provider === 'gitlab' ? (body.baseUrl?.trim().replace(/\/+$/, '') || 'https://gitlab.com') : undefined,
           token: body.token.trim(),
           owner: body.owner.trim(),
           repo: body.repo.trim(),

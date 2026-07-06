@@ -7,12 +7,26 @@ const SYNC_FILE = '.GitHubBoard/github-sync.json';
 // that were set up via TaskMaster work without duplicating config.
 const TASKMASTER_SYNC_FILE = '.taskmaster/github-sync.json';
 
+export type IssueProvider = 'github' | 'gitlab';
+
 export interface GithubConfig {
+  provider: IssueProvider;
+  baseUrl?: string;
   token: string;
   owner: string;
   repo: string;
   enabled: boolean;
   anthropicKey?: string;
+}
+
+function normalizeProvider(value: unknown): IssueProvider {
+  return value === 'gitlab' ? 'gitlab' : 'github';
+}
+
+function normalizeBaseUrl(provider: IssueProvider, value: unknown): string | undefined {
+  if (provider !== 'gitlab') return undefined;
+  const raw = typeof value === 'string' && value.trim() ? value.trim() : 'https://gitlab.com';
+  return raw.replace(/\/+$/, '');
 }
 
 async function readConfigFile(filePath: string): Promise<GithubConfig | null> {
@@ -21,7 +35,10 @@ async function readConfigFile(filePath: string): Promise<GithubConfig | null> {
     // TaskMaster files carry extra fields (webhookSecret, lastSync) — ignored here.
     const parsed = JSON.parse(content) as Partial<GithubConfig>;
     if (!parsed.token || !parsed.owner || !parsed.repo) return null;
+    const provider = normalizeProvider(parsed.provider);
     return {
+      provider,
+      baseUrl: normalizeBaseUrl(provider, parsed.baseUrl),
       token: parsed.token,
       owner: parsed.owner,
       repo: parsed.repo,

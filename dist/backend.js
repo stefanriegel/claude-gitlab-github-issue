@@ -123,12 +123,23 @@ var import_path = __toESM(require("path"));
 var import_fs = require("fs");
 var SYNC_FILE = ".GitHubBoard/github-sync.json";
 var TASKMASTER_SYNC_FILE = ".taskmaster/github-sync.json";
+function normalizeProvider(value) {
+  return value === "gitlab" ? "gitlab" : "github";
+}
+function normalizeBaseUrl(provider, value) {
+  if (provider !== "gitlab") return void 0;
+  const raw = typeof value === "string" && value.trim() ? value.trim() : "https://gitlab.com";
+  return raw.replace(/\/+$/, "");
+}
 async function readConfigFile(filePath) {
   try {
     const content = await import_fs.promises.readFile(filePath, "utf8");
     const parsed = JSON.parse(content);
     if (!parsed.token || !parsed.owner || !parsed.repo) return null;
+    const provider = normalizeProvider(parsed.provider);
     return {
+      provider,
+      baseUrl: normalizeBaseUrl(provider, parsed.baseUrl),
       token: parsed.token,
       owner: parsed.owner,
       repo: parsed.repo,
@@ -733,6 +744,8 @@ async function handleGetConfig(req, res) {
     } else {
       sendJson(res, 200, {
         configured: true,
+        provider: config.provider,
+        baseUrl: config.baseUrl,
         enabled: config.enabled,
         owner: config.owner,
         repo: config.repo,
@@ -939,7 +952,10 @@ var server = import_http.default.createServer(async (req, res) => {
           return;
         }
         const existing = await readConfig(projectPath);
+        const provider = body.provider === "gitlab" ? "gitlab" : "github";
         const config = {
+          provider,
+          baseUrl: provider === "gitlab" ? body.baseUrl?.trim().replace(/\/+$/, "") || "https://gitlab.com" : void 0,
           token: body.token.trim(),
           owner: body.owner.trim(),
           repo: body.repo.trim(),
