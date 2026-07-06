@@ -169,7 +169,7 @@ export const PlanView: React.FC<PlanViewProps> = ({ projectPath, onOpenIssue }) 
     })();
   };
 
-  if (notConfigured) return <div className="cgi-center"><div style={{ opacity: 0.5 }}>GitHub not configured. Open the ⚙ settings on the Issues Board tab.</div></div>;
+  if (notConfigured) return <div className="cgi-center"><div style={{ opacity: 0.5 }}>Issue provider not configured. Open the ⚙ settings on the Issues Board tab.</div></div>;
   if (error) return <div className="cgi-center"><div className="cgi-error-text">{error}</div><button className="cgi-btn" onClick={fetchPlan}>Retry</button></div>;
   if (loading && !data) return <div className="cgi-center"><div className="cgi-spinner" /><div>Loading plan…</div></div>;
   if (!data) return null;
