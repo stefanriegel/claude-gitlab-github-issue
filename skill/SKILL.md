@@ -1,6 +1,5 @@
----
-name: github-task
-description: Manage GitHub or GitLab Issues tasks -- list, move between columns, update comments, and order the Plan tab. Reads project config from .GitHubBoard/github-sync.json in the current project. Use when the user invokes /github-task or asks to "check tasks", "move issue to in-progress", "update task", "what needs testing", "mark done", "sprawdź taski", "przenieś task", "zaktualizuj task", or to order/rank the Plan board.
+--- name: github-task
+description: Manage GitHub or GitLab issues as tasks -- list, move, comment, and order the Plan tab. Reads .GitHubBoard/github-sync.json in the current project. Use when the user invokes /github-task or asks to check tasks, move an issue, update a task, what needs testing, mark done, or reorder the plan.
 ---
 
 # github-task skill
@@ -9,78 +8,83 @@ Read and manage GitHub or GitLab issues directly via the provider API using the 
 
 ## Setup
 
-Read `.GitHubBoard/github-sync.json` in the current project:
+Find the project config first:
 
 ```bash
-cat .GitHubBoard/github-sync.json 2>/dev/null || find . -name "github-sync.json" -path "*GitHubBoard*" 2>/dev/null | head -1 | xargs cat
+TOKEN_FILE="$(cat .GitHubBoard/github-sync.json 2>/dev/null || find . -name 'github-sync.json' -path '*GitHubBoard*' | head -1)"
 ```
 
-Extract: `provider`, `baseUrl`, `token`, `owner`, `repo`. If missing, tell user to configure in the Issues Board tab.
-
-Set shell variables:
+Read provider settings from that file:
 
 ```bash
-PROVIDER=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d.get('provider','github'))") BASE_URL=$(python3 -c "import json; d=json.load(open('$TOKEN_FILE')); print(d.get('baseUrl','https://gitlab.com').rstrip('/'))")
-TOKEN="<token from config>"
-OWNER="<owner>"
-REPO="<repo>"
-BASE="https://api.github.com"
-AUTH="-H \"Authorization: Bearer $TOKEN\" -H \"Accept: application/vnd.github+json\" -H \"X-GitHub-Api-Version: 2022-11-28\""
+PROVIDER=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('provider','github'))" "$TOKEN_FILE")
+BASE_URL=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d.get('baseUrl','https://gitlab.com').rstrip('/'))" "$TOKEN_FILE")
+TOKEN=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['token'])" "$TOKEN_FILE")
+OWNER=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['owner'])" "$TOKEN_FILE")
+REPO=$(python3 -c "import json,sys; d=json.load(open(sys.argv[1])); print(d['repo'])" "$TOKEN_FILE")
 ```
 
-## GitLab rules
+If the file is missing or incomplete, tell the user to configure the Issues Board tab.
 
-For GitLab, use `$BASE_URL/api/v4/projects/$PROJECT_ID/issues`, where `PROJECT_ID` URL-encoded `owner/repo`. GitLab issue numbers are `iid`. Closing/reopening uses `state_event=close` or `state_event=reopen`. Comments are issue notes: `/projects/:id/issues/:iid/notes`.
+## Provider rules
 
-Use `PROJECT_ID=$(python3 -c "import urllib.parse; print(urllib.parse.quote(f'{OWNER}/{REPO}', safe=''))")` when the provider is GitLab.
+- GitHub uses `https://api.github.com/repos/$OWNER/$REPO/issues`
+- GitLab uses `$BASE_URL/api/v4/projects/$PROJECT_ID/issues`, where `PROJECT_ID` is URL-encoded `owner/repo`
+- GitLab issue numbers are `iid`
+- GitLab close/reopen uses `state_event=close` or `state_event=reopen`
+- GitLab comments are issue notes at `/projects/:id/issues/:iid/notes`
 
-## Status mapping
+```bash
+PROJECT_ID=$(python3 -c "import urllib.parse; print(urllib.parse.quote(f'{OWNER}/{REPO}', safe=''))")
+```
 
-| Column | GitHub state | Labels to add | Labels to remove |
-|---|---|---|---|
-| to-do | open | none | in-progress, review, blocked, need-testing |
-| in-progress | open | in-progress | review, blocked, need-testing |
-| review | open | review, need-testing | in-progress, blocked |
-| blocked | open | blocked | in-progress, review, need-testing |
-| done | closed | none | close the issue |
-
-## Operations
-
-Use the GitHub API examples below for GitHub; for GitLab, swap to the GitLab issue path above and use `iid`.
+## Core operations
 
 ### List tasks
 
+GitHub:
+
 ```bash
-curl -s $AUTH "$BASE/repos/$OWNER/$REPO/issues?state=open&per_page=100"
+curl -s -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" "$BASE_URL/repos/$OWNER/$REPO/issues?state=open&per_page=100"
+```
+
+GitLab:
+
+```bash
+curl -s --header "PRIVATE-TOKEN: $TOKEN" "$BASE_URL/api/v4/projects/$PROJECT_ID/issues?state=opened&per_page=100"
 ```
 
 ### Move a task
 
-```bash
-curl -s $AUTH "$BASE/repos/$OWNER/$REPO/issues/$NUMBER" | python3 -c "import json,sys; i=json.load(sys.stdin); print(' '.join(l['name'] for l in i['labels']))"
-```
+GitHub updates labels; `done` closes the issue.
+
+GitLab updates labels with `PUT /issues/:iid`; use `state_event=close` for done and `state_event=reopen` when reopening.
 
 ```bash
-curl -s -X PATCH $AUTH -H "Content-Type: application/json" \
-  -d "{\"labels\": $NEW_LABELS_JSON}" \
-  "$BASE/repos/$OWNER/$REPO/issues/$NUMBER"
+curl -s -X PUT --header "PRIVATE-TOKEN: $TOKEN" --data "labels=$NEW_LABELS" --data "state_event=$STATE_EVENT" "$BASE_URL/api/v4/projects/$PROJECT_ID/issues/$IID"
 ```
 
 ### Add a comment
 
+GitHub:
+
 ```bash
-curl -s -X POST $AUTH -H "Content-Type: application/json" \
-  -d "{\"body\": \"$COMMENT_TEXT\"}" \
-  "$BASE/repos/$OWNER/$REPO/issues/$NUMBER/comments"
+curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" -d "{\"body\":\"$COMMENT_TEXT\"}" "$BASE_URL/repos/$OWNER/$REPO/issues/$NUMBER/comments"
+```
+
+GitLab:
+
+```bash
+curl -s -X POST --header "PRIVATE-TOKEN: $TOKEN" --data-urlencode "body=$COMMENT_TEXT" "$BASE_URL/api/v4/projects/$PROJECT_ID/issues/$IID/notes"
 ```
 
 ## Behavior
 
 - No confirmation needed for status moves.
-- Confirm before closing if sub-tasks are open and the user seems unsure.
+- Confirm before closing sub-tasks if the user seems unsure.
 - When moving to review, add both `review` and `need-testing`.
 - When moving to done, close the issue and add no labels.
-- When the user asks what needs testing, list `need-testing`.
+- When the user asks for needs testing, list `need-testing`.
 - When the user asks what's blocking, list `blocked`.
 - When the user asks what's to do or `sprawdź taski`, list to-do.
-- When the user asks to update a task message, post the comment and confirm.
+- When the user asks to update a task message, post a comment and confirm.
