@@ -23,7 +23,7 @@ export const ConfigBanner: React.FC<Props> = ({ onOpenSettings }) => (
       ⚙ Configure Issue Provider
     </button>
     <p style={{ fontSize: 11, opacity: 0.45, marginTop: 8 }}>
-      You'll need an access token with <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: 3 }}>repo</code> scope.<br />
+      Use a GitHub token with <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: 3 }}>repo</code> scope or a GitLab token with <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: 3 }}>api</code> scope.<br />
       Settings are saved to <code style={{ background: 'rgba(0,0,0,0.1)', padding: '1px 4px', borderRadius: 3 }}>.GitHubBoard/github-sync.json</code> in your project.
     </p>
     <p style={{ fontSize: 11, opacity: 0.45 }}>
