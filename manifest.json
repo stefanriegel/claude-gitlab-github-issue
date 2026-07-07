@@ -1,7 +1,7 @@
 {
   "name": "claude-github-issue",
   "displayName": "Issues Board",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Kanban board for GitHub or GitLab issues with per-project configuration and /github-task CLI skill auto-install",
   "author": "szmidtpiotr",
   "slot": "tab",
