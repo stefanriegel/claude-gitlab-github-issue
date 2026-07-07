@@ -264,7 +264,16 @@ export const App: React.FC = () => {
   const repoInfo = (data as unknown as { owner?: string; repo?: string }) ?? {};
 
   return (
-    <div className={`cgi-root cgi-${theme}`} style={{ background: 'var(--cgi-bg)', color: 'var(--cgi-text)' }}>
+    <div
+      className={`cgi-root cgi-${theme}`}
+      style={{ background: 'var(--cgi-bg)', color: 'var(--cgi-text)' }}
+      onSubmitCapture={e => {
+        e.preventDefault();
+      }}
+      onSubmit={e => {
+        e.stopPropagation();
+      }}
+    >
       {/* Toolbar row 1 */}
       <div className="cgi-toolbar" style={{ background: 'var(--cgi-surface)' }}>
         <div className="cgi-toolbar-title">

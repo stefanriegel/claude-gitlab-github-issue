@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import { usePluginAPI } from './PluginContext';
 import type { GithubIssue } from './types';
 
@@ -10,6 +10,7 @@ interface Props {
 
 export const NewIssueModal: React.FC<Props> = ({ projectPath, onClose, onCreated }) => {
   const api = usePluginAPI();
+  const id = useId();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -76,10 +77,11 @@ export const NewIssueModal: React.FC<Props> = ({ projectPath, onClose, onCreated
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Title */}
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, opacity: 0.65, marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <label htmlFor={`${id}-title`} style={{ display: 'block', fontSize: 11, fontWeight: 600, opacity: 0.65, marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Title <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <input
+              id={`${id}-title`}
               ref={titleRef}
               type="text"
               value={title}
@@ -93,10 +95,11 @@ export const NewIssueModal: React.FC<Props> = ({ projectPath, onClose, onCreated
 
           {/* Body */}
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, opacity: 0.65, marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <label htmlFor={`${id}-body`} style={{ display: 'block', fontSize: 11, fontWeight: 600, opacity: 0.65, marginBottom: 5, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Description <span style={{ opacity: 0.5, fontWeight: 400, textTransform: 'none' }}>(optional)</span>
             </label>
             <textarea
+              id={`${id}-body`}
               value={body}
               onChange={e => setBody(e.target.value)}
               placeholder="Describe the issue, steps to reproduce, expected vs actual behavior…"

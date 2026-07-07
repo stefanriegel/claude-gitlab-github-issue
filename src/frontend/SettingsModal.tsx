@@ -19,6 +19,7 @@ interface ConfigState {
 
 export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, onManualPrioritize }) => {
   const api = usePluginAPI();
+  const id = React.useId();
   const [form, setForm] = useState<ConfigState>({
     provider: 'github',
     baseUrl: 'https://gitlab.com',
@@ -134,8 +135,9 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
         ) : (
           <>
             <div>
-              <label style={labelStyle}>Provider</label>
+              <label htmlFor={`${id}-provider`} style={labelStyle}>Provider</label>
               <select
+                id={`${id}-provider`}
                 value={form.provider}
                 onChange={e => setForm(f => ({ ...f, provider: e.target.value as 'github' | 'gitlab' }))}
                 style={inputStyle}
@@ -147,8 +149,9 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
 
             {form.provider === 'gitlab' && (
               <div>
-                <label style={labelStyle}>GitLab Base URL</label>
+                <label htmlFor={`${id}-base-url`} style={labelStyle}>GitLab Base URL</label>
                 <input
+                  id={`${id}-base-url`}
                   type="url"
                   value={form.baseUrl}
                   onChange={e => setForm(f => ({ ...f, baseUrl: e.target.value }))}
@@ -161,9 +164,10 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
 
             {/* Token */}
             <div>
-              <label style={labelStyle}>{form.provider === 'gitlab' ? 'GitLab Access Token' : 'GitHub Personal Access Token'}</label>
+              <label htmlFor={`${id}-token`} style={labelStyle}>{form.provider === 'gitlab' ? 'GitLab Access Token' : 'GitHub Personal Access Token'}</label>
               <div style={{ position: 'relative' }}>
                 <input
+                  id={`${id}-token`}
                   type={showToken ? 'text' : 'password'}
                   value={form.token}
                   onChange={e => setForm(f => ({ ...f, token: e.target.value }))}
@@ -186,8 +190,9 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
 
             {/* Owner */}
             <div>
-              <label style={labelStyle}>{form.provider === 'gitlab' ? 'Group / Subgroup' : 'Repository Owner (username or org)'}</label>
+              <label htmlFor={`${id}-owner`} style={labelStyle}>{form.provider === 'gitlab' ? 'Group / Subgroup' : 'Repository Owner (username or org)'}</label>
               <input
+                id={`${id}-owner`}
                 type="text"
                 value={form.owner}
                 onChange={e => setForm(f => ({ ...f, owner: e.target.value }))}
@@ -199,8 +204,9 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
 
             {/* Repo */}
             <div>
-              <label style={labelStyle}>Repository Name</label>
+              <label htmlFor={`${id}-repo`} style={labelStyle}>Repository Name</label>
               <input
+                id={`${id}-repo`}
                 type="text"
                 value={form.repo}
                 onChange={e => setForm(f => ({ ...f, repo: e.target.value }))}
@@ -212,9 +218,10 @@ export const SettingsModal: React.FC<Props> = ({ projectPath, onClose, onSaved, 
 
             {/* Anthropic Key (optional) */}
             <div>
-              <label style={labelStyle}>Anthropic API Key <span style={{ opacity: 0.5, fontWeight: 400, textTransform: 'none', fontSize: 11 }}>(optional — enables real AI prioritization)</span></label>
+              <label htmlFor={`${id}-anthropic-key`} style={labelStyle}>Anthropic API Key <span style={{ opacity: 0.5, fontWeight: 400, textTransform: 'none', fontSize: 11 }}>(optional — enables real AI prioritization)</span></label>
               <div style={{ position: 'relative' }}>
                 <input
+                  id={`${id}-anthropic-key`}
                   type={showAnthropicKey ? 'text' : 'password'}
                   value={form.anthropicKey}
                   onChange={e => setForm(f => ({ ...f, anthropicKey: e.target.value }))}
